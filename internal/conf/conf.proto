@@ -1,0 +1,115 @@
+syntax = "proto3";
+package kratos.api;
+
+option go_package = "github.com/velonyapp/notification/internal/conf";
+
+import "buf/validate/validate.proto";
+import "google/protobuf/duration.proto";
+
+message Bootstrap {
+  Transport     transport     = 1 [
+    (buf.validate.field).required = true
+  ];
+  Observability observability = 2;
+  Email email = 3 [
+    (buf.validate.field).required = true
+  ];
+}
+
+message Transport {
+  message HTTP {
+    string address = 1 [
+      (buf.validate.field).string.host_and_port = true
+    ];
+
+    google.protobuf.Duration timeout = 2 [
+      (buf.validate.field).duration.gt = {}
+    ];
+  }
+
+  message GRPC {
+    string address = 1 [
+      (buf.validate.field).string.host_and_port = true
+    ];
+
+    google.protobuf.Duration timeout = 2 [
+      (buf.validate.field).duration.gt = {}
+    ];
+  }
+
+  HTTP http = 1 [
+    (buf.validate.field).required = true
+  ];
+  GRPC grpc = 2 [
+    (buf.validate.field).required = true
+  ];
+}
+
+message Observability {
+  enum Protocol {
+    PROTOCOL_UNSPECIFIED   = 0;
+    PROTOCOL_GRPC          = 1;
+    PROTOCOL_HTTP_PROTOBUF = 2;
+  }
+
+  message Tracing {
+    Protocol protocol = 1 [
+      (buf.validate.field).enum = { defined_only: true, not_in: [0] }
+    ];
+    string endpoint = 2 [
+      (buf.validate.field).string.min_len = 1
+    ];
+    optional string authorization = 3 [
+      (buf.validate.field).string.min_len = 1
+    ];
+
+    optional double sample_ratio = 4 [
+      (buf.validate.field).double = { gte: 0.0, lte: 1.0 }
+    ];
+  }
+
+  message Metrics {
+    Protocol protocol = 1 [
+      (buf.validate.field).enum = { defined_only: true, not_in: [0] }
+    ];
+    string endpoint = 2 [
+      (buf.validate.field).string.min_len = 1
+    ];
+    optional string authorization = 3 [
+      (buf.validate.field).string.min_len = 1
+    ];
+
+    google.protobuf.Duration export_interval = 4 [
+      (buf.validate.field).required = true,
+      (buf.validate.field).duration.gt = {}
+    ];
+  }
+
+  Tracing tracing = 1;
+  Metrics metrics = 2;
+}
+
+message Email {
+  message Address {
+    string name = 1 [
+      (buf.validate.field).string.min_len = 1
+    ];
+    string address = 2 [
+      (buf.validate.field).string.email = true
+    ];
+  }
+
+  message Resend {
+    string api_key = 1 [
+      (buf.validate.field).string.min_len = 1
+    ];
+  }
+
+  Address from = 1 [
+    (buf.validate.field).required = true
+  ];
+
+  Resend resend = 2 [
+    (buf.validate.field).required = true
+  ];
+}

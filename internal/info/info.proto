@@ -1,0 +1,16 @@
+syntax = "proto3";
+package kratos.info;
+
+option go_package = "github.com/velonyapp/notification/internal/info";
+
+import "google/protobuf/duration.proto";
+
+message Bootstrap {
+  Service service = 1;
+}
+
+message Service {
+  string Name       = 1;
+  string Version    = 2;
+  string InstanceID = 3;
+}

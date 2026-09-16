@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package velony.notification.api.v1;
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+
+option go_package = "github.com/velonyapp/notification/gen/api/v1;apiv1";
+
+service NotificationService {
+  rpc SendEmail(SendEmailRequest) returns (SendEmailResponse) {
+    option (google.api.http) = {
+      post: "/v1:sendEmail"
+      body: "*"
+    };
+  }
+}
+
+message EmailAddress {
+  string address = 1 [
+    (google.api.field_behavior) = REQUIRED
+  ];
+
+  optional string name = 2 [
+    (google.api.field_behavior) = OPTIONAL
+  ];
+}
+
+message Email {
+  repeated EmailAddress to = 1 [
+    (google.api.field_behavior) = REQUIRED
+  ];
+
+  repeated EmailAddress cc = 2 [
+    (google.api.field_behavior) = OPTIONAL
+  ];
+
+  repeated EmailAddress bcc = 3 [
+    (google.api.field_behavior) = OPTIONAL
+  ];
+
+  string subject = 4 [
+    (google.api.field_behavior) = REQUIRED
+  ];
+
+  optional string text = 5 [
+    (google.api.field_behavior) = OPTIONAL
+  ];
+
+  optional string html = 6 [
+    (google.api.field_behavior) = OPTIONAL
+  ];
+}
+
+message SendEmailRequest {
+  string idempotency_key = 1 [
+    (google.api.field_behavior) = REQUIRED
+  ];
+
+  Email email = 2 [
+    (google.api.field_behavior) = REQUIRED
+  ];
+}
+
+message SendEmailResponse {
+  string message_id = 1;
+}

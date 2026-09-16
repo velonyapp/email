@@ -1,0 +1,7 @@
+version: v2
+modules:
+  - path: proto
+  - path: internal
+deps:
+  - buf.build/bufbuild/protovalidate
+  - buf.build/googleapis/googleapis
