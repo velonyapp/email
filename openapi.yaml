@@ -3,19 +3,19 @@
 
 openapi: 3.0.3
 info:
-    title: NotificationService API
+    title: EmailService API
     version: 0.0.1
 paths:
     /v1:sendEmail:
         post:
             tags:
-                - NotificationService
-            operationId: NotificationService_SendEmail
+                - EmailService
+            operationId: EmailService_SendEmail
             requestBody:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/velony.notification.api.v1.SendEmailRequest'
+                            $ref: '#/components/schemas/velony.email.api.v1.SendEmailRequest'
                 required: true
             responses:
                 "200":
@@ -23,10 +23,10 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/velony.notification.api.v1.SendEmailResponse'
+                                $ref: '#/components/schemas/velony.email.api.v1.SendEmailResponse'
 components:
     schemas:
-        velony.notification.api.v1.Email:
+        velony.email.api.v1.Email:
             required:
                 - to
                 - subject
@@ -35,22 +35,22 @@ components:
                 to:
                     type: array
                     items:
-                        $ref: '#/components/schemas/velony.notification.api.v1.EmailAddress'
+                        $ref: '#/components/schemas/velony.email.api.v1.EmailAddress'
                 cc:
                     type: array
                     items:
-                        $ref: '#/components/schemas/velony.notification.api.v1.EmailAddress'
+                        $ref: '#/components/schemas/velony.email.api.v1.EmailAddress'
                 bcc:
                     type: array
                     items:
-                        $ref: '#/components/schemas/velony.notification.api.v1.EmailAddress'
+                        $ref: '#/components/schemas/velony.email.api.v1.EmailAddress'
                 subject:
                     type: string
                 text:
                     type: string
                 html:
                     type: string
-        velony.notification.api.v1.EmailAddress:
+        velony.email.api.v1.EmailAddress:
             required:
                 - address
             type: object
@@ -59,7 +59,7 @@ components:
                     type: string
                 name:
                     type: string
-        velony.notification.api.v1.SendEmailRequest:
+        velony.email.api.v1.SendEmailRequest:
             required:
                 - idempotencyKey
                 - email
@@ -68,11 +68,11 @@ components:
                 idempotencyKey:
                     type: string
                 email:
-                    $ref: '#/components/schemas/velony.notification.api.v1.Email'
-        velony.notification.api.v1.SendEmailResponse:
+                    $ref: '#/components/schemas/velony.email.api.v1.Email'
+        velony.email.api.v1.SendEmailResponse:
             type: object
             properties:
                 messageId:
                     type: string
 tags:
-    - name: NotificationService
+    - name: EmailService

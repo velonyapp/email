@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-package velony.notification.api.v1;
-
-option go_package = "github.com/velonyapp/notification/gen/api/v1;apiv1";
-
-enum ErrorReason {
-  ERROR_REASON_UNSPECIFIED = 0;
-}

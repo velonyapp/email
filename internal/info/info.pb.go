@@ -138,7 +138,7 @@ const file_info_info_proto_rawDesc = "" +
 	"\aVersion\x18\x02 \x01(\tR\aVersion\x12\x1e\n" +
 	"\n" +
 	"InstanceID\x18\x03 \x01(\tR\n" +
-	"InstanceIDB1Z/github.com/velonyapp/notification/internal/infob\x06proto3"
+	"InstanceIDB*Z(github.com/velonyapp/email/internal/infob\x06proto3"
 
 var (
 	file_info_info_proto_rawDescOnce sync.Once

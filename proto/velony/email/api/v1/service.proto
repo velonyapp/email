@@ -1,13 +1,13 @@
 syntax = "proto3";
 
-package velony.notification.api.v1;
+package velony.email.api.v1;
 
 import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
 
-option go_package = "github.com/velonyapp/notification/gen/api/v1;apiv1";
+option go_package = "github.com/velonyapp/email/gen/api/v1;apiv1";
 
-service NotificationService {
+service EmailService {
   rpc SendEmail(SendEmailRequest) returns (SendEmailResponse) {
     option (google.api.http) = {
       post: "/v1:sendEmail"

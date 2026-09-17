@@ -9,11 +9,11 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/velonyapp/notification/internal/application"
-	"github.com/velonyapp/notification/internal/conf"
-	"github.com/velonyapp/notification/internal/info"
-	"github.com/velonyapp/notification/internal/infrastructure"
-	"github.com/velonyapp/notification/internal/presentation"
+	"github.com/velonyapp/email/internal/application"
+	"github.com/velonyapp/email/internal/conf"
+	"github.com/velonyapp/email/internal/info"
+	"github.com/velonyapp/email/internal/infrastructure"
+	"github.com/velonyapp/email/internal/presentation"
 
 	"github.com/go-kratos/kratos/v3"
 	"github.com/google/wire"
@@ -23,9 +23,9 @@ import (
 func wireApp(
 	context.Context,
 	*info.Service,
+	*conf.Service,
 	*conf.Transport,
 	*conf.Observability,
-	*conf.Email,
 	*slog.Logger,
 ) (*kratos.App, func(), error) {
 	panic(wire.Build(

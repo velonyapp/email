@@ -1,7 +1,7 @@
 package presentation
 
 import (
-	"github.com/velonyapp/notification/internal/presentation/api"
+	"github.com/velonyapp/email/internal/presentation/api"
 
 	"github.com/google/wire"
 )

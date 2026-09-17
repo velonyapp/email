@@ -5,8 +5,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/velonyapp/notification/internal/conf"
-	"github.com/velonyapp/notification/internal/info"
+	"github.com/velonyapp/email/internal/conf"
+	"github.com/velonyapp/email/internal/info"
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"

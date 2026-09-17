@@ -7,7 +7,7 @@ import (
 	"go.opentelemetry.io/otel/metric"
 )
 
-const instrumentationName = "github.com/velonyapp/notification/internal/infrastructure/observability"
+const instrumentationName = "github.com/velonyapp/email/internal/infrastructure/observability"
 
 type ServerMetrics struct {
 	Requests metric.Int64Counter

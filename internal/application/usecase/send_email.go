@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 
-	"github.com/velonyapp/notification/internal/application/port"
+	"github.com/velonyapp/email/internal/application/port"
 )
 
 type SendEmail struct {

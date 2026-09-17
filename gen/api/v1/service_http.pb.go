@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-http v2.9.2
 // - protoc             (unknown)
-// source: velony/notification/api/v1/notification.proto
+// source: velony/email/api/v1/service.proto
 
 package apiv1
 
@@ -17,24 +17,24 @@ var _ = new(context.Context)
 
 const _ = http.SupportPackageIsVersion3
 
-const OperationNotificationServiceSendEmail = "/velony.notification.api.v1.NotificationService/SendEmail"
+const OperationEmailServiceSendEmail = "/velony.email.api.v1.EmailService/SendEmail"
 
-type NotificationServiceHTTPServer interface {
+type EmailServiceHTTPServer interface {
 	SendEmail(context.Context, *SendEmailRequest) (*SendEmailResponse, error)
 }
 
-func RegisterNotificationServiceHTTPServer(s *http.Server, srv NotificationServiceHTTPServer) {
+func RegisterEmailServiceHTTPServer(s *http.Server, srv EmailServiceHTTPServer) {
 	r := s.Route("/")
-	r.Handle("POST", "/v1:sendEmail", _NotificationService_SendEmail0_HTTP_Handler(srv))
+	r.Handle("POST", "/v1:sendEmail", _EmailService_SendEmail0_HTTP_Handler(srv))
 }
 
-func _NotificationService_SendEmail0_HTTP_Handler(srv NotificationServiceHTTPServer) func(ctx http.Context) error {
+func _EmailService_SendEmail0_HTTP_Handler(srv EmailServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in SendEmailRequest
 		if err := ctx.Bind(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationNotificationServiceSendEmail)
+		http.SetOperation(ctx, OperationEmailServiceSendEmail)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.SendEmail(ctx, req.(*SendEmailRequest))
 		})
@@ -47,26 +47,26 @@ func _NotificationService_SendEmail0_HTTP_Handler(srv NotificationServiceHTTPSer
 	}
 }
 
-type NotificationServiceHTTPClient interface {
+type EmailServiceHTTPClient interface {
 	SendEmail(ctx context.Context, req *SendEmailRequest, opts ...http.CallOption) (rsp *SendEmailResponse, err error)
 }
 
-type NotificationServiceHTTPClientImpl struct {
+type EmailServiceHTTPClientImpl struct {
 	cc *http.Client
 }
 
-func NewNotificationServiceHTTPClient(client *http.Client) NotificationServiceHTTPClient {
-	return &NotificationServiceHTTPClientImpl{client}
+func NewEmailServiceHTTPClient(client *http.Client) EmailServiceHTTPClient {
+	return &EmailServiceHTTPClientImpl{client}
 }
 
-func (c *NotificationServiceHTTPClientImpl) SendEmail(ctx context.Context, in *SendEmailRequest, opts ...http.CallOption) (*SendEmailResponse, error) {
+func (c *EmailServiceHTTPClientImpl) SendEmail(ctx context.Context, in *SendEmailRequest, opts ...http.CallOption) (*SendEmailResponse, error) {
 	var out SendEmailResponse
 	pattern := "/v1:sendEmail"
 	path := http.BuildPath(pattern, in)
 	opts = append([]http.CallOption{
 		http.Accept("application/protojson"),
 		http.ContentType("application/protojson"),
-		http.Operation(OperationNotificationServiceSendEmail),
+		http.Operation(OperationEmailServiceSendEmail),
 		http.PathTemplate(pattern),
 	}, opts...)
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)

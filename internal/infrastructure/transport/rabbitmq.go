@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
-	v1 "github.com/velonyapp/notification/gen/api/v1"
-	"github.com/velonyapp/notification/internal/conf"
-	"github.com/velonyapp/notification/internal/presentation/api"
+	v1 "github.com/velonyapp/email/gen/api/v1"
+	"github.com/velonyapp/email/internal/conf"
+	"github.com/velonyapp/email/internal/presentation/api"
 
 	"github.com/Azure/go-amqp"
 	"github.com/rabbitmq/rabbitmq-amqp-go-client/pkg/rabbitmqamqp"
@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	sendEmailQueue = "notification.send_email"
+	sendEmailQueue = "email.send_email"
 )
 
 type RabbitMQServer struct {

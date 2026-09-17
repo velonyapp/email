@@ -1,17 +1,43 @@
 syntax = "proto3";
 package kratos.api;
 
-option go_package = "github.com/velonyapp/notification/internal/conf";
+option go_package = "github.com/velonyapp/email/internal/conf";
 
 import "buf/validate/validate.proto";
 import "google/protobuf/duration.proto";
 
 message Bootstrap {
-  Transport     transport     = 1 [
+  Service service = 1 [
     (buf.validate.field).required = true
   ];
-  Observability observability = 2;
-  Email email = 3 [
+  Transport     transport     = 2 [
+    (buf.validate.field).required = true
+  ];
+  Observability observability = 3;
+
+}
+
+message Service {
+  message EmailAddress {
+    string name = 1 [
+      (buf.validate.field).string.min_len = 1
+    ];
+    string address = 2 [
+      (buf.validate.field).string.email = true
+    ];
+  }
+
+  message Resend {
+    string api_key = 1 [
+      (buf.validate.field).string.min_len = 1
+    ];
+  }
+
+  EmailAddress from = 1 [
+    (buf.validate.field).required = true
+  ];
+
+  Resend resend = 2 [
     (buf.validate.field).required = true
   ];
 }
@@ -102,29 +128,4 @@ message Observability {
 
   Tracing tracing = 1;
   Metrics metrics = 2;
-}
-
-message Email {
-  message Address {
-    string name = 1 [
-      (buf.validate.field).string.min_len = 1
-    ];
-    string address = 2 [
-      (buf.validate.field).string.email = true
-    ];
-  }
-
-  message Resend {
-    string api_key = 1 [
-      (buf.validate.field).string.min_len = 1
-    ];
-  }
-
-  Address from = 1 [
-    (buf.validate.field).required = true
-  ];
-
-  Resend resend = 2 [
-    (buf.validate.field).required = true
-  ];
 }

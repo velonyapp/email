@@ -1,9 +1,9 @@
 package transport
 
 import (
-	v1 "github.com/velonyapp/notification/gen/api/v1"
-	"github.com/velonyapp/notification/internal/conf"
-	"github.com/velonyapp/notification/internal/presentation/api"
+	v1 "github.com/velonyapp/email/gen/api/v1"
+	"github.com/velonyapp/email/internal/conf"
+	"github.com/velonyapp/email/internal/presentation/api"
 
 	"github.com/go-kratos/kratos/v3/middleware"
 	"github.com/go-kratos/kratos/v3/middleware/recovery"
@@ -33,7 +33,7 @@ func NewGRPCServer(
 
 	srv := grpc.NewServer(opts...)
 
-	v1.RegisterNotificationServiceServer(srv, service)
+	v1.RegisterEmailServiceServer(srv, service)
 
 	return srv
 }

@@ -3,7 +3,7 @@ package transport
 import (
 	"context"
 
-	"github.com/velonyapp/notification/internal/infrastructure/observability"
+	"github.com/velonyapp/email/internal/infrastructure/observability"
 
 	"github.com/go-kratos/kratos/contrib/otel/v3/metrics"
 	"github.com/go-kratos/kratos/contrib/otel/v3/tracing"

@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        (unknown)
-// source: velony/notification/api/v1/error_reason.proto
+// source: velony/email/api/v1/error_reason.proto
 
 package apiv1
 
@@ -48,11 +48,11 @@ func (x ErrorReason) String() string {
 }
 
 func (ErrorReason) Descriptor() protoreflect.EnumDescriptor {
-	return file_velony_notification_api_v1_error_reason_proto_enumTypes[0].Descriptor()
+	return file_velony_email_api_v1_error_reason_proto_enumTypes[0].Descriptor()
 }
 
 func (ErrorReason) Type() protoreflect.EnumType {
-	return &file_velony_notification_api_v1_error_reason_proto_enumTypes[0]
+	return &file_velony_email_api_v1_error_reason_proto_enumTypes[0]
 }
 
 func (x ErrorReason) Number() protoreflect.EnumNumber {
@@ -61,34 +61,34 @@ func (x ErrorReason) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ErrorReason.Descriptor instead.
 func (ErrorReason) EnumDescriptor() ([]byte, []int) {
-	return file_velony_notification_api_v1_error_reason_proto_rawDescGZIP(), []int{0}
+	return file_velony_email_api_v1_error_reason_proto_rawDescGZIP(), []int{0}
 }
 
-var File_velony_notification_api_v1_error_reason_proto protoreflect.FileDescriptor
+var File_velony_email_api_v1_error_reason_proto protoreflect.FileDescriptor
 
-const file_velony_notification_api_v1_error_reason_proto_rawDesc = "" +
+const file_velony_email_api_v1_error_reason_proto_rawDesc = "" +
 	"\n" +
-	"-velony/notification/api/v1/error_reason.proto\x12\x1avelony.notification.api.v1*+\n" +
+	"&velony/email/api/v1/error_reason.proto\x12\x13velony.email.api.v1*+\n" +
 	"\vErrorReason\x12\x1c\n" +
-	"\x18ERROR_REASON_UNSPECIFIED\x10\x00B4Z2github.com/velonyapp/notification/gen/api/v1;apiv1b\x06proto3"
+	"\x18ERROR_REASON_UNSPECIFIED\x10\x00B-Z+github.com/velonyapp/email/gen/api/v1;apiv1b\x06proto3"
 
 var (
-	file_velony_notification_api_v1_error_reason_proto_rawDescOnce sync.Once
-	file_velony_notification_api_v1_error_reason_proto_rawDescData []byte
+	file_velony_email_api_v1_error_reason_proto_rawDescOnce sync.Once
+	file_velony_email_api_v1_error_reason_proto_rawDescData []byte
 )
 
-func file_velony_notification_api_v1_error_reason_proto_rawDescGZIP() []byte {
-	file_velony_notification_api_v1_error_reason_proto_rawDescOnce.Do(func() {
-		file_velony_notification_api_v1_error_reason_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_velony_notification_api_v1_error_reason_proto_rawDesc), len(file_velony_notification_api_v1_error_reason_proto_rawDesc)))
+func file_velony_email_api_v1_error_reason_proto_rawDescGZIP() []byte {
+	file_velony_email_api_v1_error_reason_proto_rawDescOnce.Do(func() {
+		file_velony_email_api_v1_error_reason_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_velony_email_api_v1_error_reason_proto_rawDesc), len(file_velony_email_api_v1_error_reason_proto_rawDesc)))
 	})
-	return file_velony_notification_api_v1_error_reason_proto_rawDescData
+	return file_velony_email_api_v1_error_reason_proto_rawDescData
 }
 
-var file_velony_notification_api_v1_error_reason_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_velony_notification_api_v1_error_reason_proto_goTypes = []any{
-	(ErrorReason)(0), // 0: velony.notification.api.v1.ErrorReason
+var file_velony_email_api_v1_error_reason_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_velony_email_api_v1_error_reason_proto_goTypes = []any{
+	(ErrorReason)(0), // 0: velony.email.api.v1.ErrorReason
 }
-var file_velony_notification_api_v1_error_reason_proto_depIdxs = []int32{
+var file_velony_email_api_v1_error_reason_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
 	0, // [0:0] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -96,26 +96,26 @@ var file_velony_notification_api_v1_error_reason_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_velony_notification_api_v1_error_reason_proto_init() }
-func file_velony_notification_api_v1_error_reason_proto_init() {
-	if File_velony_notification_api_v1_error_reason_proto != nil {
+func init() { file_velony_email_api_v1_error_reason_proto_init() }
+func file_velony_email_api_v1_error_reason_proto_init() {
+	if File_velony_email_api_v1_error_reason_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_velony_notification_api_v1_error_reason_proto_rawDesc), len(file_velony_notification_api_v1_error_reason_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_velony_email_api_v1_error_reason_proto_rawDesc), len(file_velony_email_api_v1_error_reason_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   0,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_velony_notification_api_v1_error_reason_proto_goTypes,
-		DependencyIndexes: file_velony_notification_api_v1_error_reason_proto_depIdxs,
-		EnumInfos:         file_velony_notification_api_v1_error_reason_proto_enumTypes,
+		GoTypes:           file_velony_email_api_v1_error_reason_proto_goTypes,
+		DependencyIndexes: file_velony_email_api_v1_error_reason_proto_depIdxs,
+		EnumInfos:         file_velony_email_api_v1_error_reason_proto_enumTypes,
 	}.Build()
-	File_velony_notification_api_v1_error_reason_proto = out.File
-	file_velony_notification_api_v1_error_reason_proto_goTypes = nil
-	file_velony_notification_api_v1_error_reason_proto_depIdxs = nil
+	File_velony_email_api_v1_error_reason_proto = out.File
+	file_velony_email_api_v1_error_reason_proto_goTypes = nil
+	file_velony_email_api_v1_error_reason_proto_depIdxs = nil
 }

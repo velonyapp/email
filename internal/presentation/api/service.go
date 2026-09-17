@@ -3,13 +3,13 @@ package api
 import (
 	"context"
 
-	v1 "github.com/velonyapp/notification/gen/api/v1"
-	"github.com/velonyapp/notification/internal/application/port"
-	"github.com/velonyapp/notification/internal/application/usecase"
+	v1 "github.com/velonyapp/email/gen/api/v1"
+	"github.com/velonyapp/email/internal/application/port"
+	"github.com/velonyapp/email/internal/application/usecase"
 )
 
 type Service struct {
-	v1.UnimplementedNotificationServiceServer
+	v1.UnimplementedEmailServiceServer
 
 	sendEmailHandler *usecase.SendEmailHandler
 }

@@ -69,14 +69,14 @@ func (x Observability_Protocol) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Observability_Protocol.Descriptor instead.
 func (Observability_Protocol) EnumDescriptor() ([]byte, []int) {
-	return file_conf_conf_proto_rawDescGZIP(), []int{2, 0}
+	return file_conf_conf_proto_rawDescGZIP(), []int{3, 0}
 }
 
 type Bootstrap struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Transport     *Transport             `protobuf:"bytes,1,opt,name=transport,proto3" json:"transport,omitempty"`
-	Observability *Observability         `protobuf:"bytes,2,opt,name=observability,proto3" json:"observability,omitempty"`
-	Email         *Email                 `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
+	Service       *Service               `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	Transport     *Transport             `protobuf:"bytes,2,opt,name=transport,proto3" json:"transport,omitempty"`
+	Observability *Observability         `protobuf:"bytes,3,opt,name=observability,proto3" json:"observability,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -111,6 +111,13 @@ func (*Bootstrap) Descriptor() ([]byte, []int) {
 	return file_conf_conf_proto_rawDescGZIP(), []int{0}
 }
 
+func (x *Bootstrap) GetService() *Service {
+	if x != nil {
+		return x.Service
+	}
+	return nil
+}
+
 func (x *Bootstrap) GetTransport() *Transport {
 	if x != nil {
 		return x.Transport
@@ -125,9 +132,54 @@ func (x *Bootstrap) GetObservability() *Observability {
 	return nil
 }
 
-func (x *Bootstrap) GetEmail() *Email {
+type Service struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	From          *Service_EmailAddress  `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	Resend        *Service_Resend        `protobuf:"bytes,2,opt,name=resend,proto3" json:"resend,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Service) Reset() {
+	*x = Service{}
+	mi := &file_conf_conf_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Service) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Service) ProtoMessage() {}
+
+func (x *Service) ProtoReflect() protoreflect.Message {
+	mi := &file_conf_conf_proto_msgTypes[1]
 	if x != nil {
-		return x.Email
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Service.ProtoReflect.Descriptor instead.
+func (*Service) Descriptor() ([]byte, []int) {
+	return file_conf_conf_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *Service) GetFrom() *Service_EmailAddress {
+	if x != nil {
+		return x.From
+	}
+	return nil
+}
+
+func (x *Service) GetResend() *Service_Resend {
+	if x != nil {
+		return x.Resend
 	}
 	return nil
 }
@@ -143,7 +195,7 @@ type Transport struct {
 
 func (x *Transport) Reset() {
 	*x = Transport{}
-	mi := &file_conf_conf_proto_msgTypes[1]
+	mi := &file_conf_conf_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -155,7 +207,7 @@ func (x *Transport) String() string {
 func (*Transport) ProtoMessage() {}
 
 func (x *Transport) ProtoReflect() protoreflect.Message {
-	mi := &file_conf_conf_proto_msgTypes[1]
+	mi := &file_conf_conf_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -168,7 +220,7 @@ func (x *Transport) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Transport.ProtoReflect.Descriptor instead.
 func (*Transport) Descriptor() ([]byte, []int) {
-	return file_conf_conf_proto_rawDescGZIP(), []int{1}
+	return file_conf_conf_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Transport) GetHttp() *Transport_HTTP {
@@ -202,7 +254,7 @@ type Observability struct {
 
 func (x *Observability) Reset() {
 	*x = Observability{}
-	mi := &file_conf_conf_proto_msgTypes[2]
+	mi := &file_conf_conf_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -214,7 +266,7 @@ func (x *Observability) String() string {
 func (*Observability) ProtoMessage() {}
 
 func (x *Observability) ProtoReflect() protoreflect.Message {
-	mi := &file_conf_conf_proto_msgTypes[2]
+	mi := &file_conf_conf_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -227,7 +279,7 @@ func (x *Observability) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Observability.ProtoReflect.Descriptor instead.
 func (*Observability) Descriptor() ([]byte, []int) {
-	return file_conf_conf_proto_rawDescGZIP(), []int{2}
+	return file_conf_conf_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Observability) GetTracing() *Observability_Tracing {
@@ -244,29 +296,29 @@ func (x *Observability) GetMetrics() *Observability_Metrics {
 	return nil
 }
 
-type Email struct {
+type Service_EmailAddress struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	From          *Email_Address         `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
-	Resend        *Email_Resend          `protobuf:"bytes,2,opt,name=resend,proto3" json:"resend,omitempty"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Address       string                 `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *Email) Reset() {
-	*x = Email{}
-	mi := &file_conf_conf_proto_msgTypes[3]
+func (x *Service_EmailAddress) Reset() {
+	*x = Service_EmailAddress{}
+	mi := &file_conf_conf_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *Email) String() string {
+func (x *Service_EmailAddress) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Email) ProtoMessage() {}
+func (*Service_EmailAddress) ProtoMessage() {}
 
-func (x *Email) ProtoReflect() protoreflect.Message {
-	mi := &file_conf_conf_proto_msgTypes[3]
+func (x *Service_EmailAddress) ProtoReflect() protoreflect.Message {
+	mi := &file_conf_conf_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -277,23 +329,67 @@ func (x *Email) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Email.ProtoReflect.Descriptor instead.
-func (*Email) Descriptor() ([]byte, []int) {
-	return file_conf_conf_proto_rawDescGZIP(), []int{3}
+// Deprecated: Use Service_EmailAddress.ProtoReflect.Descriptor instead.
+func (*Service_EmailAddress) Descriptor() ([]byte, []int) {
+	return file_conf_conf_proto_rawDescGZIP(), []int{1, 0}
 }
 
-func (x *Email) GetFrom() *Email_Address {
+func (x *Service_EmailAddress) GetName() string {
 	if x != nil {
-		return x.From
+		return x.Name
 	}
-	return nil
+	return ""
 }
 
-func (x *Email) GetResend() *Email_Resend {
+func (x *Service_EmailAddress) GetAddress() string {
 	if x != nil {
-		return x.Resend
+		return x.Address
 	}
-	return nil
+	return ""
+}
+
+type Service_Resend struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ApiKey        string                 `protobuf:"bytes,1,opt,name=api_key,json=apiKey,proto3" json:"api_key,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Service_Resend) Reset() {
+	*x = Service_Resend{}
+	mi := &file_conf_conf_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Service_Resend) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Service_Resend) ProtoMessage() {}
+
+func (x *Service_Resend) ProtoReflect() protoreflect.Message {
+	mi := &file_conf_conf_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Service_Resend.ProtoReflect.Descriptor instead.
+func (*Service_Resend) Descriptor() ([]byte, []int) {
+	return file_conf_conf_proto_rawDescGZIP(), []int{1, 1}
+}
+
+func (x *Service_Resend) GetApiKey() string {
+	if x != nil {
+		return x.ApiKey
+	}
+	return ""
 }
 
 type Transport_HTTP struct {
@@ -306,7 +402,7 @@ type Transport_HTTP struct {
 
 func (x *Transport_HTTP) Reset() {
 	*x = Transport_HTTP{}
-	mi := &file_conf_conf_proto_msgTypes[4]
+	mi := &file_conf_conf_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -318,7 +414,7 @@ func (x *Transport_HTTP) String() string {
 func (*Transport_HTTP) ProtoMessage() {}
 
 func (x *Transport_HTTP) ProtoReflect() protoreflect.Message {
-	mi := &file_conf_conf_proto_msgTypes[4]
+	mi := &file_conf_conf_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -331,7 +427,7 @@ func (x *Transport_HTTP) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Transport_HTTP.ProtoReflect.Descriptor instead.
 func (*Transport_HTTP) Descriptor() ([]byte, []int) {
-	return file_conf_conf_proto_rawDescGZIP(), []int{1, 0}
+	return file_conf_conf_proto_rawDescGZIP(), []int{2, 0}
 }
 
 func (x *Transport_HTTP) GetAddress() string {
@@ -358,7 +454,7 @@ type Transport_GRPC struct {
 
 func (x *Transport_GRPC) Reset() {
 	*x = Transport_GRPC{}
-	mi := &file_conf_conf_proto_msgTypes[5]
+	mi := &file_conf_conf_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -370,7 +466,7 @@ func (x *Transport_GRPC) String() string {
 func (*Transport_GRPC) ProtoMessage() {}
 
 func (x *Transport_GRPC) ProtoReflect() protoreflect.Message {
-	mi := &file_conf_conf_proto_msgTypes[5]
+	mi := &file_conf_conf_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -383,7 +479,7 @@ func (x *Transport_GRPC) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Transport_GRPC.ProtoReflect.Descriptor instead.
 func (*Transport_GRPC) Descriptor() ([]byte, []int) {
-	return file_conf_conf_proto_rawDescGZIP(), []int{1, 1}
+	return file_conf_conf_proto_rawDescGZIP(), []int{2, 1}
 }
 
 func (x *Transport_GRPC) GetAddress() string {
@@ -411,7 +507,7 @@ type Transport_RabbitMQ struct {
 
 func (x *Transport_RabbitMQ) Reset() {
 	*x = Transport_RabbitMQ{}
-	mi := &file_conf_conf_proto_msgTypes[6]
+	mi := &file_conf_conf_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -423,7 +519,7 @@ func (x *Transport_RabbitMQ) String() string {
 func (*Transport_RabbitMQ) ProtoMessage() {}
 
 func (x *Transport_RabbitMQ) ProtoReflect() protoreflect.Message {
-	mi := &file_conf_conf_proto_msgTypes[6]
+	mi := &file_conf_conf_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -436,7 +532,7 @@ func (x *Transport_RabbitMQ) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Transport_RabbitMQ.ProtoReflect.Descriptor instead.
 func (*Transport_RabbitMQ) Descriptor() ([]byte, []int) {
-	return file_conf_conf_proto_rawDescGZIP(), []int{1, 2}
+	return file_conf_conf_proto_rawDescGZIP(), []int{2, 2}
 }
 
 func (x *Transport_RabbitMQ) GetAddress() string {
@@ -472,7 +568,7 @@ type Observability_Tracing struct {
 
 func (x *Observability_Tracing) Reset() {
 	*x = Observability_Tracing{}
-	mi := &file_conf_conf_proto_msgTypes[7]
+	mi := &file_conf_conf_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -484,7 +580,7 @@ func (x *Observability_Tracing) String() string {
 func (*Observability_Tracing) ProtoMessage() {}
 
 func (x *Observability_Tracing) ProtoReflect() protoreflect.Message {
-	mi := &file_conf_conf_proto_msgTypes[7]
+	mi := &file_conf_conf_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -497,7 +593,7 @@ func (x *Observability_Tracing) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Observability_Tracing.ProtoReflect.Descriptor instead.
 func (*Observability_Tracing) Descriptor() ([]byte, []int) {
-	return file_conf_conf_proto_rawDescGZIP(), []int{2, 0}
+	return file_conf_conf_proto_rawDescGZIP(), []int{3, 0}
 }
 
 func (x *Observability_Tracing) GetProtocol() Observability_Protocol {
@@ -540,7 +636,7 @@ type Observability_Metrics struct {
 
 func (x *Observability_Metrics) Reset() {
 	*x = Observability_Metrics{}
-	mi := &file_conf_conf_proto_msgTypes[8]
+	mi := &file_conf_conf_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -552,7 +648,7 @@ func (x *Observability_Metrics) String() string {
 func (*Observability_Metrics) ProtoMessage() {}
 
 func (x *Observability_Metrics) ProtoReflect() protoreflect.Message {
-	mi := &file_conf_conf_proto_msgTypes[8]
+	mi := &file_conf_conf_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -565,7 +661,7 @@ func (x *Observability_Metrics) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Observability_Metrics.ProtoReflect.Descriptor instead.
 func (*Observability_Metrics) Descriptor() ([]byte, []int) {
-	return file_conf_conf_proto_rawDescGZIP(), []int{2, 1}
+	return file_conf_conf_proto_rawDescGZIP(), []int{3, 1}
 }
 
 func (x *Observability_Metrics) GetProtocol() Observability_Protocol {
@@ -596,112 +692,24 @@ func (x *Observability_Metrics) GetExportInterval() *durationpb.Duration {
 	return nil
 }
 
-type Email_Address struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Address       string                 `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Email_Address) Reset() {
-	*x = Email_Address{}
-	mi := &file_conf_conf_proto_msgTypes[9]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Email_Address) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Email_Address) ProtoMessage() {}
-
-func (x *Email_Address) ProtoReflect() protoreflect.Message {
-	mi := &file_conf_conf_proto_msgTypes[9]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Email_Address.ProtoReflect.Descriptor instead.
-func (*Email_Address) Descriptor() ([]byte, []int) {
-	return file_conf_conf_proto_rawDescGZIP(), []int{3, 0}
-}
-
-func (x *Email_Address) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *Email_Address) GetAddress() string {
-	if x != nil {
-		return x.Address
-	}
-	return ""
-}
-
-type Email_Resend struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	ApiKey        string                 `protobuf:"bytes,1,opt,name=api_key,json=apiKey,proto3" json:"api_key,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Email_Resend) Reset() {
-	*x = Email_Resend{}
-	mi := &file_conf_conf_proto_msgTypes[10]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Email_Resend) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Email_Resend) ProtoMessage() {}
-
-func (x *Email_Resend) ProtoReflect() protoreflect.Message {
-	mi := &file_conf_conf_proto_msgTypes[10]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Email_Resend.ProtoReflect.Descriptor instead.
-func (*Email_Resend) Descriptor() ([]byte, []int) {
-	return file_conf_conf_proto_rawDescGZIP(), []int{3, 1}
-}
-
-func (x *Email_Resend) GetApiKey() string {
-	if x != nil {
-		return x.ApiKey
-	}
-	return ""
-}
-
 var File_conf_conf_proto protoreflect.FileDescriptor
 
 const file_conf_conf_proto_rawDesc = "" +
 	"\n" +
 	"\x0fconf/conf.proto\x12\n" +
-	"kratos.api\x1a\x1bbuf/validate/validate.proto\x1a\x1egoogle/protobuf/duration.proto\"\xba\x01\n" +
-	"\tBootstrap\x12;\n" +
-	"\ttransport\x18\x01 \x01(\v2\x15.kratos.api.TransportB\x06\xbaH\x03\xc8\x01\x01R\ttransport\x12?\n" +
-	"\robservability\x18\x02 \x01(\v2\x19.kratos.api.ObservabilityR\robservability\x12/\n" +
-	"\x05email\x18\x03 \x01(\v2\x11.kratos.api.EmailB\x06\xbaH\x03\xc8\x01\x01R\x05email\"\x8e\x04\n" +
+	"kratos.api\x1a\x1bbuf/validate/validate.proto\x1a\x1egoogle/protobuf/duration.proto\"\xc0\x01\n" +
+	"\tBootstrap\x125\n" +
+	"\aservice\x18\x01 \x01(\v2\x13.kratos.api.ServiceB\x06\xbaH\x03\xc8\x01\x01R\aservice\x12;\n" +
+	"\ttransport\x18\x02 \x01(\v2\x15.kratos.api.TransportB\x06\xbaH\x03\xc8\x01\x01R\ttransport\x12?\n" +
+	"\robservability\x18\x03 \x01(\v2\x19.kratos.api.ObservabilityR\robservability\"\xff\x01\n" +
+	"\aService\x12<\n" +
+	"\x04from\x18\x01 \x01(\v2 .kratos.api.Service.EmailAddressB\x06\xbaH\x03\xc8\x01\x01R\x04from\x12:\n" +
+	"\x06resend\x18\x02 \x01(\v2\x1a.kratos.api.Service.ResendB\x06\xbaH\x03\xc8\x01\x01R\x06resend\x1aN\n" +
+	"\fEmailAddress\x12\x1b\n" +
+	"\x04name\x18\x01 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\x04name\x12!\n" +
+	"\aaddress\x18\x02 \x01(\tB\a\xbaH\x04r\x02`\x01R\aaddress\x1a*\n" +
+	"\x06Resend\x12 \n" +
+	"\aapi_key\x18\x01 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\x06apiKey\"\x8e\x04\n" +
 	"\tTransport\x126\n" +
 	"\x04http\x18\x01 \x01(\v2\x1a.kratos.api.Transport.HTTPB\x06\xbaH\x03\xc8\x01\x01R\x04http\x126\n" +
 	"\x04grpc\x18\x02 \x01(\v2\x1a.kratos.api.Transport.GRPCB\x06\xbaH\x03\xc8\x01\x01R\x04grpc\x12B\n" +
@@ -737,15 +745,7 @@ const file_conf_conf_proto_rawDesc = "" +
 	"\bProtocol\x12\x18\n" +
 	"\x14PROTOCOL_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rPROTOCOL_GRPC\x10\x01\x12\x1a\n" +
-	"\x16PROTOCOL_HTTP_PROTOBUF\x10\x02\"\xef\x01\n" +
-	"\x05Email\x125\n" +
-	"\x04from\x18\x01 \x01(\v2\x19.kratos.api.Email.AddressB\x06\xbaH\x03\xc8\x01\x01R\x04from\x128\n" +
-	"\x06resend\x18\x02 \x01(\v2\x18.kratos.api.Email.ResendB\x06\xbaH\x03\xc8\x01\x01R\x06resend\x1aI\n" +
-	"\aAddress\x12\x1b\n" +
-	"\x04name\x18\x01 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\x04name\x12!\n" +
-	"\aaddress\x18\x02 \x01(\tB\a\xbaH\x04r\x02`\x01R\aaddress\x1a*\n" +
-	"\x06Resend\x12 \n" +
-	"\aapi_key\x18\x01 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\x06apiKeyB1Z/github.com/velonyapp/notification/internal/confb\x06proto3"
+	"\x16PROTOCOL_HTTP_PROTOBUF\x10\x02B*Z(github.com/velonyapp/email/internal/confb\x06proto3"
 
 var (
 	file_conf_conf_proto_rawDescOnce sync.Once
@@ -764,29 +764,29 @@ var file_conf_conf_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_conf_conf_proto_goTypes = []any{
 	(Observability_Protocol)(0),   // 0: kratos.api.Observability.Protocol
 	(*Bootstrap)(nil),             // 1: kratos.api.Bootstrap
-	(*Transport)(nil),             // 2: kratos.api.Transport
-	(*Observability)(nil),         // 3: kratos.api.Observability
-	(*Email)(nil),                 // 4: kratos.api.Email
-	(*Transport_HTTP)(nil),        // 5: kratos.api.Transport.HTTP
-	(*Transport_GRPC)(nil),        // 6: kratos.api.Transport.GRPC
-	(*Transport_RabbitMQ)(nil),    // 7: kratos.api.Transport.RabbitMQ
-	(*Observability_Tracing)(nil), // 8: kratos.api.Observability.Tracing
-	(*Observability_Metrics)(nil), // 9: kratos.api.Observability.Metrics
-	(*Email_Address)(nil),         // 10: kratos.api.Email.Address
-	(*Email_Resend)(nil),          // 11: kratos.api.Email.Resend
+	(*Service)(nil),               // 2: kratos.api.Service
+	(*Transport)(nil),             // 3: kratos.api.Transport
+	(*Observability)(nil),         // 4: kratos.api.Observability
+	(*Service_EmailAddress)(nil),  // 5: kratos.api.Service.EmailAddress
+	(*Service_Resend)(nil),        // 6: kratos.api.Service.Resend
+	(*Transport_HTTP)(nil),        // 7: kratos.api.Transport.HTTP
+	(*Transport_GRPC)(nil),        // 8: kratos.api.Transport.GRPC
+	(*Transport_RabbitMQ)(nil),    // 9: kratos.api.Transport.RabbitMQ
+	(*Observability_Tracing)(nil), // 10: kratos.api.Observability.Tracing
+	(*Observability_Metrics)(nil), // 11: kratos.api.Observability.Metrics
 	(*durationpb.Duration)(nil),   // 12: google.protobuf.Duration
 }
 var file_conf_conf_proto_depIdxs = []int32{
-	2,  // 0: kratos.api.Bootstrap.transport:type_name -> kratos.api.Transport
-	3,  // 1: kratos.api.Bootstrap.observability:type_name -> kratos.api.Observability
-	4,  // 2: kratos.api.Bootstrap.email:type_name -> kratos.api.Email
-	5,  // 3: kratos.api.Transport.http:type_name -> kratos.api.Transport.HTTP
-	6,  // 4: kratos.api.Transport.grpc:type_name -> kratos.api.Transport.GRPC
-	7,  // 5: kratos.api.Transport.rabbitmq:type_name -> kratos.api.Transport.RabbitMQ
-	8,  // 6: kratos.api.Observability.tracing:type_name -> kratos.api.Observability.Tracing
-	9,  // 7: kratos.api.Observability.metrics:type_name -> kratos.api.Observability.Metrics
-	10, // 8: kratos.api.Email.from:type_name -> kratos.api.Email.Address
-	11, // 9: kratos.api.Email.resend:type_name -> kratos.api.Email.Resend
+	2,  // 0: kratos.api.Bootstrap.service:type_name -> kratos.api.Service
+	3,  // 1: kratos.api.Bootstrap.transport:type_name -> kratos.api.Transport
+	4,  // 2: kratos.api.Bootstrap.observability:type_name -> kratos.api.Observability
+	5,  // 3: kratos.api.Service.from:type_name -> kratos.api.Service.EmailAddress
+	6,  // 4: kratos.api.Service.resend:type_name -> kratos.api.Service.Resend
+	7,  // 5: kratos.api.Transport.http:type_name -> kratos.api.Transport.HTTP
+	8,  // 6: kratos.api.Transport.grpc:type_name -> kratos.api.Transport.GRPC
+	9,  // 7: kratos.api.Transport.rabbitmq:type_name -> kratos.api.Transport.RabbitMQ
+	10, // 8: kratos.api.Observability.tracing:type_name -> kratos.api.Observability.Tracing
+	11, // 9: kratos.api.Observability.metrics:type_name -> kratos.api.Observability.Metrics
 	12, // 10: kratos.api.Transport.HTTP.timeout:type_name -> google.protobuf.Duration
 	12, // 11: kratos.api.Transport.GRPC.timeout:type_name -> google.protobuf.Duration
 	0,  // 12: kratos.api.Observability.Tracing.protocol:type_name -> kratos.api.Observability.Protocol
@@ -804,8 +804,8 @@ func file_conf_conf_proto_init() {
 	if File_conf_conf_proto != nil {
 		return
 	}
-	file_conf_conf_proto_msgTypes[7].OneofWrappers = []any{}
-	file_conf_conf_proto_msgTypes[8].OneofWrappers = []any{}
+	file_conf_conf_proto_msgTypes[9].OneofWrappers = []any{}
+	file_conf_conf_proto_msgTypes[10].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

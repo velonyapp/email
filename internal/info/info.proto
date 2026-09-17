@@ -1,7 +1,7 @@
 syntax = "proto3";
 package kratos.info;
 
-option go_package = "github.com/velonyapp/notification/internal/info";
+option go_package = "github.com/velonyapp/email/internal/info";
 
 import "google/protobuf/duration.proto";
 

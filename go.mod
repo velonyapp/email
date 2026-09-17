@@ -1,4 +1,4 @@
-module github.com/velonyapp/notification
+module github.com/velonyapp/email
 
 go 1.25.7
 

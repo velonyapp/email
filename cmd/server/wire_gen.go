@@ -9,13 +9,13 @@ package main
 import (
 	"context"
 	"github.com/go-kratos/kratos/v3"
-	"github.com/velonyapp/notification/internal/application/usecase"
-	"github.com/velonyapp/notification/internal/conf"
-	"github.com/velonyapp/notification/internal/info"
-	"github.com/velonyapp/notification/internal/infrastructure/email/resend"
-	"github.com/velonyapp/notification/internal/infrastructure/observability"
-	"github.com/velonyapp/notification/internal/infrastructure/transport"
-	"github.com/velonyapp/notification/internal/presentation/api"
+	"github.com/velonyapp/email/internal/application/usecase"
+	"github.com/velonyapp/email/internal/conf"
+	"github.com/velonyapp/email/internal/info"
+	"github.com/velonyapp/email/internal/infrastructure/observability"
+	"github.com/velonyapp/email/internal/infrastructure/service/resend"
+	"github.com/velonyapp/email/internal/infrastructure/transport"
+	"github.com/velonyapp/email/internal/presentation/api"
 	"log/slog"
 )
 
@@ -26,9 +26,9 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func wireApp(contextContext context.Context, service *info.Service, confTransport *conf.Transport, confObservability *conf.Observability, email *conf.Email, logger *slog.Logger) (*kratos.App, func(), error) {
-	client := resend.NewClient(email)
-	emailSender := resend.NewSender(email, client)
+func wireApp(contextContext context.Context, service *info.Service, confService *conf.Service, confTransport *conf.Transport, confObservability *conf.Observability, logger *slog.Logger) (*kratos.App, func(), error) {
+	client := resend.NewClient(confService)
+	emailSender := resend.NewSender(confService, client)
 	sendEmailHandler := usecase.NewSendEmailHandler(emailSender)
 	apiService := api.NewService(sendEmailHandler)
 	tracesMiddleware := transport.NewTracesMiddleware()

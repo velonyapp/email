@@ -6,10 +6,10 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/velonyapp/notification/internal/conf"
-	"github.com/velonyapp/notification/internal/info"
-	"github.com/velonyapp/notification/internal/infrastructure/observability"
-	"github.com/velonyapp/notification/internal/infrastructure/transport"
+	"github.com/velonyapp/email/internal/conf"
+	"github.com/velonyapp/email/internal/info"
+	"github.com/velonyapp/email/internal/infrastructure/observability"
+	"github.com/velonyapp/email/internal/infrastructure/transport"
 
 	"buf.build/go/protovalidate"
 	"github.com/go-kratos/kratos/contrib/otel/v3/tracing"
@@ -25,7 +25,7 @@ import (
 )
 
 var (
-	Name          = "velony-notification"
+	Name          = "velony-email"
 	Version       = "dev"
 	InstanceID, _ = os.Hostname()
 
@@ -76,7 +76,7 @@ func main() {
 	c := config.New(
 		config.WithSource(
 			file.NewSource(flagconf),
-			env.NewSource("VELONY_NOTIFICATION_"),
+			env.NewSource("VELONY_EMAIL_"),
 		),
 	)
 	defer c.Close()
@@ -111,9 +111,9 @@ func main() {
 	app, cleanup, err := wireApp(
 		context.Background(),
 		bi.Service,
+		bc.Service,
 		bc.Transport,
 		bc.Observability,
-		bc.Email,
 		logger,
 	)
 	if err != nil {

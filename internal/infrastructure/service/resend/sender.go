@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/mail"
 
-	"github.com/velonyapp/notification/internal/application/port"
-	"github.com/velonyapp/notification/internal/conf"
+	"github.com/velonyapp/email/internal/application/port"
+	"github.com/velonyapp/email/internal/conf"
 
 	"github.com/resend/resend-go/v3"
 )
@@ -15,7 +15,7 @@ type Sender struct {
 	from   string
 }
 
-func NewSender(c *conf.Email, client *resend.Client) port.EmailSender {
+func NewSender(c *conf.Service, client *resend.Client) port.EmailSender {
 	return &Sender{
 		client: client,
 		from: (&mail.Address{

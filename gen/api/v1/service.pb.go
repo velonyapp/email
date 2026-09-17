@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        (unknown)
-// source: velony/notification/api/v1/notification.proto
+// source: velony/email/api/v1/service.proto
 
 package apiv1
 
@@ -32,7 +32,7 @@ type EmailAddress struct {
 
 func (x *EmailAddress) Reset() {
 	*x = EmailAddress{}
-	mi := &file_velony_notification_api_v1_notification_proto_msgTypes[0]
+	mi := &file_velony_email_api_v1_service_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -44,7 +44,7 @@ func (x *EmailAddress) String() string {
 func (*EmailAddress) ProtoMessage() {}
 
 func (x *EmailAddress) ProtoReflect() protoreflect.Message {
-	mi := &file_velony_notification_api_v1_notification_proto_msgTypes[0]
+	mi := &file_velony_email_api_v1_service_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -57,7 +57,7 @@ func (x *EmailAddress) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EmailAddress.ProtoReflect.Descriptor instead.
 func (*EmailAddress) Descriptor() ([]byte, []int) {
-	return file_velony_notification_api_v1_notification_proto_rawDescGZIP(), []int{0}
+	return file_velony_email_api_v1_service_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *EmailAddress) GetAddress() string {
@@ -88,7 +88,7 @@ type Email struct {
 
 func (x *Email) Reset() {
 	*x = Email{}
-	mi := &file_velony_notification_api_v1_notification_proto_msgTypes[1]
+	mi := &file_velony_email_api_v1_service_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -100,7 +100,7 @@ func (x *Email) String() string {
 func (*Email) ProtoMessage() {}
 
 func (x *Email) ProtoReflect() protoreflect.Message {
-	mi := &file_velony_notification_api_v1_notification_proto_msgTypes[1]
+	mi := &file_velony_email_api_v1_service_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -113,7 +113,7 @@ func (x *Email) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Email.ProtoReflect.Descriptor instead.
 func (*Email) Descriptor() ([]byte, []int) {
-	return file_velony_notification_api_v1_notification_proto_rawDescGZIP(), []int{1}
+	return file_velony_email_api_v1_service_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Email) GetTo() []*EmailAddress {
@@ -168,7 +168,7 @@ type SendEmailRequest struct {
 
 func (x *SendEmailRequest) Reset() {
 	*x = SendEmailRequest{}
-	mi := &file_velony_notification_api_v1_notification_proto_msgTypes[2]
+	mi := &file_velony_email_api_v1_service_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -180,7 +180,7 @@ func (x *SendEmailRequest) String() string {
 func (*SendEmailRequest) ProtoMessage() {}
 
 func (x *SendEmailRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_velony_notification_api_v1_notification_proto_msgTypes[2]
+	mi := &file_velony_email_api_v1_service_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -193,7 +193,7 @@ func (x *SendEmailRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SendEmailRequest.ProtoReflect.Descriptor instead.
 func (*SendEmailRequest) Descriptor() ([]byte, []int) {
-	return file_velony_notification_api_v1_notification_proto_rawDescGZIP(), []int{2}
+	return file_velony_email_api_v1_service_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *SendEmailRequest) GetIdempotencyKey() string {
@@ -219,7 +219,7 @@ type SendEmailResponse struct {
 
 func (x *SendEmailResponse) Reset() {
 	*x = SendEmailResponse{}
-	mi := &file_velony_notification_api_v1_notification_proto_msgTypes[3]
+	mi := &file_velony_email_api_v1_service_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -231,7 +231,7 @@ func (x *SendEmailResponse) String() string {
 func (*SendEmailResponse) ProtoMessage() {}
 
 func (x *SendEmailResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_velony_notification_api_v1_notification_proto_msgTypes[3]
+	mi := &file_velony_email_api_v1_service_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -244,7 +244,7 @@ func (x *SendEmailResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SendEmailResponse.ProtoReflect.Descriptor instead.
 func (*SendEmailResponse) Descriptor() ([]byte, []int) {
-	return file_velony_notification_api_v1_notification_proto_rawDescGZIP(), []int{3}
+	return file_velony_email_api_v1_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *SendEmailResponse) GetMessageId() string {
@@ -254,59 +254,59 @@ func (x *SendEmailResponse) GetMessageId() string {
 	return ""
 }
 
-var File_velony_notification_api_v1_notification_proto protoreflect.FileDescriptor
+var File_velony_email_api_v1_service_proto protoreflect.FileDescriptor
 
-const file_velony_notification_api_v1_notification_proto_rawDesc = "" +
+const file_velony_email_api_v1_service_proto_rawDesc = "" +
 	"\n" +
-	"-velony/notification/api/v1/notification.proto\x12\x1avelony.notification.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\"T\n" +
+	"!velony/email/api/v1/service.proto\x12\x13velony.email.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\"T\n" +
 	"\fEmailAddress\x12\x1d\n" +
 	"\aaddress\x18\x01 \x01(\tB\x03\xe0A\x02R\aaddress\x12\x1c\n" +
 	"\x04name\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\x04name\x88\x01\x01B\a\n" +
-	"\x05_name\"\xb3\x02\n" +
-	"\x05Email\x12=\n" +
-	"\x02to\x18\x01 \x03(\v2(.velony.notification.api.v1.EmailAddressB\x03\xe0A\x02R\x02to\x12=\n" +
-	"\x02cc\x18\x02 \x03(\v2(.velony.notification.api.v1.EmailAddressB\x03\xe0A\x01R\x02cc\x12?\n" +
-	"\x03bcc\x18\x03 \x03(\v2(.velony.notification.api.v1.EmailAddressB\x03\xe0A\x01R\x03bcc\x12\x1d\n" +
+	"\x05_name\"\x9e\x02\n" +
+	"\x05Email\x126\n" +
+	"\x02to\x18\x01 \x03(\v2!.velony.email.api.v1.EmailAddressB\x03\xe0A\x02R\x02to\x126\n" +
+	"\x02cc\x18\x02 \x03(\v2!.velony.email.api.v1.EmailAddressB\x03\xe0A\x01R\x02cc\x128\n" +
+	"\x03bcc\x18\x03 \x03(\v2!.velony.email.api.v1.EmailAddressB\x03\xe0A\x01R\x03bcc\x12\x1d\n" +
 	"\asubject\x18\x04 \x01(\tB\x03\xe0A\x02R\asubject\x12\x1c\n" +
 	"\x04text\x18\x05 \x01(\tB\x03\xe0A\x01H\x00R\x04text\x88\x01\x01\x12\x1c\n" +
 	"\x04html\x18\x06 \x01(\tB\x03\xe0A\x01H\x01R\x04html\x88\x01\x01B\a\n" +
 	"\x05_textB\a\n" +
-	"\x05_html\"~\n" +
+	"\x05_html\"w\n" +
 	"\x10SendEmailRequest\x12,\n" +
-	"\x0fidempotency_key\x18\x01 \x01(\tB\x03\xe0A\x02R\x0eidempotencyKey\x12<\n" +
-	"\x05email\x18\x02 \x01(\v2!.velony.notification.api.v1.EmailB\x03\xe0A\x02R\x05email\"2\n" +
+	"\x0fidempotency_key\x18\x01 \x01(\tB\x03\xe0A\x02R\x0eidempotencyKey\x125\n" +
+	"\x05email\x18\x02 \x01(\v2\x1a.velony.email.api.v1.EmailB\x03\xe0A\x02R\x05email\"2\n" +
 	"\x11SendEmailResponse\x12\x1d\n" +
 	"\n" +
-	"message_id\x18\x01 \x01(\tR\tmessageId2\x9a\x01\n" +
-	"\x13NotificationService\x12\x82\x01\n" +
-	"\tSendEmail\x12,.velony.notification.api.v1.SendEmailRequest\x1a-.velony.notification.api.v1.SendEmailResponse\"\x18\x82\xd3\xe4\x93\x02\x12:\x01*\"\r/v1:sendEmailB4Z2github.com/velonyapp/notification/gen/api/v1;apiv1b\x06proto3"
+	"message_id\x18\x01 \x01(\tR\tmessageId2\x84\x01\n" +
+	"\fEmailService\x12t\n" +
+	"\tSendEmail\x12%.velony.email.api.v1.SendEmailRequest\x1a&.velony.email.api.v1.SendEmailResponse\"\x18\x82\xd3\xe4\x93\x02\x12:\x01*\"\r/v1:sendEmailB-Z+github.com/velonyapp/email/gen/api/v1;apiv1b\x06proto3"
 
 var (
-	file_velony_notification_api_v1_notification_proto_rawDescOnce sync.Once
-	file_velony_notification_api_v1_notification_proto_rawDescData []byte
+	file_velony_email_api_v1_service_proto_rawDescOnce sync.Once
+	file_velony_email_api_v1_service_proto_rawDescData []byte
 )
 
-func file_velony_notification_api_v1_notification_proto_rawDescGZIP() []byte {
-	file_velony_notification_api_v1_notification_proto_rawDescOnce.Do(func() {
-		file_velony_notification_api_v1_notification_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_velony_notification_api_v1_notification_proto_rawDesc), len(file_velony_notification_api_v1_notification_proto_rawDesc)))
+func file_velony_email_api_v1_service_proto_rawDescGZIP() []byte {
+	file_velony_email_api_v1_service_proto_rawDescOnce.Do(func() {
+		file_velony_email_api_v1_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_velony_email_api_v1_service_proto_rawDesc), len(file_velony_email_api_v1_service_proto_rawDesc)))
 	})
-	return file_velony_notification_api_v1_notification_proto_rawDescData
+	return file_velony_email_api_v1_service_proto_rawDescData
 }
 
-var file_velony_notification_api_v1_notification_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
-var file_velony_notification_api_v1_notification_proto_goTypes = []any{
-	(*EmailAddress)(nil),      // 0: velony.notification.api.v1.EmailAddress
-	(*Email)(nil),             // 1: velony.notification.api.v1.Email
-	(*SendEmailRequest)(nil),  // 2: velony.notification.api.v1.SendEmailRequest
-	(*SendEmailResponse)(nil), // 3: velony.notification.api.v1.SendEmailResponse
+var file_velony_email_api_v1_service_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_velony_email_api_v1_service_proto_goTypes = []any{
+	(*EmailAddress)(nil),      // 0: velony.email.api.v1.EmailAddress
+	(*Email)(nil),             // 1: velony.email.api.v1.Email
+	(*SendEmailRequest)(nil),  // 2: velony.email.api.v1.SendEmailRequest
+	(*SendEmailResponse)(nil), // 3: velony.email.api.v1.SendEmailResponse
 }
-var file_velony_notification_api_v1_notification_proto_depIdxs = []int32{
-	0, // 0: velony.notification.api.v1.Email.to:type_name -> velony.notification.api.v1.EmailAddress
-	0, // 1: velony.notification.api.v1.Email.cc:type_name -> velony.notification.api.v1.EmailAddress
-	0, // 2: velony.notification.api.v1.Email.bcc:type_name -> velony.notification.api.v1.EmailAddress
-	1, // 3: velony.notification.api.v1.SendEmailRequest.email:type_name -> velony.notification.api.v1.Email
-	2, // 4: velony.notification.api.v1.NotificationService.SendEmail:input_type -> velony.notification.api.v1.SendEmailRequest
-	3, // 5: velony.notification.api.v1.NotificationService.SendEmail:output_type -> velony.notification.api.v1.SendEmailResponse
+var file_velony_email_api_v1_service_proto_depIdxs = []int32{
+	0, // 0: velony.email.api.v1.Email.to:type_name -> velony.email.api.v1.EmailAddress
+	0, // 1: velony.email.api.v1.Email.cc:type_name -> velony.email.api.v1.EmailAddress
+	0, // 2: velony.email.api.v1.Email.bcc:type_name -> velony.email.api.v1.EmailAddress
+	1, // 3: velony.email.api.v1.SendEmailRequest.email:type_name -> velony.email.api.v1.Email
+	2, // 4: velony.email.api.v1.EmailService.SendEmail:input_type -> velony.email.api.v1.SendEmailRequest
+	3, // 5: velony.email.api.v1.EmailService.SendEmail:output_type -> velony.email.api.v1.SendEmailResponse
 	5, // [5:6] is the sub-list for method output_type
 	4, // [4:5] is the sub-list for method input_type
 	4, // [4:4] is the sub-list for extension type_name
@@ -314,28 +314,28 @@ var file_velony_notification_api_v1_notification_proto_depIdxs = []int32{
 	0, // [0:4] is the sub-list for field type_name
 }
 
-func init() { file_velony_notification_api_v1_notification_proto_init() }
-func file_velony_notification_api_v1_notification_proto_init() {
-	if File_velony_notification_api_v1_notification_proto != nil {
+func init() { file_velony_email_api_v1_service_proto_init() }
+func file_velony_email_api_v1_service_proto_init() {
+	if File_velony_email_api_v1_service_proto != nil {
 		return
 	}
-	file_velony_notification_api_v1_notification_proto_msgTypes[0].OneofWrappers = []any{}
-	file_velony_notification_api_v1_notification_proto_msgTypes[1].OneofWrappers = []any{}
+	file_velony_email_api_v1_service_proto_msgTypes[0].OneofWrappers = []any{}
+	file_velony_email_api_v1_service_proto_msgTypes[1].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_velony_notification_api_v1_notification_proto_rawDesc), len(file_velony_notification_api_v1_notification_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_velony_email_api_v1_service_proto_rawDesc), len(file_velony_email_api_v1_service_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_velony_notification_api_v1_notification_proto_goTypes,
-		DependencyIndexes: file_velony_notification_api_v1_notification_proto_depIdxs,
-		MessageInfos:      file_velony_notification_api_v1_notification_proto_msgTypes,
+		GoTypes:           file_velony_email_api_v1_service_proto_goTypes,
+		DependencyIndexes: file_velony_email_api_v1_service_proto_depIdxs,
+		MessageInfos:      file_velony_email_api_v1_service_proto_msgTypes,
 	}.Build()
-	File_velony_notification_api_v1_notification_proto = out.File
-	file_velony_notification_api_v1_notification_proto_goTypes = nil
-	file_velony_notification_api_v1_notification_proto_depIdxs = nil
+	File_velony_email_api_v1_service_proto = out.File
+	file_velony_email_api_v1_service_proto_goTypes = nil
+	file_velony_email_api_v1_service_proto_depIdxs = nil
 }

@@ -1,7 +1,7 @@
 package application
 
 import (
-	"github.com/velonyapp/notification/internal/application/usecase"
+	"github.com/velonyapp/email/internal/application/usecase"
 
 	"github.com/google/wire"
 )
