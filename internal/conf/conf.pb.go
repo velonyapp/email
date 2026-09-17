@@ -403,6 +403,8 @@ func (x *Transport_GRPC) GetTimeout() *durationpb.Duration {
 type Transport_RabbitMQ struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Address       string                 `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	Username      string                 `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
+	Password      string                 `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -440,6 +442,20 @@ func (*Transport_RabbitMQ) Descriptor() ([]byte, []int) {
 func (x *Transport_RabbitMQ) GetAddress() string {
 	if x != nil {
 		return x.Address
+	}
+	return ""
+}
+
+func (x *Transport_RabbitMQ) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *Transport_RabbitMQ) GetPassword() string {
+	if x != nil {
+		return x.Password
 	}
 	return ""
 }
@@ -685,7 +701,7 @@ const file_conf_conf_proto_rawDesc = "" +
 	"\tBootstrap\x12;\n" +
 	"\ttransport\x18\x01 \x01(\v2\x15.kratos.api.TransportB\x06\xbaH\x03\xc8\x01\x01R\ttransport\x12?\n" +
 	"\robservability\x18\x02 \x01(\v2\x19.kratos.api.ObservabilityR\robservability\x12/\n" +
-	"\x05email\x18\x03 \x01(\v2\x11.kratos.api.EmailB\x06\xbaH\x03\xc8\x01\x01R\x05email\"\xc4\x03\n" +
+	"\x05email\x18\x03 \x01(\v2\x11.kratos.api.EmailB\x06\xbaH\x03\xc8\x01\x01R\x05email\"\x8e\x04\n" +
 	"\tTransport\x126\n" +
 	"\x04http\x18\x01 \x01(\v2\x1a.kratos.api.Transport.HTTPB\x06\xbaH\x03\xc8\x01\x01R\x04http\x126\n" +
 	"\x04grpc\x18\x02 \x01(\v2\x1a.kratos.api.Transport.GRPCB\x06\xbaH\x03\xc8\x01\x01R\x04grpc\x12B\n" +
@@ -695,9 +711,11 @@ const file_conf_conf_proto_rawDesc = "" +
 	"\atimeout\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\b\xbaH\x05\xaa\x01\x02*\x00R\atimeout\x1ai\n" +
 	"\x04GRPC\x12\"\n" +
 	"\aaddress\x18\x01 \x01(\tB\b\xbaH\x05r\x03\x80\x02\x01R\aaddress\x12=\n" +
-	"\atimeout\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\b\xbaH\x05\xaa\x01\x02*\x00R\atimeout\x1a-\n" +
+	"\atimeout\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\b\xbaH\x05\xaa\x01\x02*\x00R\atimeout\x1aw\n" +
 	"\bRabbitMQ\x12!\n" +
-	"\aaddress\x18\x01 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\aaddress\"\x87\x06\n" +
+	"\aaddress\x18\x01 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\aaddress\x12#\n" +
+	"\busername\x18\x02 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\busername\x12#\n" +
+	"\bpassword\x18\x03 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\bpassword\"\x87\x06\n" +
 	"\rObservability\x12;\n" +
 	"\atracing\x18\x01 \x01(\v2!.kratos.api.Observability.TracingR\atracing\x12;\n" +
 	"\ametrics\x18\x02 \x01(\v2!.kratos.api.Observability.MetricsR\ametrics\x1a\x92\x02\n" +

@@ -8,6 +8,7 @@ import (
 	"github.com/velonyapp/notification/internal/conf"
 	"github.com/velonyapp/notification/internal/presentation/api"
 
+	"github.com/Azure/go-amqp"
 	"github.com/rabbitmq/rabbitmq-amqp-go-client/pkg/rabbitmqamqp"
 	"google.golang.org/protobuf/proto"
 )
@@ -17,8 +18,10 @@ const (
 )
 
 type RabbitMQServer struct {
-	address string
-	service *api.Service
+	address  string
+	username string
+	password string
+	service  *api.Service
 
 	conn      *rabbitmqamqp.AmqpConnection
 	consumers []*rabbitmqamqp.Consumer
@@ -29,13 +32,24 @@ func NewRabbitMQServer(
 	service *api.Service,
 ) *RabbitMQServer {
 	return &RabbitMQServer{
-		address: c.Rabbitmq.Address,
-		service: service,
+		address:  c.Rabbitmq.Address,
+		username: c.Rabbitmq.Username,
+		password: c.Rabbitmq.Password,
+		service:  service,
 	}
 }
 
 func (s *RabbitMQServer) Start(ctx context.Context) error {
-	conn, err := rabbitmqamqp.Dial(ctx, s.address, nil)
+	conn, err := rabbitmqamqp.Dial(
+		ctx,
+		s.address,
+		&rabbitmqamqp.AmqpConnOptions{
+			SASLType: amqp.SASLTypePlain(
+				s.username,
+				s.password,
+			),
+		},
+	)
 	if err != nil {
 		return err
 	}
