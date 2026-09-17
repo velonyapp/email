@@ -20,8 +20,8 @@ type RabbitMQServer struct {
 	address string
 	service *api.Service
 
-	conn     *rabbitmqamqp.AmqpConnection
-	consumer *rabbitmqamqp.Consumer
+	conn      *rabbitmqamqp.AmqpConnection
+	consumers []*rabbitmqamqp.Consumer
 }
 
 func NewRabbitMQServer(
@@ -41,18 +41,32 @@ func (s *RabbitMQServer) Start(ctx context.Context) error {
 	}
 	s.conn = conn
 
-	consumer, err := conn.NewConsumer(
-		ctx,
-		sendEmailQueue,
-		nil,
-	)
+	emailConsumer, err := conn.NewConsumer(ctx, sendEmailQueue, nil)
 	if err != nil {
-		_ = conn.Close(ctx)
-		s.conn = nil
 		return err
 	}
-	s.consumer = consumer
 
+	s.consumers = append(s.consumers, emailConsumer)
+
+	return consume(
+		ctx,
+		emailConsumer,
+		func() *v1.SendEmailRequest {
+			return new(v1.SendEmailRequest)
+		},
+		func(ctx context.Context, req *v1.SendEmailRequest) error {
+			_, err := s.service.SendEmail(ctx, req)
+			return err
+		},
+	)
+}
+
+func consume[T proto.Message](
+	ctx context.Context,
+	consumer *rabbitmqamqp.Consumer,
+	newMessage func() T,
+	handler func(context.Context, T) error,
+) error {
 	for {
 		delivery, err := consumer.Receive(ctx)
 		if err != nil {
@@ -63,7 +77,7 @@ func (s *RabbitMQServer) Start(ctx context.Context) error {
 			return err
 		}
 
-		req := new(v1.SendEmailRequest)
+		req := newMessage()
 
 		if err := proto.Unmarshal(
 			delivery.Message().GetData(),
@@ -76,7 +90,7 @@ func (s *RabbitMQServer) Start(ctx context.Context) error {
 			continue
 		}
 
-		if _, err := s.service.SendEmail(ctx, req); err != nil {
+		if err := handler(ctx, req); err != nil {
 			if err := delivery.Requeue(ctx); err != nil {
 				return err
 			}
@@ -91,17 +105,19 @@ func (s *RabbitMQServer) Start(ctx context.Context) error {
 }
 
 func (s *RabbitMQServer) Stop(ctx context.Context) error {
-	if s.consumer != nil {
-		if err := s.consumer.Close(ctx); err != nil {
+	for _, consumer := range s.consumers {
+		if err := consumer.Close(ctx); err != nil {
 			return err
 		}
-		s.consumer = nil
 	}
+
+	s.consumers = nil
 
 	if s.conn != nil {
 		if err := s.conn.Close(ctx); err != nil {
 			return err
 		}
+
 		s.conn = nil
 	}
 
