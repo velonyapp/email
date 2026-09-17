@@ -40,11 +40,12 @@ func wireApp(contextContext context.Context, service *info.Service, confTranspor
 	validationMiddleware := transport.NewValidationMiddleware()
 	server := transport.NewGRPCServer(confTransport, apiService, tracesMiddleware, metricsMiddleware, validationMiddleware)
 	httpServer := transport.NewHTTPServer(confTransport, apiService, tracesMiddleware, metricsMiddleware, validationMiddleware)
+	rabbitMQServer := transport.NewRabbitMQServer(confTransport, apiService)
 	openTelemetry, cleanup, err := observability.NewOpenTelemetry(contextContext, confObservability, service)
 	if err != nil {
 		return nil, nil, err
 	}
-	app := newApp(logger, server, httpServer, openTelemetry)
+	app := newApp(logger, server, httpServer, rabbitMQServer, openTelemetry)
 	return app, func() {
 		cleanup()
 	}, nil

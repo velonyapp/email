@@ -6,6 +6,7 @@ require (
 	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.11-20260709200747-435963d16310.1
 	buf.build/go/protovalidate v1.3.0
 	github.com/google/wire v0.6.0
+	github.com/rabbitmq/rabbitmq-amqp-go-client v1.4.0
 	github.com/resend/resend-go/v3 v3.17.0
 	go.einride.tech/aip v0.86.3
 	go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc v1.46.0
@@ -22,6 +23,7 @@ require (
 
 require (
 	cel.dev/expr v0.25.2 // indirect
+	github.com/Azure/go-amqp v1.7.0 // indirect
 	github.com/antlr4-go/antlr/v4 v4.13.1 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect

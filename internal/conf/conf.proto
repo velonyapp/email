@@ -37,10 +37,19 @@ message Transport {
     ];
   }
 
+  message RabbitMQ {
+    string address = 1 [
+      (buf.validate.field).string.min_len = 1
+    ];
+  }
+
   HTTP http = 1 [
     (buf.validate.field).required = true
   ];
   GRPC grpc = 2 [
+    (buf.validate.field).required = true
+  ];
+  RabbitMQ rabbitmq = 3 [
     (buf.validate.field).required = true
   ];
 }
