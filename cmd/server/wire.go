@@ -23,7 +23,7 @@ import (
 func wireApp(
 	context.Context,
 	*info.Service,
-	*conf.Service,
+	*conf.Email,
 	*conf.Transport,
 	*conf.Observability,
 	*slog.Logger,

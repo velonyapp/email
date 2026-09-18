@@ -8,9 +8,10 @@ type EmailAddress struct {
 }
 
 type Email struct {
+	From    EmailAddress
 	To      []EmailAddress
-	Cc      []EmailAddress
-	Bcc     []EmailAddress
+	CC      []EmailAddress
+	BCC     []EmailAddress
 	ReplyTo *EmailAddress
 
 	Subject string
@@ -19,5 +20,5 @@ type Email struct {
 }
 
 type EmailSender interface {
-	Send(ctx context.Context, idempotencyKey string, email *Email) (messageID string, err error)
+	Send(ctx context.Context, email *Email, idempotencyKey *string) (messageID string, err error)
 }

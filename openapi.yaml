@@ -28,10 +28,13 @@ components:
     schemas:
         velony.email.api.v1.Email:
             required:
+                - from
                 - to
                 - subject
             type: object
             properties:
+                from:
+                    $ref: '#/components/schemas/velony.email.api.v1.EmailAddress'
                 to:
                     type: array
                     items:
@@ -61,14 +64,13 @@ components:
                     type: string
         velony.email.api.v1.SendEmailRequest:
             required:
-                - idempotencyKey
                 - email
             type: object
             properties:
-                idempotencyKey:
-                    type: string
                 email:
                     $ref: '#/components/schemas/velony.email.api.v1.Email'
+                idempotencyKey:
+                    type: string
         velony.email.api.v1.SendEmailResponse:
             type: object
             properties:

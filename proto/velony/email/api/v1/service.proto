@@ -20,45 +20,43 @@ message EmailAddress {
   string address = 1 [
     (google.api.field_behavior) = REQUIRED
   ];
-
   optional string name = 2 [
     (google.api.field_behavior) = OPTIONAL
   ];
 }
 
 message Email {
-  repeated EmailAddress to = 1 [
+  EmailAddress from = 1 [
     (google.api.field_behavior) = REQUIRED
   ];
-
-  repeated EmailAddress cc = 2 [
-    (google.api.field_behavior) = OPTIONAL
-  ];
-
-  repeated EmailAddress bcc = 3 [
-    (google.api.field_behavior) = OPTIONAL
-  ];
-
-  string subject = 4 [
+  repeated EmailAddress to = 2 [
     (google.api.field_behavior) = REQUIRED
   ];
-
-  optional string text = 5 [
+  repeated EmailAddress cc = 3 [
+    (google.api.field_behavior) = OPTIONAL
+  ];
+  repeated EmailAddress bcc = 4 [
     (google.api.field_behavior) = OPTIONAL
   ];
 
-  optional string html = 6 [
+  string subject = 5 [
+    (google.api.field_behavior) = REQUIRED
+  ];
+  optional string text = 6 [
+    (google.api.field_behavior) = OPTIONAL
+  ];
+  optional string html = 7 [
     (google.api.field_behavior) = OPTIONAL
   ];
 }
 
 message SendEmailRequest {
-  string idempotency_key = 1 [
+  Email email = 1 [
     (google.api.field_behavior) = REQUIRED
   ];
 
-  Email email = 2 [
-    (google.api.field_behavior) = REQUIRED
+  optional string idempotency_key = 2 [
+    (google.api.field_behavior) = OPTIONAL
   ];
 }
 

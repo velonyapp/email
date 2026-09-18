@@ -7,35 +7,21 @@ import "buf/validate/validate.proto";
 import "google/protobuf/duration.proto";
 
 message Bootstrap {
-  Service service = 1 [
+  Email email = 1 [
     (buf.validate.field).required = true
   ];
   Transport     transport     = 2 [
     (buf.validate.field).required = true
   ];
   Observability observability = 3;
-
 }
 
-message Service {
-  message EmailAddress {
-    string name = 1 [
-      (buf.validate.field).string.min_len = 1
-    ];
-    string address = 2 [
-      (buf.validate.field).string.email = true
-    ];
-  }
-
+message Email {
   message Resend {
     string api_key = 1 [
       (buf.validate.field).string.min_len = 1
     ];
   }
-
-  EmailAddress from = 1 [
-    (buf.validate.field).required = true
-  ];
 
   Resend resend = 2 [
     (buf.validate.field).required = true

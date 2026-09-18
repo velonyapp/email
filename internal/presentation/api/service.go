@@ -27,9 +27,13 @@ func (s *Service) SendEmail(
 	req *v1.SendEmailRequest,
 ) (*v1.SendEmailResponse, error) {
 	email := &port.Email{
+		From: port.EmailAddress{
+			Address: req.Email.From.Address,
+			Name:    req.Email.From.Name,
+		},
 		To:      make([]port.EmailAddress, 0, len(req.Email.To)),
-		Cc:      make([]port.EmailAddress, 0, len(req.Email.Cc)),
-		Bcc:     make([]port.EmailAddress, 0, len(req.Email.Bcc)),
+		CC:      make([]port.EmailAddress, 0, len(req.Email.Cc)),
+		BCC:     make([]port.EmailAddress, 0, len(req.Email.Bcc)),
 		Subject: req.Email.Subject,
 		Text:    req.Email.Text,
 		HTML:    req.Email.Html,
@@ -50,7 +54,7 @@ func (s *Service) SendEmail(
 			continue
 		}
 
-		email.Cc = append(email.Cc, port.EmailAddress{
+		email.CC = append(email.CC, port.EmailAddress{
 			Address: address.Address,
 			Name:    address.Name,
 		})
@@ -60,7 +64,7 @@ func (s *Service) SendEmail(
 			continue
 		}
 
-		email.Bcc = append(email.Bcc, port.EmailAddress{
+		email.BCC = append(email.BCC, port.EmailAddress{
 			Address: address.Address,
 			Name:    address.Name,
 		})

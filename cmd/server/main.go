@@ -111,7 +111,7 @@ func main() {
 	app, cleanup, err := wireApp(
 		context.Background(),
 		bi.Service,
-		bc.Service,
+		bc.Email,
 		bc.Transport,
 		bc.Observability,
 		logger,

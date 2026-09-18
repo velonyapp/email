@@ -1,8 +1,8 @@
 package infrastructure
 
 import (
+	"github.com/velonyapp/email/internal/infrastructure/email/resend"
 	"github.com/velonyapp/email/internal/infrastructure/observability"
-	"github.com/velonyapp/email/internal/infrastructure/service/resend"
 	"github.com/velonyapp/email/internal/infrastructure/transport"
 
 	"github.com/google/wire"

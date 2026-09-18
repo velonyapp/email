@@ -7,9 +7,9 @@ import (
 )
 
 type SendEmail struct {
-	IdempotencyKey string
-
 	Email *port.Email
+
+	IdempotencyKey *string
 }
 
 type SendEmailResult struct {
@@ -32,7 +32,7 @@ func (h *SendEmailHandler) Execute(
 	ctx context.Context,
 	uc *SendEmail,
 ) (*SendEmailResult, error) {
-	messageID, err := h.emailSender.Send(ctx, uc.IdempotencyKey, uc.Email)
+	messageID, err := h.emailSender.Send(ctx, uc.Email, uc.IdempotencyKey)
 	if err != nil {
 		return nil, err
 	}

@@ -12,8 +12,8 @@ import (
 	"github.com/velonyapp/email/internal/application/usecase"
 	"github.com/velonyapp/email/internal/conf"
 	"github.com/velonyapp/email/internal/info"
+	"github.com/velonyapp/email/internal/infrastructure/email/resend"
 	"github.com/velonyapp/email/internal/infrastructure/observability"
-	"github.com/velonyapp/email/internal/infrastructure/service/resend"
 	"github.com/velonyapp/email/internal/infrastructure/transport"
 	"github.com/velonyapp/email/internal/presentation/api"
 	"log/slog"
@@ -26,9 +26,9 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func wireApp(contextContext context.Context, service *info.Service, confService *conf.Service, confTransport *conf.Transport, confObservability *conf.Observability, logger *slog.Logger) (*kratos.App, func(), error) {
-	client := resend.NewClient(confService)
-	emailSender := resend.NewSender(confService, client)
+func wireApp(contextContext context.Context, service *info.Service, email *conf.Email, confTransport *conf.Transport, confObservability *conf.Observability, logger *slog.Logger) (*kratos.App, func(), error) {
+	client := resend.NewClient(email)
+	emailSender := resend.NewSender(email, client)
 	sendEmailHandler := usecase.NewSendEmailHandler(emailSender)
 	apiService := api.NewService(sendEmailHandler)
 	tracesMiddleware := transport.NewTracesMiddleware()

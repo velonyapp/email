@@ -12,28 +12,30 @@ import (
 
 type Sender struct {
 	client *resend.Client
-	from   string
 }
 
-func NewSender(c *conf.Service, client *resend.Client) port.EmailSender {
+func NewSender(c *conf.Email, client *resend.Client) port.EmailSender {
 	return &Sender{
 		client: client,
-		from: (&mail.Address{
-			Name:    c.From.Name,
-			Address: c.From.Address,
-		}).String(),
 	}
 }
 
-func (s *Sender) Send(ctx context.Context, idempotencyKey string, email *port.Email) (string, error) {
+func (s *Sender) Send(ctx context.Context, email *port.Email, idempotencyKey *string) (string, error) {
 	req := &resend.SendEmailRequest{
-		From:    s.from,
 		To:      make([]string, 0, len(email.To)),
-		Cc:      make([]string, 0, len(email.Cc)),
-		Bcc:     make([]string, 0, len(email.Bcc)),
+		Cc:      make([]string, 0, len(email.CC)),
+		Bcc:     make([]string, 0, len(email.BCC)),
 		Subject: email.Subject,
 	}
 
+	if email.From.Name != nil {
+		req.From = (&mail.Address{
+			Name:    *email.From.Name,
+			Address: email.From.Address,
+		}).String()
+	} else {
+		req.From = email.From.Address
+	}
 	for _, address := range email.To {
 		if address.Name != nil {
 			req.To = append(req.To, (&mail.Address{
@@ -44,7 +46,7 @@ func (s *Sender) Send(ctx context.Context, idempotencyKey string, email *port.Em
 			req.To = append(req.To, address.Address)
 		}
 	}
-	for _, address := range email.Cc {
+	for _, address := range email.CC {
 		if address.Name != nil {
 			req.Cc = append(req.Cc, (&mail.Address{
 				Name:    *address.Name,
@@ -54,7 +56,7 @@ func (s *Sender) Send(ctx context.Context, idempotencyKey string, email *port.Em
 			req.Cc = append(req.Cc, address.Address)
 		}
 	}
-	for _, address := range email.Bcc {
+	for _, address := range email.BCC {
 		if address.Name != nil {
 			req.Bcc = append(req.Bcc, (&mail.Address{
 				Name:    *address.Name,
@@ -83,13 +85,18 @@ func (s *Sender) Send(ctx context.Context, idempotencyKey string, email *port.Em
 		req.Html = *email.HTML
 	}
 
-	result, err := s.client.Emails.SendWithOptions(
-		ctx,
-		req,
-		&resend.SendEmailOptions{
-			IdempotencyKey: idempotencyKey,
-		},
-	)
+	var result *resend.SendEmailResponse
+	var err error
+
+	if idempotencyKey != nil {
+		result, err = s.client.Emails.SendWithOptions(ctx, req,
+			&resend.SendEmailOptions{
+				IdempotencyKey: *idempotencyKey,
+			},
+		)
+	} else {
+		result, err = s.client.Emails.SendWithContext(ctx, req)
+	}
 	if err != nil {
 		return "", err
 	}

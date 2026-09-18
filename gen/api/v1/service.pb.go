@@ -76,12 +76,13 @@ func (x *EmailAddress) GetName() string {
 
 type Email struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	To            []*EmailAddress        `protobuf:"bytes,1,rep,name=to,proto3" json:"to,omitempty"`
-	Cc            []*EmailAddress        `protobuf:"bytes,2,rep,name=cc,proto3" json:"cc,omitempty"`
-	Bcc           []*EmailAddress        `protobuf:"bytes,3,rep,name=bcc,proto3" json:"bcc,omitempty"`
-	Subject       string                 `protobuf:"bytes,4,opt,name=subject,proto3" json:"subject,omitempty"`
-	Text          *string                `protobuf:"bytes,5,opt,name=text,proto3,oneof" json:"text,omitempty"`
-	Html          *string                `protobuf:"bytes,6,opt,name=html,proto3,oneof" json:"html,omitempty"`
+	From          *EmailAddress          `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	To            []*EmailAddress        `protobuf:"bytes,2,rep,name=to,proto3" json:"to,omitempty"`
+	Cc            []*EmailAddress        `protobuf:"bytes,3,rep,name=cc,proto3" json:"cc,omitempty"`
+	Bcc           []*EmailAddress        `protobuf:"bytes,4,rep,name=bcc,proto3" json:"bcc,omitempty"`
+	Subject       string                 `protobuf:"bytes,5,opt,name=subject,proto3" json:"subject,omitempty"`
+	Text          *string                `protobuf:"bytes,6,opt,name=text,proto3,oneof" json:"text,omitempty"`
+	Html          *string                `protobuf:"bytes,7,opt,name=html,proto3,oneof" json:"html,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -114,6 +115,13 @@ func (x *Email) ProtoReflect() protoreflect.Message {
 // Deprecated: Use Email.ProtoReflect.Descriptor instead.
 func (*Email) Descriptor() ([]byte, []int) {
 	return file_velony_email_api_v1_service_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *Email) GetFrom() *EmailAddress {
+	if x != nil {
+		return x.From
+	}
+	return nil
 }
 
 func (x *Email) GetTo() []*EmailAddress {
@@ -160,8 +168,8 @@ func (x *Email) GetHtml() string {
 
 type SendEmailRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	IdempotencyKey string                 `protobuf:"bytes,1,opt,name=idempotency_key,json=idempotencyKey,proto3" json:"idempotency_key,omitempty"`
-	Email          *Email                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
+	Email          *Email                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	IdempotencyKey *string                `protobuf:"bytes,2,opt,name=idempotency_key,json=idempotencyKey,proto3,oneof" json:"idempotency_key,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -196,18 +204,18 @@ func (*SendEmailRequest) Descriptor() ([]byte, []int) {
 	return file_velony_email_api_v1_service_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *SendEmailRequest) GetIdempotencyKey() string {
-	if x != nil {
-		return x.IdempotencyKey
-	}
-	return ""
-}
-
 func (x *SendEmailRequest) GetEmail() *Email {
 	if x != nil {
 		return x.Email
 	}
 	return nil
+}
+
+func (x *SendEmailRequest) GetIdempotencyKey() string {
+	if x != nil && x.IdempotencyKey != nil {
+		return *x.IdempotencyKey
+	}
+	return ""
 }
 
 type SendEmailResponse struct {
@@ -262,19 +270,21 @@ const file_velony_email_api_v1_service_proto_rawDesc = "" +
 	"\fEmailAddress\x12\x1d\n" +
 	"\aaddress\x18\x01 \x01(\tB\x03\xe0A\x02R\aaddress\x12\x1c\n" +
 	"\x04name\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\x04name\x88\x01\x01B\a\n" +
-	"\x05_name\"\x9e\x02\n" +
-	"\x05Email\x126\n" +
-	"\x02to\x18\x01 \x03(\v2!.velony.email.api.v1.EmailAddressB\x03\xe0A\x02R\x02to\x126\n" +
-	"\x02cc\x18\x02 \x03(\v2!.velony.email.api.v1.EmailAddressB\x03\xe0A\x01R\x02cc\x128\n" +
-	"\x03bcc\x18\x03 \x03(\v2!.velony.email.api.v1.EmailAddressB\x03\xe0A\x01R\x03bcc\x12\x1d\n" +
-	"\asubject\x18\x04 \x01(\tB\x03\xe0A\x02R\asubject\x12\x1c\n" +
-	"\x04text\x18\x05 \x01(\tB\x03\xe0A\x01H\x00R\x04text\x88\x01\x01\x12\x1c\n" +
-	"\x04html\x18\x06 \x01(\tB\x03\xe0A\x01H\x01R\x04html\x88\x01\x01B\a\n" +
+	"\x05_name\"\xda\x02\n" +
+	"\x05Email\x12:\n" +
+	"\x04from\x18\x01 \x01(\v2!.velony.email.api.v1.EmailAddressB\x03\xe0A\x02R\x04from\x126\n" +
+	"\x02to\x18\x02 \x03(\v2!.velony.email.api.v1.EmailAddressB\x03\xe0A\x02R\x02to\x126\n" +
+	"\x02cc\x18\x03 \x03(\v2!.velony.email.api.v1.EmailAddressB\x03\xe0A\x01R\x02cc\x128\n" +
+	"\x03bcc\x18\x04 \x03(\v2!.velony.email.api.v1.EmailAddressB\x03\xe0A\x01R\x03bcc\x12\x1d\n" +
+	"\asubject\x18\x05 \x01(\tB\x03\xe0A\x02R\asubject\x12\x1c\n" +
+	"\x04text\x18\x06 \x01(\tB\x03\xe0A\x01H\x00R\x04text\x88\x01\x01\x12\x1c\n" +
+	"\x04html\x18\a \x01(\tB\x03\xe0A\x01H\x01R\x04html\x88\x01\x01B\a\n" +
 	"\x05_textB\a\n" +
-	"\x05_html\"w\n" +
-	"\x10SendEmailRequest\x12,\n" +
-	"\x0fidempotency_key\x18\x01 \x01(\tB\x03\xe0A\x02R\x0eidempotencyKey\x125\n" +
-	"\x05email\x18\x02 \x01(\v2\x1a.velony.email.api.v1.EmailB\x03\xe0A\x02R\x05email\"2\n" +
+	"\x05_html\"\x90\x01\n" +
+	"\x10SendEmailRequest\x125\n" +
+	"\x05email\x18\x01 \x01(\v2\x1a.velony.email.api.v1.EmailB\x03\xe0A\x02R\x05email\x121\n" +
+	"\x0fidempotency_key\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\x0eidempotencyKey\x88\x01\x01B\x12\n" +
+	"\x10_idempotency_key\"2\n" +
 	"\x11SendEmailResponse\x12\x1d\n" +
 	"\n" +
 	"message_id\x18\x01 \x01(\tR\tmessageId2\x84\x01\n" +
@@ -301,17 +311,18 @@ var file_velony_email_api_v1_service_proto_goTypes = []any{
 	(*SendEmailResponse)(nil), // 3: velony.email.api.v1.SendEmailResponse
 }
 var file_velony_email_api_v1_service_proto_depIdxs = []int32{
-	0, // 0: velony.email.api.v1.Email.to:type_name -> velony.email.api.v1.EmailAddress
-	0, // 1: velony.email.api.v1.Email.cc:type_name -> velony.email.api.v1.EmailAddress
-	0, // 2: velony.email.api.v1.Email.bcc:type_name -> velony.email.api.v1.EmailAddress
-	1, // 3: velony.email.api.v1.SendEmailRequest.email:type_name -> velony.email.api.v1.Email
-	2, // 4: velony.email.api.v1.EmailService.SendEmail:input_type -> velony.email.api.v1.SendEmailRequest
-	3, // 5: velony.email.api.v1.EmailService.SendEmail:output_type -> velony.email.api.v1.SendEmailResponse
-	5, // [5:6] is the sub-list for method output_type
-	4, // [4:5] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	0, // 0: velony.email.api.v1.Email.from:type_name -> velony.email.api.v1.EmailAddress
+	0, // 1: velony.email.api.v1.Email.to:type_name -> velony.email.api.v1.EmailAddress
+	0, // 2: velony.email.api.v1.Email.cc:type_name -> velony.email.api.v1.EmailAddress
+	0, // 3: velony.email.api.v1.Email.bcc:type_name -> velony.email.api.v1.EmailAddress
+	1, // 4: velony.email.api.v1.SendEmailRequest.email:type_name -> velony.email.api.v1.Email
+	2, // 5: velony.email.api.v1.EmailService.SendEmail:input_type -> velony.email.api.v1.SendEmailRequest
+	3, // 6: velony.email.api.v1.EmailService.SendEmail:output_type -> velony.email.api.v1.SendEmailResponse
+	6, // [6:7] is the sub-list for method output_type
+	5, // [5:6] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_velony_email_api_v1_service_proto_init() }
@@ -321,6 +332,7 @@ func file_velony_email_api_v1_service_proto_init() {
 	}
 	file_velony_email_api_v1_service_proto_msgTypes[0].OneofWrappers = []any{}
 	file_velony_email_api_v1_service_proto_msgTypes[1].OneofWrappers = []any{}
+	file_velony_email_api_v1_service_proto_msgTypes[2].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
