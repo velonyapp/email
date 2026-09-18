@@ -134,7 +134,7 @@ func (x *Bootstrap) GetObservability() *Observability {
 
 type Email struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Resend        *Email_Resend          `protobuf:"bytes,2,opt,name=resend,proto3" json:"resend,omitempty"`
+	Resend        *Email_Resend          `protobuf:"bytes,1,opt,name=resend,proto3" json:"resend,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -643,7 +643,7 @@ const file_conf_conf_proto_rawDesc = "" +
 	"\ttransport\x18\x02 \x01(\v2\x15.kratos.api.TransportB\x06\xbaH\x03\xc8\x01\x01R\ttransport\x12?\n" +
 	"\robservability\x18\x03 \x01(\v2\x19.kratos.api.ObservabilityR\robservability\"m\n" +
 	"\x05Email\x128\n" +
-	"\x06resend\x18\x02 \x01(\v2\x18.kratos.api.Email.ResendB\x06\xbaH\x03\xc8\x01\x01R\x06resend\x1a*\n" +
+	"\x06resend\x18\x01 \x01(\v2\x18.kratos.api.Email.ResendB\x06\xbaH\x03\xc8\x01\x01R\x06resend\x1a*\n" +
 	"\x06Resend\x12 \n" +
 	"\aapi_key\x18\x01 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\x06apiKey\"\x8e\x04\n" +
 	"\tTransport\x126\n" +

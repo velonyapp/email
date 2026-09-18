@@ -23,7 +23,7 @@ message Email {
     ];
   }
 
-  Resend resend = 2 [
+  Resend resend = 1 [
     (buf.validate.field).required = true
   ];
 }
