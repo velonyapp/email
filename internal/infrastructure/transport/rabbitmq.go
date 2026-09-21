@@ -15,9 +15,8 @@ import (
 )
 
 const (
-	emailJobsQueue = "email.jobs"
-
-	sendEmailRoutingKey = "email.send-email"
+	sendQueue      = "email.send"
+	sendRoutingKey = "send"
 )
 
 type RabbitMQServer struct {
@@ -59,7 +58,7 @@ func (s *RabbitMQServer) Start(ctx context.Context) error {
 
 	s.conn = conn
 
-	consumer, err := conn.NewConsumer(ctx, emailJobsQueue, nil)
+	consumer, err := conn.NewConsumer(ctx, sendQueue, nil)
 	if err != nil {
 		return err
 	}
@@ -101,13 +100,9 @@ func (s *RabbitMQServer) Start(ctx context.Context) error {
 	}
 }
 
-func (s *RabbitMQServer) handle(
-	ctx context.Context,
-	routingKey string,
-	data []byte,
-) error {
+func (s *RabbitMQServer) handle(ctx context.Context, routingKey string, data []byte) error {
 	switch routingKey {
-	case sendEmailRoutingKey:
+	case sendRoutingKey:
 		req := new(v1.SendEmailRequest)
 
 		if err := proto.Unmarshal(data, req); err != nil {
