@@ -1,11 +1,13 @@
 package vo
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/google/uuid"
+)
 
 var (
-	ErrTemplateIDEmpty            = errors.New("template ID must not be empty")
-	ErrTemplateIDTooLong          = errors.New("template ID must not exceed 64 characters")
-	ErrTemplateIDInvalidCharacter = errors.New("template ID contains an invalid character")
+	ErrTemplateIDInvalid = errors.New("invalid template ID")
 )
 
 type TemplateID struct {
@@ -13,30 +15,18 @@ type TemplateID struct {
 }
 
 func NewTemplateID(value string) (TemplateID, error) {
-	if value == "" {
-		return TemplateID{}, ErrTemplateIDEmpty
+	id, err := uuid.Parse(value)
+	if err != nil {
+		return TemplateID{}, ErrTemplateIDInvalid
 	}
 
-	for i := 0; i < len(value); i++ {
-		c := value[i]
+	return TemplateID{value: id.String()}, nil
+}
 
-		if !((c >= 'a' && c <= 'z') ||
-			(c >= 'A' && c <= 'Z') ||
-			(c >= '0' && c <= '9') ||
-			c == '-' ||
-			c == '_' ||
-			c == '.') {
-			return TemplateID{}, ErrTemplateIDInvalidCharacter
-		}
-	}
-
-	if len(value) > 64 {
-		return TemplateID{}, ErrTemplateIDTooLong
-	}
-
+func GenerateTemplateID() TemplateID {
 	return TemplateID{
-		value: value,
-	}, nil
+		value: uuid.Must(uuid.NewV7()).String(),
+	}
 }
 
 func (id TemplateID) String() string {

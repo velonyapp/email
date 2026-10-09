@@ -8,6 +8,7 @@ require (
 	github.com/Azure/go-amqp v1.7.0
 	github.com/XSAM/otelsql v0.44.0
 	github.com/go-sql-driver/mysql v1.10.1
+	github.com/google/uuid v1.6.0
 	github.com/google/wire v0.6.0
 	github.com/rabbitmq/rabbitmq-amqp-go-client v1.4.0
 	github.com/resend/resend-go/v3 v3.17.0
@@ -48,7 +49,6 @@ require (
 	github.com/go-logr/logr v1.4.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-playground/form/v4 v4.3.0 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
 	go.opentelemetry.io/otel v1.47.0
 	go.opentelemetry.io/otel/metric v1.47.0 // indirect

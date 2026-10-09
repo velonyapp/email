@@ -27,9 +27,10 @@ const (
 type EmailTemplate struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Subject       string                 `protobuf:"bytes,2,opt,name=subject,proto3" json:"subject,omitempty"`
-	Html          string                 `protobuf:"bytes,3,opt,name=html,proto3" json:"html,omitempty"`
-	Text          string                 `protobuf:"bytes,4,opt,name=text,proto3" json:"text,omitempty"`
+	Alias         string                 `protobuf:"bytes,2,opt,name=alias,proto3" json:"alias,omitempty"`
+	Subject       string                 `protobuf:"bytes,3,opt,name=subject,proto3" json:"subject,omitempty"`
+	Html          string                 `protobuf:"bytes,4,opt,name=html,proto3" json:"html,omitempty"`
+	Text          string                 `protobuf:"bytes,5,opt,name=text,proto3" json:"text,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -67,6 +68,13 @@ func (*EmailTemplate) Descriptor() ([]byte, []int) {
 func (x *EmailTemplate) GetName() string {
 	if x != nil {
 		return x.Name
+	}
+	return ""
+}
+
+func (x *EmailTemplate) GetAlias() string {
+	if x != nil {
+		return x.Alias
 	}
 	return ""
 }
@@ -217,11 +225,10 @@ func (x *ListEmailTemplatesResponse) GetEmailTemplates() []*EmailTemplate {
 }
 
 type CreateEmailTemplateRequest struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	EmailTemplate   *EmailTemplate         `protobuf:"bytes,1,opt,name=email_template,json=emailTemplate,proto3" json:"email_template,omitempty"`
-	EmailTemplateId string                 `protobuf:"bytes,2,opt,name=email_template_id,json=emailTemplateId,proto3" json:"email_template_id,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	EmailTemplate *EmailTemplate         `protobuf:"bytes,1,opt,name=email_template,json=emailTemplate,proto3" json:"email_template,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreateEmailTemplateRequest) Reset() {
@@ -259,13 +266,6 @@ func (x *CreateEmailTemplateRequest) GetEmailTemplate() *EmailTemplate {
 		return x.EmailTemplate
 	}
 	return nil
-}
-
-func (x *CreateEmailTemplateRequest) GetEmailTemplateId() string {
-	if x != nil {
-		return x.EmailTemplateId
-	}
-	return ""
 }
 
 type UpdateEmailTemplateRequest struct {
@@ -682,22 +682,22 @@ var File_velony_email_api_v1_email_proto protoreflect.FileDescriptor
 
 const file_velony_email_api_v1_email_proto_rawDesc = "" +
 	"\n" +
-	"\x1fvelony/email/api/v1/email.proto\x12\x13velony.email.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xdc\x01\n" +
+	"\x1fvelony/email/api/v1/email.proto\x12\x13velony.email.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xf7\x01\n" +
 	"\rEmailTemplate\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1d\n" +
-	"\asubject\x18\x02 \x01(\tB\x03\xe0A\x02R\asubject\x12\x17\n" +
-	"\x04html\x18\x03 \x01(\tB\x03\xe0A\x01R\x04html\x12\x17\n" +
-	"\x04text\x18\x04 \x01(\tB\x03\xe0A\x01R\x04text:a\xeaA^\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x19\n" +
+	"\x05alias\x18\x02 \x01(\tB\x03\xe0A\x02R\x05alias\x12\x1d\n" +
+	"\asubject\x18\x03 \x01(\tB\x03\xe0A\x02R\asubject\x12\x17\n" +
+	"\x04html\x18\x04 \x01(\tB\x03\xe0A\x01R\x04html\x12\x17\n" +
+	"\x04text\x18\x05 \x01(\tB\x03\xe0A\x01R\x04text:a\xeaA^\n" +
 	"\x1capi.velony.app/EmailTemplate\x12\x1femailTemplates/{email_template}*\x0eemailTemplates2\remailTemplate\"S\n" +
 	"\x17GetEmailTemplateRequest\x128\n" +
 	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
 	"\x1capi.velony.app/EmailTemplateR\x04name\"\x1b\n" +
 	"\x19ListEmailTemplatesRequest\"i\n" +
 	"\x1aListEmailTemplatesResponse\x12K\n" +
-	"\x0femail_templates\x18\x01 \x03(\v2\".velony.email.api.v1.EmailTemplateR\x0eemailTemplates\"\x9d\x01\n" +
+	"\x0femail_templates\x18\x01 \x03(\v2\".velony.email.api.v1.EmailTemplateR\x0eemailTemplates\"l\n" +
 	"\x1aCreateEmailTemplateRequest\x12N\n" +
-	"\x0eemail_template\x18\x01 \x01(\v2\".velony.email.api.v1.EmailTemplateB\x03\xe0A\x02R\remailTemplate\x12/\n" +
-	"\x11email_template_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x0femailTemplateId\"\xae\x01\n" +
+	"\x0eemail_template\x18\x01 \x01(\v2\".velony.email.api.v1.EmailTemplateB\x03\xe0A\x02R\remailTemplate\"\xae\x01\n" +
 	"\x1aUpdateEmailTemplateRequest\x12N\n" +
 	"\x0eemail_template\x18\x01 \x01(\v2\".velony.email.api.v1.EmailTemplateB\x03\xe0A\x02R\remailTemplate\x12@\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
@@ -727,11 +727,11 @@ const file_velony_email_api_v1_email_proto_rawDesc = "" +
 	"\x10SendEmailRequest\x125\n" +
 	"\x05email\x18\x01 \x01(\v2\x1a.velony.email.api.v1.EmailB\x03\xe0A\x02R\x05email\x12,\n" +
 	"\x0fidempotency_key\x18\x02 \x01(\tB\x03\xe0A\x01R\x0eidempotencyKey\"\x13\n" +
-	"\x11SendEmailResponse2\xd5\a\n" +
+	"\x11SendEmailResponse2\xc3\a\n" +
 	"\fEmailService\x12\x90\x01\n" +
 	"\x10GetEmailTemplate\x12,.velony.email.api.v1.GetEmailTemplateRequest\x1a\".velony.email.api.v1.EmailTemplate\"*\xdaA\x04name\x82\xd3\xe4\x93\x02\x1d\x12\x1b/v1/{name=emailTemplates/*}\x12\x91\x01\n" +
-	"\x12ListEmailTemplates\x12..velony.email.api.v1.ListEmailTemplatesRequest\x1a/.velony.email.api.v1.ListEmailTemplatesResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/v1/emailTemplates\x12\xb9\x01\n" +
-	"\x13CreateEmailTemplate\x12/.velony.email.api.v1.CreateEmailTemplateRequest\x1a\".velony.email.api.v1.EmailTemplate\"M\xdaA email_template,email_template_id\x82\xd3\xe4\x93\x02$:\x0eemail_template\"\x12/v1/emailTemplates\x12\xcb\x01\n" +
+	"\x12ListEmailTemplates\x12..velony.email.api.v1.ListEmailTemplatesRequest\x1a/.velony.email.api.v1.ListEmailTemplatesResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/v1/emailTemplates\x12\xa7\x01\n" +
+	"\x13CreateEmailTemplate\x12/.velony.email.api.v1.CreateEmailTemplateRequest\x1a\".velony.email.api.v1.EmailTemplate\";\xdaA\x0eemail_template\x82\xd3\xe4\x93\x02$:\x0eemail_template\"\x12/v1/emailTemplates\x12\xcb\x01\n" +
 	"\x13UpdateEmailTemplate\x12/.velony.email.api.v1.UpdateEmailTemplateRequest\x1a\".velony.email.api.v1.EmailTemplate\"_\xdaA\x1aemail_template,update_mask\x82\xd3\xe4\x93\x02<:\x0eemail_template2*/v1/{email_template.name=emailTemplates/*}\x12\x8a\x01\n" +
 	"\x13DeleteEmailTemplate\x12/.velony.email.api.v1.DeleteEmailTemplateRequest\x1a\x16.google.protobuf.Empty\"*\xdaA\x04name\x82\xd3\xe4\x93\x02\x1d*\x1b/v1/{name=emailTemplates/*}\x12t\n" +
 	"\tSendEmail\x12%.velony.email.api.v1.SendEmailRequest\x1a&.velony.email.api.v1.SendEmailResponse\"\x18\x82\xd3\xe4\x93\x02\x12:\x01*\"\r/v1:sendEmail\x1a\x11\xcaA\x0eapi.velony.appB-Z+github.com/velonyapp/email/gen/api/v1;apiv1b\x06proto3"

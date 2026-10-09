@@ -53,6 +53,7 @@ func (s *Service) GetEmailTemplate(ctx context.Context, req *v1.GetEmailTemplate
 
 	return &v1.EmailTemplate{
 		Name:    resourcename.Sprint(emailTemplateResourcePattern, result.Template.ID),
+		Alias:   result.Template.Alias,
 		Subject: result.Template.Subject,
 		Html:    result.Template.HTML,
 		Text:    result.Template.Text,
@@ -70,6 +71,7 @@ func (s *Service) ListEmailTemplates(ctx context.Context, req *v1.ListEmailTempl
 	for i, template := range result.Templates {
 		templates[i] = &v1.EmailTemplate{
 			Name:    resourcename.Sprint(emailTemplateResourcePattern, template.ID),
+			Alias:   template.Alias,
 			Subject: template.Subject,
 			Html:    template.HTML,
 			Text:    template.Text,
@@ -83,10 +85,10 @@ func (s *Service) ListEmailTemplates(ctx context.Context, req *v1.ListEmailTempl
 
 func (s *Service) CreateEmailTemplate(ctx context.Context, req *v1.CreateEmailTemplateRequest) (*v1.EmailTemplate, error) {
 	result, err := command.Send(ctx, s.commandBus, command.CreateTemplate{
-		TemplateID: req.EmailTemplateId,
-		Subject:    req.EmailTemplate.Subject,
-		HTML:       req.EmailTemplate.Html,
-		Text:       req.EmailTemplate.Text,
+		Alias:   req.EmailTemplate.Alias,
+		Subject: req.EmailTemplate.Subject,
+		HTML:    req.EmailTemplate.Html,
+		Text:    req.EmailTemplate.Text,
 	})
 	if err != nil {
 		return nil, err
@@ -94,6 +96,7 @@ func (s *Service) CreateEmailTemplate(ctx context.Context, req *v1.CreateEmailTe
 
 	return &v1.EmailTemplate{
 		Name:    resourcename.Sprint(emailTemplateResourcePattern, result.Template.ID),
+		Alias:   result.Template.Alias,
 		Subject: result.Template.Subject,
 		Html:    result.Template.HTML,
 		Text:    result.Template.Text,
@@ -106,11 +109,15 @@ func (s *Service) UpdateEmailTemplate(ctx context.Context, req *v1.UpdateEmailTe
 		return nil, ErrInvalidEmailTemplateResourceName
 	}
 
-	var subject, html, text *string
+	var alias, subject, html, text *string
 
-	paths := req.UpdateMask.Paths
+	paths := req.UpdateMask.GetPaths()
 
 	if paths == nil {
+		if req.EmailTemplate.Alias != "" {
+			value := req.EmailTemplate.Alias
+			alias = &value
+		}
 		if req.EmailTemplate.Subject != "" {
 			value := req.EmailTemplate.Subject
 			subject = &value
@@ -127,6 +134,9 @@ func (s *Service) UpdateEmailTemplate(ctx context.Context, req *v1.UpdateEmailTe
 		for _, path := range paths {
 			switch path {
 			case "*":
+				aliasValue := req.EmailTemplate.Alias
+				alias = &aliasValue
+
 				subjectValue := req.EmailTemplate.Subject
 				subject = &subjectValue
 
@@ -135,6 +145,10 @@ func (s *Service) UpdateEmailTemplate(ctx context.Context, req *v1.UpdateEmailTe
 
 				textValue := req.EmailTemplate.Text
 				text = &textValue
+
+			case "alias":
+				value := req.EmailTemplate.Alias
+				alias = &value
 
 			case "subject":
 				value := req.EmailTemplate.Subject
@@ -156,6 +170,7 @@ func (s *Service) UpdateEmailTemplate(ctx context.Context, req *v1.UpdateEmailTe
 
 	result, err := command.Send(ctx, s.commandBus, command.UpdateTemplate{
 		TemplateID: templateID,
+		Alias:      alias,
 		Subject:    subject,
 		HTML:       html,
 		Text:       text,
@@ -166,6 +181,7 @@ func (s *Service) UpdateEmailTemplate(ctx context.Context, req *v1.UpdateEmailTe
 
 	return &v1.EmailTemplate{
 		Name:    resourcename.Sprint(emailTemplateResourcePattern, result.Template.ID),
+		Alias:   result.Template.Alias,
 		Subject: result.Template.Subject,
 		Html:    result.Template.HTML,
 		Text:    result.Template.Text,

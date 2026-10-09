@@ -45,6 +45,7 @@ func (h *listTemplatesHandler) Handle(
 	for _, template := range templates {
 		results = append(results, common.TemplateResult{
 			ID:      template.ID().String(),
+			Alias:   template.Alias().String(),
 			Subject: template.Subject().String(),
 			HTML:    template.HTML().String(),
 			Text:    template.Text().String(),

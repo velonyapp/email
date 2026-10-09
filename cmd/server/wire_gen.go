@@ -33,10 +33,10 @@ func wireApp(email *conf.Email, data *conf.Data, confTransport *conf.Transport, 
 		return nil, nil, err
 	}
 	template := mysql.NewTemplateRepo(db)
-	templateIDPolicy := service.NewTemplateIDPolicy(template)
+	aliasPolicy := service.NewAliasPolicy(template)
 	unitOfWork := mysql.NewUnitOfWork(db)
-	createTemplateHandler := command.NewCreateTemplateHandler(template, templateIDPolicy, unitOfWork)
-	updateTemplateHandler := command.NewUpdateTemplateHandler(template, unitOfWork)
+	createTemplateHandler := command.NewCreateTemplateHandler(template, aliasPolicy, unitOfWork)
+	updateTemplateHandler := command.NewUpdateTemplateHandler(template, aliasPolicy, unitOfWork)
 	deleteTemplateHandler := command.NewDeleteTemplateHandler(template, unitOfWork)
 	client := resend.NewClient(email)
 	emailSender := resend.NewSender(client)

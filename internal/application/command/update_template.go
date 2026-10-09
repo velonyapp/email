@@ -7,11 +7,13 @@ import (
 	"github.com/velonyapp/email/internal/application/port"
 	"github.com/velonyapp/email/internal/domain/entity"
 	"github.com/velonyapp/email/internal/domain/repo"
+	"github.com/velonyapp/email/internal/domain/service"
 	"github.com/velonyapp/email/internal/domain/vo"
 )
 
 type UpdateTemplate struct {
 	TemplateID string
+	Alias      *string
 	Subject    *string
 	HTML       *string
 	Text       *string
@@ -29,15 +31,18 @@ type UpdateTemplateHandler Handler[UpdateTemplate, UpdateTemplateResult]
 
 type updateTemplateHandler struct {
 	templateRepo repo.Template
+	aliasPolicy  *service.AliasPolicy
 	unitOfWork   port.UnitOfWork
 }
 
 func NewUpdateTemplateHandler(
 	templateRepo repo.Template,
+	aliasPolicy *service.AliasPolicy,
 	unitOfWork port.UnitOfWork,
 ) UpdateTemplateHandler {
 	return &updateTemplateHandler{
 		templateRepo: templateRepo,
+		aliasPolicy:  aliasPolicy,
 		unitOfWork:   unitOfWork,
 	}
 }
@@ -61,6 +66,19 @@ func (h *updateTemplateHandler) Handle(
 			return common.ErrTemplateNotFound
 		}
 
+		if cmd.Alias != nil {
+			alias, err := vo.NewAlias(*cmd.Alias)
+			if err != nil {
+				return err
+			}
+			if !template.Alias().Equal(alias) {
+				if err := h.aliasPolicy.CanUse(ctx, alias); err != nil {
+					return err
+				}
+
+				template.ChangeAlias(alias)
+			}
+		}
 		if cmd.Subject != nil {
 			template.ChangeSubject(vo.NewSubject(*cmd.Subject))
 		}
@@ -90,6 +108,7 @@ func (h *updateTemplateHandler) Handle(
 	return UpdateTemplateResult{
 		Template: common.TemplateResult{
 			ID:      template.ID().String(),
+			Alias:   template.Alias().String(),
 			Subject: template.Subject().String(),
 			HTML:    template.HTML().String(),
 			Text:    template.Text().String(),

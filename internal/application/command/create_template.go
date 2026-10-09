@@ -12,10 +12,10 @@ import (
 )
 
 type CreateTemplate struct {
-	TemplateID string
-	Subject    string
-	HTML       string
-	Text       string
+	Alias   string
+	Subject string
+	HTML    string
+	Text    string
 }
 
 type CreateTemplateResult struct {
@@ -29,20 +29,20 @@ func (CreateTemplate) resultType() CreateTemplateResult {
 type CreateTemplateHandler Handler[CreateTemplate, CreateTemplateResult]
 
 type createTemplateHandler struct {
-	templateRepo     repo.Template
-	templateIDPolicy *service.TemplateIDPolicy
-	unitOfWork       port.UnitOfWork
+	templateRepo repo.Template
+	aliasPolicy  *service.AliasPolicy
+	unitOfWork   port.UnitOfWork
 }
 
 func NewCreateTemplateHandler(
 	templateRepo repo.Template,
-	templateIDPolicy *service.TemplateIDPolicy,
+	aliasPolicy *service.AliasPolicy,
 	unitOfWork port.UnitOfWork,
 ) CreateTemplateHandler {
 	return &createTemplateHandler{
-		templateRepo:     templateRepo,
-		templateIDPolicy: templateIDPolicy,
-		unitOfWork:       unitOfWork,
+		templateRepo: templateRepo,
+		aliasPolicy:  aliasPolicy,
+		unitOfWork:   unitOfWork,
 	}
 }
 
@@ -50,7 +50,7 @@ func (h *createTemplateHandler) Handle(
 	ctx context.Context,
 	cmd CreateTemplate,
 ) (CreateTemplateResult, error) {
-	templateID, err := vo.NewTemplateID(cmd.TemplateID)
+	alias, err := vo.NewAlias(cmd.Alias)
 	if err != nil {
 		return CreateTemplateResult{}, err
 	}
@@ -58,7 +58,7 @@ func (h *createTemplateHandler) Handle(
 	var template *entity.Template
 
 	if err := h.unitOfWork.Do(ctx, func(ctx context.Context) error {
-		if err := h.templateIDPolicy.CanUse(ctx, templateID); err != nil {
+		if err := h.aliasPolicy.CanUse(ctx, alias); err != nil {
 			return err
 		}
 
@@ -67,7 +67,7 @@ func (h *createTemplateHandler) Handle(
 		text := vo.NewText(cmd.Text)
 
 		template, err = entity.NewTemplate(
-			templateID,
+			alias,
 			subject,
 			html,
 			text,
@@ -84,6 +84,7 @@ func (h *createTemplateHandler) Handle(
 	return CreateTemplateResult{
 		Template: common.TemplateResult{
 			ID:      template.ID().String(),
+			Alias:   template.Alias().String(),
 			Subject: template.Subject().String(),
 			HTML:    template.HTML().String(),
 			Text:    template.Text().String(),

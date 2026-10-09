@@ -24,11 +24,6 @@ paths:
             tags:
                 - EmailService
             operationId: EmailService_CreateEmailTemplate
-            parameters:
-                - name: emailTemplateId
-                  in: query
-                  schema:
-                    type: string
             requestBody:
                 content:
                     application/json:
@@ -162,10 +157,13 @@ components:
                     $ref: '#/components/schemas/velony.email.api.v1.EmailTemplateContent'
         velony.email.api.v1.EmailTemplate:
             required:
+                - alias
                 - subject
             type: object
             properties:
                 name:
+                    type: string
+                alias:
                     type: string
                 subject:
                     type: string

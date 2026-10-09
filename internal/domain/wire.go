@@ -7,5 +7,5 @@ import (
 )
 
 var ProviderSet = wire.NewSet(
-	service.NewTemplateIDPolicy,
+	service.NewAliasPolicy,
 )

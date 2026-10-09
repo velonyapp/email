@@ -32,6 +32,7 @@ func (r *templateRepo) FindByID(ctx context.Context, templateID vo.TemplateID) (
 	const query = `
 		SELECT
 			id,
+			alias,
 			subject,
 			html,
 			text
@@ -57,10 +58,41 @@ func (r *templateRepo) FindByID(ctx context.Context, templateID vo.TemplateID) (
 	return template, nil
 }
 
+func (r *templateRepo) FindByAlias(ctx context.Context, alias vo.Alias) (*entity.Template, error) {
+	const query = `
+		SELECT
+			id,
+			alias,
+			subject,
+			html,
+			text
+		FROM templates
+		WHERE alias = ?
+		LIMIT 1
+		FOR UPDATE
+	`
+
+	row := executor(ctx, r.db).QueryRowContext(ctx, query,
+		alias.String(),
+	)
+
+	template, err := scanTemplate(row)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	return template, nil
+}
+
 func (r *templateRepo) FindAll(ctx context.Context) ([]*entity.Template, error) {
 	const query = `
 		SELECT
 			id,
+			alias,
 			subject,
 			html,
 			text
@@ -108,12 +140,14 @@ func (r *templateRepo) Save(ctx context.Context, template *entity.Template) erro
 		const query = `
 			INSERT INTO templates (
 				id,
+				alias,
 				subject,
 				html,
 				text
 			)
-			VALUES (?, ?, ?, ?) AS new
+			VALUES (?, ?, ?, ?, ?) AS new
 			ON DUPLICATE KEY UPDATE
+				alias = new.alias,
 				subject = new.subject,
 				html = new.html,
 				text = new.text
@@ -121,6 +155,7 @@ func (r *templateRepo) Save(ctx context.Context, template *entity.Template) erro
 
 		if _, err := executor(ctx, r.db).ExecContext(ctx, query,
 			template.ID().String(),
+			template.Alias().String(),
 			template.Subject().String(),
 			template.HTML().String(),
 			template.Text().String(),
@@ -135,6 +170,7 @@ func (r *templateRepo) Save(ctx context.Context, template *entity.Template) erro
 func scanTemplate(scanner templateScanner) (*entity.Template, error) {
 	var (
 		idRaw      string
+		aliasRaw   string
 		subjectRaw string
 		htmlRaw    string
 		textRaw    string
@@ -142,6 +178,7 @@ func scanTemplate(scanner templateScanner) (*entity.Template, error) {
 
 	if err := scanner.Scan(
 		&idRaw,
+		&aliasRaw,
 		&subjectRaw,
 		&htmlRaw,
 		&textRaw,
@@ -149,16 +186,15 @@ func scanTemplate(scanner templateScanner) (*entity.Template, error) {
 		return nil, err
 	}
 
-	id, err := vo.NewTemplateID(idRaw)
-	if err != nil {
-		return nil, err
-	}
+	id, _ := vo.NewTemplateID(idRaw)
+	alias, _ := vo.NewAlias(aliasRaw)
 	subject := vo.NewSubject(subjectRaw)
 	html := vo.NewHTML(htmlRaw)
 	text := vo.NewText(textRaw)
 
 	return entity.ReconstituteTemplate(
 		id,
+		alias,
 		subject,
 		html,
 		text,

@@ -32,17 +32,23 @@ func NewErrorMapper() ErrorMapper {
 
 				switch {
 				// Template ID
-				case errors.Is(err, domainvo.ErrTemplateIDEmpty):
+				case errors.Is(err, domainvo.ErrTemplateIDInvalid):
 					return reply, kerrors.BadRequest("",
-						domainvo.ErrTemplateIDEmpty.Error(),
+						domainvo.ErrTemplateIDInvalid.Error(),
 					)
-				case errors.Is(err, domainvo.ErrTemplateIDTooLong):
+
+				// Alias
+				case errors.Is(err, domainvo.ErrAliasEmpty):
 					return reply, kerrors.BadRequest("",
-						domainvo.ErrTemplateIDTooLong.Error(),
+						domainvo.ErrAliasEmpty.Error(),
 					)
-				case errors.Is(err, domainvo.ErrTemplateIDInvalidCharacter):
+				case errors.Is(err, domainvo.ErrAliasTooLong):
 					return reply, kerrors.BadRequest("",
-						domainvo.ErrTemplateIDInvalidCharacter.Error(),
+						domainvo.ErrAliasTooLong.Error(),
+					)
+				case errors.Is(err, domainvo.ErrAliasInvalidCharacter):
+					return reply, kerrors.BadRequest("",
+						domainvo.ErrAliasInvalidCharacter.Error(),
 					)
 
 				// Address
@@ -57,10 +63,10 @@ func NewErrorMapper() ErrorMapper {
 						domainentity.ErrTemplateBodyRequired.Error(),
 					)
 
-				// Template ID Policy
-				case errors.Is(err, domainservice.ErrTemplateIDAlreadyExists):
+				// Alias Policy
+				case errors.Is(err, domainservice.ErrAliasAlreadyExists):
 					return reply, kerrors.Conflict("",
-						domainservice.ErrTemplateIDAlreadyExists.Error(),
+						domainservice.ErrAliasAlreadyExists.Error(),
 					)
 
 				// Application Common

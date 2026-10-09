@@ -12,6 +12,7 @@ var (
 
 type Template struct {
 	id      vo.TemplateID
+	alias   vo.Alias
 	subject vo.Subject
 	html    vo.HTML
 	text    vo.Text
@@ -19,33 +20,34 @@ type Template struct {
 }
 
 func NewTemplate(
-	id vo.TemplateID,
+	alias vo.Alias,
 	subject vo.Subject,
 	html vo.HTML,
 	text vo.Text,
 ) (*Template, error) {
-	t := &Template{
-		id:      id,
-		subject: subject,
-		html:    html,
-		text:    text,
-	}
-
-	if !t.HasHTML() && !t.HasText() {
+	if html.IsEmpty() && text.IsEmpty() {
 		return nil, ErrTemplateBodyRequired
 	}
 
-	return t, nil
+	return &Template{
+		id:      vo.GenerateTemplateID(),
+		alias:   alias,
+		subject: subject,
+		html:    html,
+		text:    text,
+	}, nil
 }
 
 func ReconstituteTemplate(
 	id vo.TemplateID,
+	alias vo.Alias,
 	subject vo.Subject,
 	html vo.HTML,
 	text vo.Text,
 ) (*Template, error) {
 	t := &Template{
 		id:      id,
+		alias:   alias,
 		subject: subject,
 		html:    html,
 		text:    text,
@@ -60,6 +62,10 @@ func ReconstituteTemplate(
 
 func (t *Template) ID() vo.TemplateID {
 	return t.id
+}
+
+func (t *Template) Alias() vo.Alias {
+	return t.alias
 }
 
 func (t *Template) Subject() vo.Subject {
@@ -84,6 +90,10 @@ func (t *Template) HasHTML() bool {
 
 func (t *Template) HasText() bool {
 	return !t.text.IsEmpty()
+}
+
+func (t *Template) ChangeAlias(newAlias vo.Alias) {
+	t.alias = newAlias
 }
 
 func (t *Template) ChangeSubject(newSubject vo.Subject) {

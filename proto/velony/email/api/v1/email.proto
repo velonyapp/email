@@ -33,7 +33,7 @@ service EmailService {
       post: "/v1/emailTemplates"
       body: "email_template"
     };
-    option (google.api.method_signature) = "email_template,email_template_id";
+    option (google.api.method_signature) = "email_template";
   }
 
   rpc UpdateEmailTemplate(UpdateEmailTemplateRequest) returns (EmailTemplate) {
@@ -71,13 +71,17 @@ message EmailTemplate {
     (google.api.field_behavior) = IDENTIFIER
   ];
 
-  string subject = 2 [
+  string alias = 2 [
     (google.api.field_behavior) = REQUIRED
   ];
-  string html = 3 [
+
+  string subject = 3 [
+    (google.api.field_behavior) = REQUIRED
+  ];
+  string html = 4 [
     (google.api.field_behavior) = OPTIONAL
   ];
-  string text = 4 [
+  string text = 5 [
     (google.api.field_behavior) = OPTIONAL
   ];
 }
@@ -99,10 +103,6 @@ message ListEmailTemplatesResponse {
 
 message CreateEmailTemplateRequest {
   EmailTemplate email_template = 1 [
-    (google.api.field_behavior) = REQUIRED
-  ];
-
-  string email_template_id = 2 [
     (google.api.field_behavior) = REQUIRED
   ];
 }

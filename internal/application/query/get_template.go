@@ -38,10 +38,7 @@ func (h *getTemplateHandler) Handle(
 	ctx context.Context,
 	qry GetTemplate,
 ) (GetTemplateResult, error) {
-	templateID, err := vo.NewTemplateID(qry.TemplateID)
-	if err != nil {
-		return GetTemplateResult{}, err
-	}
+	templateID, _ := vo.NewTemplateID(qry.TemplateID)
 
 	template, err := h.templateRepo.FindByID(ctx, templateID)
 	if err != nil {
@@ -54,6 +51,7 @@ func (h *getTemplateHandler) Handle(
 	return GetTemplateResult{
 		Template: common.TemplateResult{
 			ID:      template.ID().String(),
+			Alias:   template.Alias().String(),
 			Subject: template.Subject().String(),
 			HTML:    template.HTML().String(),
 			Text:    template.Text().String(),
