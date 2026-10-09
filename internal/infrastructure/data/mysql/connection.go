@@ -18,7 +18,6 @@ func NewConnection(c *conf.Data) (*sql.DB, error) {
 
 	cfg.ParseTime = true
 	cfg.InterpolateParams = true
-	cfg.ClientFoundRows = true
 
 	dsn := cfg.FormatDSN()
 
