@@ -1,0 +1,207 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: EmailService API
+    version: 0.0.1
+servers:
+    - url: https://api.velony.app
+paths:
+    /v1/emailTemplates:
+        get:
+            tags:
+                - EmailService
+            operationId: EmailService_ListEmailTemplates
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/velony.email.api.v1.ListEmailTemplatesResponse'
+        post:
+            tags:
+                - EmailService
+            operationId: EmailService_CreateEmailTemplate
+            parameters:
+                - name: emailTemplateId
+                  in: query
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/velony.email.api.v1.EmailTemplate'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/velony.email.api.v1.EmailTemplate'
+    /v1/emailTemplates/{emailTemplate}:
+        get:
+            tags:
+                - EmailService
+            operationId: EmailService_GetEmailTemplate
+            parameters:
+                - name: emailTemplate
+                  in: path
+                  description: The emailTemplate id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/velony.email.api.v1.EmailTemplate'
+        delete:
+            tags:
+                - EmailService
+            operationId: EmailService_DeleteEmailTemplate
+            parameters:
+                - name: emailTemplate
+                  in: path
+                  description: The emailTemplate id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+        patch:
+            tags:
+                - EmailService
+            operationId: EmailService_UpdateEmailTemplate
+            parameters:
+                - name: emailTemplate
+                  in: path
+                  description: The emailTemplate id.
+                  required: true
+                  schema:
+                    type: string
+                - name: updateMask
+                  in: query
+                  schema:
+                    type: string
+                    format: field-mask
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/velony.email.api.v1.EmailTemplate'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/velony.email.api.v1.EmailTemplate'
+    /v1:sendEmail:
+        post:
+            tags:
+                - EmailService
+            operationId: EmailService_SendEmail
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/velony.email.api.v1.SendEmailRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/velony.email.api.v1.SendEmailResponse'
+components:
+    schemas:
+        velony.email.api.v1.CustomEmailContent:
+            required:
+                - subject
+            type: object
+            properties:
+                subject:
+                    type: string
+                html:
+                    type: string
+                text:
+                    type: string
+        velony.email.api.v1.Email:
+            required:
+                - from
+                - to
+            type: object
+            properties:
+                from:
+                    type: string
+                to:
+                    type: array
+                    items:
+                        type: string
+                cc:
+                    type: array
+                    items:
+                        type: string
+                bcc:
+                    type: array
+                    items:
+                        type: string
+                custom:
+                    $ref: '#/components/schemas/velony.email.api.v1.CustomEmailContent'
+                template:
+                    $ref: '#/components/schemas/velony.email.api.v1.EmailTemplateContent'
+        velony.email.api.v1.EmailTemplate:
+            required:
+                - subject
+            type: object
+            properties:
+                name:
+                    type: string
+                subject:
+                    type: string
+                html:
+                    type: string
+                text:
+                    type: string
+        velony.email.api.v1.EmailTemplateContent:
+            required:
+                - name
+            type: object
+            properties:
+                name:
+                    type: string
+                variables:
+                    type: object
+                    additionalProperties:
+                        type: string
+        velony.email.api.v1.ListEmailTemplatesResponse:
+            type: object
+            properties:
+                emailTemplates:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/velony.email.api.v1.EmailTemplate'
+        velony.email.api.v1.SendEmailRequest:
+            required:
+                - email
+            type: object
+            properties:
+                email:
+                    $ref: '#/components/schemas/velony.email.api.v1.Email'
+                idempotencyKey:
+                    type: string
+        velony.email.api.v1.SendEmailResponse:
+            type: object
+            properties: {}
+tags:
+    - name: EmailService

@@ -1,0 +1,156 @@
+
+syntax = "proto3";
+package kratos.api;
+
+option go_package = "github.com/velonyapp/email/internal/conf";
+
+import "buf/validate/validate.proto";
+import "google/protobuf/duration.proto";
+
+message Bootstrap {
+  Email email = 1 [
+    (buf.validate.field).required = true
+  ];
+  Transport transport = 2 [
+    (buf.validate.field).required = true
+  ];
+  Data data = 3 [
+    (buf.validate.field).required = true
+  ];
+  Telemetry telemetry = 4;
+}
+
+message Email {
+  message Resend {
+    string api_key = 1 [
+      (buf.validate.field).string.min_len = 1
+    ];
+  }
+
+  Resend resend = 1 [
+    (buf.validate.field).required = true
+  ];
+}
+
+message Transport {
+  message HTTP {
+    string address = 1 [
+      (buf.validate.field).string.host_and_port = true
+    ];
+
+    google.protobuf.Duration timeout = 2 [
+      (buf.validate.field).duration.gt = {}
+    ];
+  }
+
+  message GRPC {
+    string address = 1 [
+      (buf.validate.field).string.host_and_port = true
+    ];
+
+    google.protobuf.Duration timeout = 2 [
+      (buf.validate.field).duration.gt = {}
+    ];
+  }
+
+  message RabbitMQ {
+    message Queues {
+      string send_email = 1 [
+        (buf.validate.field).string.min_len = 1
+      ];
+    }
+
+    string address = 1 [
+      (buf.validate.field).string.min_len = 1
+    ];
+    string username = 2 [
+      (buf.validate.field).string.min_len = 1
+    ];
+    string password = 3 [
+      (buf.validate.field).string.min_len = 1
+    ];
+
+    Queues queues = 4 [
+      (buf.validate.field).required = true
+    ];
+  }
+
+  HTTP http = 1 [
+    (buf.validate.field).required = true
+  ];
+  GRPC grpc = 2 [
+    (buf.validate.field).required = true
+  ];
+  RabbitMQ rabbitmq = 3 [
+    (buf.validate.field).required = true
+  ];
+}
+
+message Data {
+  message MySQL {
+    string dsn = 1 [
+      (buf.validate.field).string.min_len = 1
+    ];
+
+    optional uint32 max_open_connections = 2;
+    optional uint32 max_idle_connections = 3;
+
+    google.protobuf.Duration max_connection_lifetime = 4 [
+      (buf.validate.field).duration.gte = {}
+    ];
+
+    option (buf.validate.message).cel = {
+      id        : "mysql.pool_limits"
+      message   : "max_idle_connections cannot exceed max_open_connections unless max_open_connections is 0"
+      expression: "this.max_open_connections == 0u || this.max_idle_connections <= this.max_open_connections"
+    };
+  }
+
+  MySQL mysql = 1 [
+    (buf.validate.field).required = true
+  ];
+}
+
+message Telemetry {
+  enum Protocol {
+    PROTOCOL_UNSPECIFIED = 0;
+    GRPC                 = 1;
+    HTTP_PROTOBUF        = 2;
+  }
+
+  message Tracing {
+    Protocol protocol = 1 [
+      (buf.validate.field).enum = { defined_only: true, not_in: [0] }
+    ];
+    string endpoint = 2 [
+      (buf.validate.field).string.min_len = 1
+    ];
+    optional string authorization = 3 [
+      (buf.validate.field).string.min_len = 1
+    ];
+
+    optional double sample_ratio = 4 [
+      (buf.validate.field).double = { gte: 0.0, lte: 1.0 }
+    ];
+  }
+
+  message Metrics {
+    Protocol protocol = 1 [
+      (buf.validate.field).enum = { defined_only: true, not_in: [0] }
+    ];
+    string endpoint = 2 [
+      (buf.validate.field).string.min_len = 1
+    ];
+    optional string authorization = 3 [
+      (buf.validate.field).string.min_len = 1
+    ];
+
+    google.protobuf.Duration export_interval = 4 [
+      (buf.validate.field).required = true,
+      (buf.validate.field).duration.gt = {}
+    ];
+  }
+
+  Tracing tracing = 1;
+  Metrics metrics = 2;
+}

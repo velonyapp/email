@@ -1,0 +1,185 @@
+
+syntax = "proto3";
+
+package velony.email.api.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+
+option go_package = "github.com/velonyapp/email/gen/api/v1;apiv1";
+
+service EmailService {
+  option (google.api.default_host) = "api.velony.app";
+
+  rpc GetEmailTemplate(GetEmailTemplateRequest) returns (EmailTemplate) {
+    option (google.api.http) = {
+      get: "/v1/{name=emailTemplates/*}"
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  rpc ListEmailTemplates(ListEmailTemplatesRequest) returns (ListEmailTemplatesResponse) {
+    option (google.api.http) = {
+      get: "/v1/emailTemplates"
+    };
+  }
+
+  rpc CreateEmailTemplate(CreateEmailTemplateRequest) returns (EmailTemplate) {
+    option (google.api.http) = {
+      post: "/v1/emailTemplates"
+      body: "email_template"
+    };
+    option (google.api.method_signature) = "email_template,email_template_id";
+  }
+
+  rpc UpdateEmailTemplate(UpdateEmailTemplateRequest) returns (EmailTemplate) {
+    option (google.api.http) = {
+      patch: "/v1/{email_template.name=emailTemplates/*}"
+      body : "email_template"
+    };
+    option (google.api.method_signature) = "email_template,update_mask";
+  }
+
+  rpc DeleteEmailTemplate(DeleteEmailTemplateRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/{name=emailTemplates/*}"
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  rpc SendEmail(SendEmailRequest) returns (SendEmailResponse) {
+    option (google.api.http) = {
+      post: "/v1:sendEmail"
+      body: "*"
+    };
+  }
+}
+
+message EmailTemplate {
+  option (google.api.resource) = {
+    type    : "api.velony.app/EmailTemplate"
+    pattern : "emailTemplates/{email_template}"
+    singular: "emailTemplate"
+    plural  : "emailTemplates"
+  };
+
+  string name = 1 [
+    (google.api.field_behavior) = IDENTIFIER
+  ];
+
+  string subject = 2 [
+    (google.api.field_behavior) = REQUIRED
+  ];
+  string html = 3 [
+    (google.api.field_behavior) = OPTIONAL
+  ];
+  string text = 4 [
+    (google.api.field_behavior) = OPTIONAL
+  ];
+}
+
+message GetEmailTemplateRequest {
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+    type: "api.velony.app/EmailTemplate"
+    }
+  ];
+}
+
+message ListEmailTemplatesRequest {}
+
+message ListEmailTemplatesResponse {
+  repeated EmailTemplate email_templates = 1;
+}
+
+message CreateEmailTemplateRequest {
+  EmailTemplate email_template = 1 [
+    (google.api.field_behavior) = REQUIRED
+  ];
+
+  string email_template_id = 2 [
+    (google.api.field_behavior) = REQUIRED
+  ];
+}
+
+message UpdateEmailTemplateRequest {
+  EmailTemplate email_template = 1 [
+    (google.api.field_behavior) = REQUIRED
+  ];
+
+  google.protobuf.FieldMask update_mask = 2 [
+    (google.api.field_behavior) = OPTIONAL
+  ];
+}
+
+message DeleteEmailTemplateRequest {
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+    type: "api.velony.app/EmailTemplate"
+    }
+  ];
+}
+
+message CustomEmailContent {
+  string subject = 1 [
+    (google.api.field_behavior) = REQUIRED
+  ];
+  string html = 2 [
+    (google.api.field_behavior) = OPTIONAL
+  ];
+  string text = 3 [
+    (google.api.field_behavior) = OPTIONAL
+  ];
+}
+
+message EmailTemplateContent {
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+    type: "api.velony.app/EmailTemplate"
+    }
+  ];
+
+  map<string, string> variables = 2 [
+    (google.api.field_behavior) = OPTIONAL
+  ];
+}
+
+message Email {
+  string from = 1 [
+    (google.api.field_behavior) = REQUIRED
+  ];
+  repeated string to = 2 [
+    (google.api.field_behavior) = REQUIRED
+  ];
+  repeated string cc = 3 [
+    (google.api.field_behavior) = OPTIONAL
+  ];
+  repeated string bcc = 4 [
+    (google.api.field_behavior) = OPTIONAL
+  ];
+
+  oneof content {
+    CustomEmailContent   custom   = 5;
+    EmailTemplateContent template = 6;
+  }
+}
+
+message SendEmailRequest {
+  Email email = 1 [
+    (google.api.field_behavior) = REQUIRED
+  ];
+
+  string idempotency_key = 2 [
+    (google.api.field_behavior) = OPTIONAL
+  ];
+}
+
+message SendEmailResponse {
+}

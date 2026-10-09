@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package velony.email.api.v1;
+
+option go_package = "github.com/velonyapp/email/gen/api/v1;apiv1";
+
+enum ErrorReason {
+  ERROR_REASON_UNSPECIFIED = 0;
+}
