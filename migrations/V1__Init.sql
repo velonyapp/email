@@ -3,7 +3,7 @@ CREATE TABLE templates (
     alias   VARCHAR(64) NOT NULL,
     subject TEXT NOT NULL,
     html    TEXT NOT NULL,
-    text    TEXT NOT NULL
-) ENGINE = InnoDB;
+    text    TEXT NOT NULL,
 
-CREATE INDEX idx_templates_alias ON templates (alias);
+    INDEX idx_templates_alias (alias)
+) ENGINE = InnoDB;
