@@ -1,4 +1,5 @@
-package api
+
+package service
 
 import (
 	"context"
@@ -8,40 +9,34 @@ import (
 	"github.com/velonyapp/email/internal/application/command"
 	"github.com/velonyapp/email/internal/application/query"
 
-	"go.einride.tech/aip/resourcename"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 var (
-	ErrInvalidEmailTemplateResourceName = errors.New("invalid email template resource name")
-	ErrInvalidUpdateMaskPath            = errors.New("invalid update mask path")
+	ErrInvalidUpdateMaskPath = errors.New("invalid update mask path")
 )
 
-const (
-	emailTemplateResourcePattern = "emailTemplates/{email_template}"
-)
-
-type Service struct {
+type API struct {
 	v1.UnimplementedEmailServiceServer
 
 	commandBus *command.Bus
 	queryBus   *query.Bus
 }
 
-func NewService(
+func NewAPI(
 	commandBus *command.Bus,
 	queryBus *query.Bus,
-) *Service {
-	return &Service{
+) *API {
+	return &API{
 		commandBus: commandBus,
 		queryBus:   queryBus,
 	}
 }
 
-func (s *Service) GetEmailTemplate(ctx context.Context, req *v1.GetEmailTemplateRequest) (*v1.EmailTemplate, error) {
-	var templateID string
-	if err := resourcename.Sscan(req.Name, emailTemplateResourcePattern, &templateID); err != nil {
-		return nil, ErrInvalidEmailTemplateResourceName
+func (s *API) GetEmailTemplate(ctx context.Context, req *v1.GetEmailTemplateRequest) (*v1.EmailTemplate, error) {
+	templateID, err := parseEmailTemplateName(req.Name)
+	if err != nil {
+		return nil, err
 	}
 
 	result, err := query.Send(ctx, s.queryBus, query.GetTemplate{
@@ -52,7 +47,7 @@ func (s *Service) GetEmailTemplate(ctx context.Context, req *v1.GetEmailTemplate
 	}
 
 	return &v1.EmailTemplate{
-		Name:    resourcename.Sprint(emailTemplateResourcePattern, result.Template.ID),
+		Name:    formatEmailTemplateName(result.Template.ID),
 		Alias:   result.Template.Alias,
 		Subject: result.Template.Subject,
 		Html:    result.Template.HTML,
@@ -60,7 +55,7 @@ func (s *Service) GetEmailTemplate(ctx context.Context, req *v1.GetEmailTemplate
 	}, nil
 }
 
-func (s *Service) ListEmailTemplates(ctx context.Context, req *v1.ListEmailTemplatesRequest) (*v1.ListEmailTemplatesResponse, error) {
+func (s *API) ListEmailTemplates(ctx context.Context, req *v1.ListEmailTemplatesRequest) (*v1.ListEmailTemplatesResponse, error) {
 	result, err := query.Send(ctx, s.queryBus, query.ListTemplates{})
 	if err != nil {
 		return nil, err
@@ -70,7 +65,7 @@ func (s *Service) ListEmailTemplates(ctx context.Context, req *v1.ListEmailTempl
 
 	for i, template := range result.Templates {
 		templates[i] = &v1.EmailTemplate{
-			Name:    resourcename.Sprint(emailTemplateResourcePattern, template.ID),
+			Name:    formatEmailTemplateName(template.ID),
 			Alias:   template.Alias,
 			Subject: template.Subject,
 			Html:    template.HTML,
@@ -83,7 +78,7 @@ func (s *Service) ListEmailTemplates(ctx context.Context, req *v1.ListEmailTempl
 	}, nil
 }
 
-func (s *Service) CreateEmailTemplate(ctx context.Context, req *v1.CreateEmailTemplateRequest) (*v1.EmailTemplate, error) {
+func (s *API) CreateEmailTemplate(ctx context.Context, req *v1.CreateEmailTemplateRequest) (*v1.EmailTemplate, error) {
 	result, err := command.Send(ctx, s.commandBus, command.CreateTemplate{
 		Alias:   req.EmailTemplate.Alias,
 		Subject: req.EmailTemplate.Subject,
@@ -95,7 +90,7 @@ func (s *Service) CreateEmailTemplate(ctx context.Context, req *v1.CreateEmailTe
 	}
 
 	return &v1.EmailTemplate{
-		Name:    resourcename.Sprint(emailTemplateResourcePattern, result.Template.ID),
+		Name:    formatEmailTemplateName(result.Template.ID),
 		Alias:   result.Template.Alias,
 		Subject: result.Template.Subject,
 		Html:    result.Template.HTML,
@@ -103,10 +98,10 @@ func (s *Service) CreateEmailTemplate(ctx context.Context, req *v1.CreateEmailTe
 	}, nil
 }
 
-func (s *Service) UpdateEmailTemplate(ctx context.Context, req *v1.UpdateEmailTemplateRequest) (*v1.EmailTemplate, error) {
-	var templateID string
-	if err := resourcename.Sscan(req.EmailTemplate.Name, emailTemplateResourcePattern, &templateID); err != nil {
-		return nil, ErrInvalidEmailTemplateResourceName
+func (s *API) UpdateEmailTemplate(ctx context.Context, req *v1.UpdateEmailTemplateRequest) (*v1.EmailTemplate, error) {
+	templateID, err := parseEmailTemplateName(req.EmailTemplate.Name)
+	if err != nil {
+		return nil, err
 	}
 
 	var alias, subject, html, text *string
@@ -180,7 +175,7 @@ func (s *Service) UpdateEmailTemplate(ctx context.Context, req *v1.UpdateEmailTe
 	}
 
 	return &v1.EmailTemplate{
-		Name:    resourcename.Sprint(emailTemplateResourcePattern, result.Template.ID),
+		Name:    formatEmailTemplateName(result.Template.ID),
 		Alias:   result.Template.Alias,
 		Subject: result.Template.Subject,
 		Html:    result.Template.HTML,
@@ -188,10 +183,10 @@ func (s *Service) UpdateEmailTemplate(ctx context.Context, req *v1.UpdateEmailTe
 	}, nil
 }
 
-func (s *Service) DeleteEmailTemplate(ctx context.Context, req *v1.DeleteEmailTemplateRequest) (*emptypb.Empty, error) {
-	var templateID string
-	if err := resourcename.Sscan(req.Name, emailTemplateResourcePattern, &templateID); err != nil {
-		return nil, ErrInvalidEmailTemplateResourceName
+func (s *API) DeleteEmailTemplate(ctx context.Context, req *v1.DeleteEmailTemplateRequest) (*emptypb.Empty, error) {
+	templateID, err := parseEmailTemplateName(req.Name)
+	if err != nil {
+		return nil, err
 	}
 
 	if _, err := command.Send(ctx, s.commandBus, command.DeleteTemplate{
@@ -203,7 +198,7 @@ func (s *Service) DeleteEmailTemplate(ctx context.Context, req *v1.DeleteEmailTe
 	return &emptypb.Empty{}, nil
 }
 
-func (s *Service) SendEmail(ctx context.Context, req *v1.SendEmailRequest) (*v1.SendEmailResponse, error) {
+func (s *API) SendEmail(ctx context.Context, req *v1.SendEmailRequest) (*v1.SendEmailResponse, error) {
 	if content := req.Email.GetCustom(); content != nil {
 		if _, err := command.Send(ctx, s.commandBus, command.SendEmail{
 			From:           req.Email.From,
@@ -219,9 +214,9 @@ func (s *Service) SendEmail(ctx context.Context, req *v1.SendEmailRequest) (*v1.
 		}
 	}
 	if content := req.Email.GetTemplate(); content != nil {
-		var templateID string
-		if err := resourcename.Sscan(content.Name, emailTemplateResourcePattern, &templateID); err != nil {
-			return nil, ErrInvalidEmailTemplateResourceName
+		templateID, err := parseEmailTemplateName(content.Name)
+		if err != nil {
+			return nil, err
 		}
 
 		if _, err := command.Send(ctx, s.commandBus, command.SendEmailFromTemplate{

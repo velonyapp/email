@@ -3,8 +3,8 @@ package transport
 import (
 	v1 "github.com/velonyapp/email/gen/api/v1"
 	"github.com/velonyapp/email/internal/conf"
-	"github.com/velonyapp/email/internal/presentation/api"
 	"github.com/velonyapp/email/internal/presentation/middleware"
+	"github.com/velonyapp/email/internal/presentation/service"
 
 	"github.com/go-kratos/kratos/v3/middleware/recovery"
 	"github.com/go-kratos/kratos/v3/transport/http"
@@ -12,7 +12,7 @@ import (
 
 func NewHTTPServer(
 	c *conf.Transport,
-	service *api.Service,
+	service *service.API,
 	tracing middleware.Tracing,
 	metrics middleware.Metrics,
 	errorMapper middleware.ErrorMapper,

@@ -1,0 +1,33 @@
+
+syntax = "proto3";
+
+package velony.email.job.v1;
+
+option go_package = "github.com/velonyapp/email/gen/job/v1;jobv1";
+
+message SendEmail {
+  string from = 1;
+
+  repeated string to  = 2;
+  repeated string cc  = 3;
+  repeated string bcc = 4;
+
+  oneof content {
+    CustomEmailContent   custom   = 5;
+    EmailTemplateContent template = 6;
+  }
+
+  string idempotency_key = 7;
+}
+
+message CustomEmailContent {
+  string subject = 1;
+  string html    = 2;
+  string text    = 3;
+}
+
+message EmailTemplateContent {
+  string name = 1;
+
+  map<string, string> variables = 2;
+}

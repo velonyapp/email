@@ -5,14 +5,13 @@ import (
 	"errors"
 	"sync"
 
-	v1 "github.com/velonyapp/email/gen/api/v1"
-	"github.com/velonyapp/email/internal/application/command"
+	v1 "github.com/velonyapp/email/gen/job/v1"
 	"github.com/velonyapp/email/internal/conf"
+	"github.com/velonyapp/email/internal/presentation/service"
 
 	"github.com/Azure/go-amqp"
 	"github.com/go-kratos/kratos/v3/transport"
 	"github.com/rabbitmq/rabbitmq-amqp-go-client/pkg/rabbitmqamqp"
-	"go.einride.tech/aip/resourcename"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -21,15 +20,11 @@ var (
 	ErrInvalidMessage     = errors.New("invalid message")
 )
 
-const (
-	emailTemplateResourcePattern = "emailTemplates/{email_template}"
-)
-
 var _ transport.Server = (*RabbitMQConsumer)(nil)
 
 type RabbitMQConsumer struct {
 	c          *conf.Transport
-	commandBus *command.Bus
+	jobService *service.Job
 
 	conn      *rabbitmqamqp.AmqpConnection
 	consumers map[string]*rabbitmqamqp.Consumer
@@ -39,11 +34,11 @@ type RabbitMQConsumer struct {
 
 func NewRabbitMQConsumer(
 	c *conf.Transport,
-	commandBus *command.Bus,
+	jobService *service.Job,
 ) *RabbitMQConsumer {
 	return &RabbitMQConsumer{
 		c:          c,
-		commandBus: commandBus,
+		jobService: jobService,
 	}
 }
 
@@ -60,51 +55,17 @@ func (rc *RabbitMQConsumer) registerAllConsumers(ctx context.Context) error {
 func (rc *RabbitMQConsumer) handleMessage(ctx context.Context, queue string, data []byte) error {
 	switch queue {
 	case rc.c.Rabbitmq.Queues.SendEmail:
-		req := new(v1.SendEmailRequest)
+		req := new(v1.SendEmail)
 
 		if err := proto.Unmarshal(data, req); err != nil {
 			return ErrInvalidMessage
 		}
 
-		if content := req.Email.GetCustom(); content != nil {
-			if _, err := command.Send(ctx, rc.commandBus, command.SendEmail{
-				From:           req.Email.From,
-				To:             req.Email.To,
-				CC:             req.Email.Cc,
-				BCC:            req.Email.Bcc,
-				Subject:        content.Subject,
-				HTML:           content.Html,
-				Text:           content.Text,
-				IdempotencyKey: req.IdempotencyKey,
-			}); err != nil {
-				return err
-			}
-		} else if content := req.Email.GetTemplate(); content != nil {
-			var templateID string
-			if err := resourcename.Sscan(content.Name, emailTemplateResourcePattern, &templateID); err != nil {
-				return err
-			}
-
-			if _, err := command.Send(ctx, rc.commandBus, command.SendEmailFromTemplate{
-				From:           req.Email.From,
-				To:             req.Email.To,
-				CC:             req.Email.Cc,
-				BCC:            req.Email.Bcc,
-				TemplateID:     templateID,
-				Variables:      content.Variables,
-				IdempotencyKey: req.IdempotencyKey,
-			}); err != nil {
-				return err
-			}
-		} else {
-			return ErrInvalidMessage
-		}
+		return rc.jobService.SendEmail(ctx, req)
 
 	default:
 		return ErrUnsupportedMessage
 	}
-
-	return nil
 }
 
 func (rc *RabbitMQConsumer) registerConsumer(ctx context.Context, queue string) error {

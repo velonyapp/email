@@ -8,7 +8,7 @@ import (
 	domainentity "github.com/velonyapp/email/internal/domain/entity"
 	domainservice "github.com/velonyapp/email/internal/domain/service"
 	domainvo "github.com/velonyapp/email/internal/domain/vo"
-	presentationapi "github.com/velonyapp/email/internal/presentation/api"
+	presentationservice "github.com/velonyapp/email/internal/presentation/service"
 
 	kerrors "github.com/go-kratos/kratos/v3/errors"
 	"github.com/go-kratos/kratos/v3/middleware"
@@ -76,14 +76,14 @@ func NewErrorMapper() ErrorMapper {
 					)
 
 				// API Service
-				case errors.Is(err, presentationapi.ErrInvalidEmailTemplateResourceName):
+				case errors.Is(err, presentationservice.ErrInvalidEmailTemplateResourceName):
 					return reply, kerrors.BadRequest("",
-						presentationapi.ErrInvalidEmailTemplateResourceName.Error(),
+						presentationservice.ErrInvalidEmailTemplateResourceName.Error(),
 					)
 
-				case errors.Is(err, presentationapi.ErrInvalidUpdateMaskPath):
+				case errors.Is(err, presentationservice.ErrInvalidUpdateMaskPath):
 					return reply, kerrors.BadRequest("",
-						presentationapi.ErrInvalidUpdateMaskPath.Error(),
+						presentationservice.ErrInvalidUpdateMaskPath.Error(),
 					)
 
 				default:
