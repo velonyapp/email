@@ -19,35 +19,35 @@ func NewJob(
 	}
 }
 
-func (s *Job) SendEmail(ctx context.Context, req *v1.SendEmail) error {
-	if content := req.GetCustom(); content != nil {
+func (s *Job) SendEmail(ctx context.Context, payload *v1.SendEmailPayload) error {
+	if content := payload.GetCustom(); content != nil {
 		if _, err := command.Send(ctx, s.commandBus, command.SendEmail{
-			From:           req.From,
-			To:             req.To,
-			CC:             req.Cc,
-			BCC:            req.Bcc,
+			From:           payload.From,
+			To:             payload.To,
+			CC:             payload.Cc,
+			BCC:            payload.Bcc,
 			Subject:        content.Subject,
 			HTML:           content.Html,
 			Text:           content.Text,
-			IdempotencyKey: req.IdempotencyKey,
+			IdempotencyKey: payload.IdempotencyKey,
 		}); err != nil {
 			return err
 		}
 	}
-	if content := req.GetTemplate(); content != nil {
+	if content := payload.GetTemplate(); content != nil {
 		templateID, err := parseEmailTemplateName(content.Name)
 		if err != nil {
 			return err
 		}
 
 		if _, err := command.Send(ctx, s.commandBus, command.SendEmailFromTemplate{
-			From:           req.From,
-			To:             req.To,
-			CC:             req.Cc,
-			BCC:            req.Bcc,
+			From:           payload.From,
+			To:             payload.To,
+			CC:             payload.Cc,
+			BCC:            payload.Bcc,
 			TemplateID:     templateID,
 			Variables:      content.Variables,
-			IdempotencyKey: req.IdempotencyKey,
+			IdempotencyKey: payload.IdempotencyKey,
 		}); err != nil {
 			return err
 		}

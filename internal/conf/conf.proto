@@ -54,12 +54,6 @@ message Transport {
   }
 
   message RabbitMQ {
-    message Queues {
-      string send_email = 1 [
-        (buf.validate.field).string.min_len = 1
-      ];
-    }
-
     string address = 1 [
       (buf.validate.field).string.min_len = 1
     ];
@@ -68,10 +62,6 @@ message Transport {
     ];
     string password = 3 [
       (buf.validate.field).string.min_len = 1
-    ];
-
-    Queues queues = 4 [
-      (buf.validate.field).required = true
     ];
   }
 

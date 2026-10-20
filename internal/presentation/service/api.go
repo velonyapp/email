@@ -1,4 +1,3 @@
-
 package service
 
 import (
@@ -9,11 +8,17 @@ import (
 	"github.com/velonyapp/email/internal/application/command"
 	"github.com/velonyapp/email/internal/application/query"
 
+	"go.einride.tech/aip/resourcename"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 var (
-	ErrInvalidUpdateMaskPath = errors.New("invalid update mask path")
+	ErrInvalidEmailTemplateResourceName = errors.New("invalid email template resource name")
+	ErrInvalidUpdateMaskPath            = errors.New("invalid update mask path")
+)
+
+const (
+	emailTemplateResourcePattern = "emailTemplates/{email_template}"
 )
 
 type API struct {
@@ -233,4 +238,17 @@ func (s *API) SendEmail(ctx context.Context, req *v1.SendEmailRequest) (*v1.Send
 	}
 
 	return &v1.SendEmailResponse{}, nil
+}
+
+func parseEmailTemplateName(name string) (string, error) {
+	var templateID string
+	if err := resourcename.Sscan(name, emailTemplateResourcePattern, &templateID); err != nil {
+		return "", ErrInvalidEmailTemplateResourceName
+	}
+
+	return templateID, nil
+}
+
+func formatEmailTemplateName(templateID string) string {
+	return resourcename.Sprint(emailTemplateResourcePattern, templateID)
 }

@@ -12,12 +12,16 @@ import (
 	"github.com/Azure/go-amqp"
 	"github.com/go-kratos/kratos/v3/transport"
 	"github.com/rabbitmq/rabbitmq-amqp-go-client/pkg/rabbitmqamqp"
-	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 var (
 	ErrUnsupportedMessage = errors.New("unsupported message")
 	ErrInvalidMessage     = errors.New("invalid message")
+)
+
+const (
+	sendEmailQueue = "email.send-email"
 )
 
 var _ transport.Server = (*RabbitMQConsumer)(nil)
@@ -45,7 +49,7 @@ func NewRabbitMQConsumer(
 func (rc *RabbitMQConsumer) registerAllConsumers(ctx context.Context) error {
 	var errs []error
 
-	if err := rc.registerConsumer(ctx, rc.c.Rabbitmq.Queues.SendEmail); err != nil {
+	if err := rc.registerConsumer(ctx, sendEmailQueue); err != nil {
 		errs = append(errs, err)
 	}
 
@@ -54,14 +58,14 @@ func (rc *RabbitMQConsumer) registerAllConsumers(ctx context.Context) error {
 
 func (rc *RabbitMQConsumer) handleMessage(ctx context.Context, queue string, data []byte) error {
 	switch queue {
-	case rc.c.Rabbitmq.Queues.SendEmail:
-		req := new(v1.SendEmail)
+	case sendEmailQueue:
+		payload := new(v1.SendEmailPayload)
 
-		if err := proto.Unmarshal(data, req); err != nil {
+		if err := protojson.Unmarshal(data, payload); err != nil {
 			return ErrInvalidMessage
 		}
 
-		return rc.jobService.SendEmail(ctx, req)
+		return rc.jobService.SendEmail(ctx, payload)
 
 	default:
 		return ErrUnsupportedMessage

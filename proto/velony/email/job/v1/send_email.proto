@@ -5,7 +5,7 @@ package velony.email.job.v1;
 
 option go_package = "github.com/velonyapp/email/gen/job/v1;jobv1";
 
-message SendEmail {
+message SendEmailPayload {
   string from = 1;
 
   repeated string to  = 2;
