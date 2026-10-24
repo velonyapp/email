@@ -1,9 +1,14 @@
 package command
 
 import (
+	"bytes"
 	"context"
+	htmltemplate "html/template"
+	texttemplate "text/template"
 
+	"github.com/velonyapp/email/internal/application/common"
 	"github.com/velonyapp/email/internal/application/port"
+	"github.com/velonyapp/email/internal/domain/repo"
 	"github.com/velonyapp/email/internal/domain/vo"
 )
 
@@ -12,9 +17,8 @@ type SendEmail struct {
 	To             []string
 	CC             []string
 	BCC            []string
-	Subject        string
-	HTML           string
-	Text           string
+	TemplateAlias  string
+	Variables      map[string]string
 	IdempotencyKey string
 }
 
@@ -27,14 +31,17 @@ func (SendEmail) resultType() SendEmailResult {
 type SendEmailHandler Handler[SendEmail, SendEmailResult]
 
 type sendEmailHandler struct {
-	emailSender port.EmailSender
+	templateRepo repo.Template
+	emailSender  port.EmailSender
 }
 
 func NewSendEmailHandler(
+	templateRepo repo.Template,
 	emailSender port.EmailSender,
 ) SendEmailHandler {
 	return &sendEmailHandler{
-		emailSender: emailSender,
+		templateRepo: templateRepo,
+		emailSender:  emailSender,
 	}
 }
 
@@ -42,6 +49,56 @@ func (h *sendEmailHandler) Handle(
 	ctx context.Context,
 	cmd SendEmail,
 ) (SendEmailResult, error) {
+	templateAlias, err := vo.NewAlias(cmd.TemplateAlias)
+	if err != nil {
+		return SendEmailResult{}, err
+	}
+
+	template, err := h.templateRepo.FindByAlias(ctx, templateAlias)
+	if err != nil {
+		return SendEmailResult{}, err
+	}
+	if template == nil {
+		return SendEmailResult{}, common.ErrTemplateNotFound
+	}
+
+	subjectTemplate, err := texttemplate.New("subject").
+		Option("missingkey=error").
+		Parse(template.Subject().String())
+	if err != nil {
+		return SendEmailResult{}, err
+	}
+	var subject bytes.Buffer
+	if err := subjectTemplate.Execute(&subject, cmd.Variables); err != nil {
+		return SendEmailResult{}, err
+	}
+
+	var html bytes.Buffer
+	if template.HasHTML() {
+		htmlTemplate, err := htmltemplate.New("html").
+			Option("missingkey=error").
+			Parse(template.HTML().String())
+		if err != nil {
+			return SendEmailResult{}, err
+		}
+		if err := htmlTemplate.Execute(&html, cmd.Variables); err != nil {
+			return SendEmailResult{}, err
+		}
+	}
+
+	var text bytes.Buffer
+	if template.HasText() {
+		textTemplate, err := texttemplate.New("text").
+			Option("missingkey=error").
+			Parse(template.Text().String())
+		if err != nil {
+			return SendEmailResult{}, err
+		}
+		if err := textTemplate.Execute(&text, cmd.Variables); err != nil {
+			return SendEmailResult{}, err
+		}
+	}
+
 	from, err := vo.NewAddress(cmd.From)
 	if err != nil {
 		return SendEmailResult{}, err
@@ -76,9 +133,9 @@ func (h *sendEmailHandler) Handle(
 		To:      to,
 		CC:      cc,
 		BCC:     bcc,
-		Subject: vo.NewSubject(cmd.Subject),
-		Text:    vo.NewText(cmd.Text),
-		HTML:    vo.NewHTML(cmd.HTML),
+		Subject: vo.NewSubject(subject.String()),
+		Text:    vo.NewText(text.String()),
+		HTML:    vo.NewHTML(html.String()),
 	}, cmd.IdempotencyKey); err != nil {
 		return SendEmailResult{}, err
 	}

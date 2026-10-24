@@ -214,37 +214,21 @@ func (s *API) RenameEmailTemplate(ctx context.Context, req *v1.RenameEmailTempla
 }
 
 func (s *API) SendEmail(ctx context.Context, req *v1.SendEmailRequest) (*v1.SendEmailResponse, error) {
-	if content := req.Email.GetCustom(); content != nil {
-		if _, err := command.Send(ctx, s.commandBus, command.SendEmail{
-			From:           req.Email.From,
-			To:             req.Email.To,
-			CC:             req.Email.Cc,
-			BCC:            req.Email.Bcc,
-			Subject:        content.Subject,
-			HTML:           content.Html,
-			Text:           content.Text,
-			IdempotencyKey: req.IdempotencyKey,
-		}); err != nil {
-			return nil, err
-		}
+	templateAlias, err := parseEmailTemplateName(req.Template)
+	if err != nil {
+		return nil, err
 	}
-	if content := req.Email.GetTemplate(); content != nil {
-		alias, err := parseEmailTemplateName(content.Name)
-		if err != nil {
-			return nil, err
-		}
 
-		if _, err := command.Send(ctx, s.commandBus, command.SendEmailFromTemplate{
-			From:           req.Email.From,
-			To:             req.Email.To,
-			CC:             req.Email.Cc,
-			BCC:            req.Email.Bcc,
-			Alias:          alias,
-			Variables:      content.Variables,
-			IdempotencyKey: req.IdempotencyKey,
-		}); err != nil {
-			return nil, err
-		}
+	if _, err := command.Send(ctx, s.commandBus, command.SendEmail{
+		From:           req.From,
+		To:             req.To,
+		CC:             req.Cc,
+		BCC:            req.Bcc,
+		TemplateAlias:  templateAlias,
+		Variables:      req.Variables,
+		IdempotencyKey: req.IdempotencyKey,
+	}); err != nil {
+		return nil, err
 	}
 
 	return &v1.SendEmailResponse{}, nil

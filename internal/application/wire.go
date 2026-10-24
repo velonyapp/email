@@ -14,7 +14,6 @@ var ProviderSet = wire.NewSet(
 	command.NewDeleteTemplateHandler,
 	command.NewRenameTemplateHandler,
 	command.NewSendEmailHandler,
-	command.NewSendEmailFromTemplateHandler,
 	query.NewBus,
 	query.NewGetTemplateHandler,
 	query.NewListTemplatesHandler,

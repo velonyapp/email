@@ -22,17 +22,14 @@ const (
 )
 
 type SendEmailPayload struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	From  string                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
-	To    []string               `protobuf:"bytes,2,rep,name=to,proto3" json:"to,omitempty"`
-	Cc    []string               `protobuf:"bytes,3,rep,name=cc,proto3" json:"cc,omitempty"`
-	Bcc   []string               `protobuf:"bytes,4,rep,name=bcc,proto3" json:"bcc,omitempty"`
-	// Types that are valid to be assigned to Content:
-	//
-	//	*SendEmailPayload_Custom
-	//	*SendEmailPayload_Template
-	Content        isSendEmailPayload_Content `protobuf_oneof:"content"`
-	IdempotencyKey string                     `protobuf:"bytes,7,opt,name=idempotency_key,json=idempotencyKey,proto3" json:"idempotency_key,omitempty"`
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	From           string                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	To             []string               `protobuf:"bytes,2,rep,name=to,proto3" json:"to,omitempty"`
+	Cc             []string               `protobuf:"bytes,3,rep,name=cc,proto3" json:"cc,omitempty"`
+	Bcc            []string               `protobuf:"bytes,4,rep,name=bcc,proto3" json:"bcc,omitempty"`
+	Template       string                 `protobuf:"bytes,5,opt,name=template,proto3" json:"template,omitempty"`
+	Variables      map[string]string      `protobuf:"bytes,6,rep,name=variables,proto3" json:"variables,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	IdempotencyKey string                 `protobuf:"bytes,7,opt,name=idempotency_key,json=idempotencyKey,proto3" json:"idempotency_key,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -95,27 +92,16 @@ func (x *SendEmailPayload) GetBcc() []string {
 	return nil
 }
 
-func (x *SendEmailPayload) GetContent() isSendEmailPayload_Content {
+func (x *SendEmailPayload) GetTemplate() string {
 	if x != nil {
-		return x.Content
+		return x.Template
 	}
-	return nil
+	return ""
 }
 
-func (x *SendEmailPayload) GetCustom() *CustomEmailContent {
+func (x *SendEmailPayload) GetVariables() map[string]string {
 	if x != nil {
-		if x, ok := x.Content.(*SendEmailPayload_Custom); ok {
-			return x.Custom
-		}
-	}
-	return nil
-}
-
-func (x *SendEmailPayload) GetTemplate() *EmailTemplateContent {
-	if x != nil {
-		if x, ok := x.Content.(*SendEmailPayload_Template); ok {
-			return x.Template
-		}
+		return x.Variables
 	}
 	return nil
 }
@@ -127,155 +113,19 @@ func (x *SendEmailPayload) GetIdempotencyKey() string {
 	return ""
 }
 
-type isSendEmailPayload_Content interface {
-	isSendEmailPayload_Content()
-}
-
-type SendEmailPayload_Custom struct {
-	Custom *CustomEmailContent `protobuf:"bytes,5,opt,name=custom,proto3,oneof"`
-}
-
-type SendEmailPayload_Template struct {
-	Template *EmailTemplateContent `protobuf:"bytes,6,opt,name=template,proto3,oneof"`
-}
-
-func (*SendEmailPayload_Custom) isSendEmailPayload_Content() {}
-
-func (*SendEmailPayload_Template) isSendEmailPayload_Content() {}
-
-type CustomEmailContent struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Subject       string                 `protobuf:"bytes,1,opt,name=subject,proto3" json:"subject,omitempty"`
-	Html          string                 `protobuf:"bytes,2,opt,name=html,proto3" json:"html,omitempty"`
-	Text          string                 `protobuf:"bytes,3,opt,name=text,proto3" json:"text,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CustomEmailContent) Reset() {
-	*x = CustomEmailContent{}
-	mi := &file_velony_email_job_v1_send_email_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CustomEmailContent) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CustomEmailContent) ProtoMessage() {}
-
-func (x *CustomEmailContent) ProtoReflect() protoreflect.Message {
-	mi := &file_velony_email_job_v1_send_email_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CustomEmailContent.ProtoReflect.Descriptor instead.
-func (*CustomEmailContent) Descriptor() ([]byte, []int) {
-	return file_velony_email_job_v1_send_email_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *CustomEmailContent) GetSubject() string {
-	if x != nil {
-		return x.Subject
-	}
-	return ""
-}
-
-func (x *CustomEmailContent) GetHtml() string {
-	if x != nil {
-		return x.Html
-	}
-	return ""
-}
-
-func (x *CustomEmailContent) GetText() string {
-	if x != nil {
-		return x.Text
-	}
-	return ""
-}
-
-type EmailTemplateContent struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Variables     map[string]string      `protobuf:"bytes,2,rep,name=variables,proto3" json:"variables,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *EmailTemplateContent) Reset() {
-	*x = EmailTemplateContent{}
-	mi := &file_velony_email_job_v1_send_email_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *EmailTemplateContent) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*EmailTemplateContent) ProtoMessage() {}
-
-func (x *EmailTemplateContent) ProtoReflect() protoreflect.Message {
-	mi := &file_velony_email_job_v1_send_email_proto_msgTypes[2]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use EmailTemplateContent.ProtoReflect.Descriptor instead.
-func (*EmailTemplateContent) Descriptor() ([]byte, []int) {
-	return file_velony_email_job_v1_send_email_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *EmailTemplateContent) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *EmailTemplateContent) GetVariables() map[string]string {
-	if x != nil {
-		return x.Variables
-	}
-	return nil
-}
-
 var File_velony_email_job_v1_send_email_proto protoreflect.FileDescriptor
 
 const file_velony_email_job_v1_send_email_proto_rawDesc = "" +
 	"\n" +
-	"$velony/email/job/v1/send_email.proto\x12\x13velony.email.job.v1\"\x98\x02\n" +
+	"$velony/email/job/v1/send_email.proto\x12\x13velony.email.job.v1\"\xaf\x02\n" +
 	"\x10SendEmailPayload\x12\x12\n" +
 	"\x04from\x18\x01 \x01(\tR\x04from\x12\x0e\n" +
 	"\x02to\x18\x02 \x03(\tR\x02to\x12\x0e\n" +
 	"\x02cc\x18\x03 \x03(\tR\x02cc\x12\x10\n" +
-	"\x03bcc\x18\x04 \x03(\tR\x03bcc\x12A\n" +
-	"\x06custom\x18\x05 \x01(\v2'.velony.email.job.v1.CustomEmailContentH\x00R\x06custom\x12G\n" +
-	"\btemplate\x18\x06 \x01(\v2).velony.email.job.v1.EmailTemplateContentH\x00R\btemplate\x12'\n" +
-	"\x0fidempotency_key\x18\a \x01(\tR\x0eidempotencyKeyB\t\n" +
-	"\acontent\"V\n" +
-	"\x12CustomEmailContent\x12\x18\n" +
-	"\asubject\x18\x01 \x01(\tR\asubject\x12\x12\n" +
-	"\x04html\x18\x02 \x01(\tR\x04html\x12\x12\n" +
-	"\x04text\x18\x03 \x01(\tR\x04text\"\xc0\x01\n" +
-	"\x14EmailTemplateContent\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12V\n" +
-	"\tvariables\x18\x02 \x03(\v28.velony.email.job.v1.EmailTemplateContent.VariablesEntryR\tvariables\x1a<\n" +
+	"\x03bcc\x18\x04 \x03(\tR\x03bcc\x12\x1a\n" +
+	"\btemplate\x18\x05 \x01(\tR\btemplate\x12R\n" +
+	"\tvariables\x18\x06 \x03(\v24.velony.email.job.v1.SendEmailPayload.VariablesEntryR\tvariables\x12'\n" +
+	"\x0fidempotency_key\x18\a \x01(\tR\x0eidempotencyKey\x1a<\n" +
 	"\x0eVariablesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B-Z+github.com/velonyapp/email/gen/job/v1;jobv1b\x06proto3"
@@ -292,22 +142,18 @@ func file_velony_email_job_v1_send_email_proto_rawDescGZIP() []byte {
 	return file_velony_email_job_v1_send_email_proto_rawDescData
 }
 
-var file_velony_email_job_v1_send_email_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_velony_email_job_v1_send_email_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_velony_email_job_v1_send_email_proto_goTypes = []any{
-	(*SendEmailPayload)(nil),     // 0: velony.email.job.v1.SendEmailPayload
-	(*CustomEmailContent)(nil),   // 1: velony.email.job.v1.CustomEmailContent
-	(*EmailTemplateContent)(nil), // 2: velony.email.job.v1.EmailTemplateContent
-	nil,                          // 3: velony.email.job.v1.EmailTemplateContent.VariablesEntry
+	(*SendEmailPayload)(nil), // 0: velony.email.job.v1.SendEmailPayload
+	nil,                      // 1: velony.email.job.v1.SendEmailPayload.VariablesEntry
 }
 var file_velony_email_job_v1_send_email_proto_depIdxs = []int32{
-	1, // 0: velony.email.job.v1.SendEmailPayload.custom:type_name -> velony.email.job.v1.CustomEmailContent
-	2, // 1: velony.email.job.v1.SendEmailPayload.template:type_name -> velony.email.job.v1.EmailTemplateContent
-	3, // 2: velony.email.job.v1.EmailTemplateContent.variables:type_name -> velony.email.job.v1.EmailTemplateContent.VariablesEntry
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	1, // 0: velony.email.job.v1.SendEmailPayload.variables:type_name -> velony.email.job.v1.SendEmailPayload.VariablesEntry
+	1, // [1:1] is the sub-list for method output_type
+	1, // [1:1] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_velony_email_job_v1_send_email_proto_init() }
@@ -315,17 +161,13 @@ func file_velony_email_job_v1_send_email_proto_init() {
 	if File_velony_email_job_v1_send_email_proto != nil {
 		return
 	}
-	file_velony_email_job_v1_send_email_proto_msgTypes[0].OneofWrappers = []any{
-		(*SendEmailPayload_Custom)(nil),
-		(*SendEmailPayload_Template)(nil),
-	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_velony_email_job_v1_send_email_proto_rawDesc), len(file_velony_email_job_v1_send_email_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

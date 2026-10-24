@@ -150,41 +150,6 @@ paths:
                                 $ref: '#/components/schemas/velony.email.api.v1.SendEmailResponse'
 components:
     schemas:
-        velony.email.api.v1.CustomEmailContent:
-            required:
-                - subject
-            type: object
-            properties:
-                subject:
-                    type: string
-                html:
-                    type: string
-                text:
-                    type: string
-        velony.email.api.v1.Email:
-            required:
-                - from
-                - to
-            type: object
-            properties:
-                from:
-                    type: string
-                to:
-                    type: array
-                    items:
-                        type: string
-                cc:
-                    type: array
-                    items:
-                        type: string
-                bcc:
-                    type: array
-                    items:
-                        type: string
-                custom:
-                    $ref: '#/components/schemas/velony.email.api.v1.CustomEmailContent'
-                template:
-                    $ref: '#/components/schemas/velony.email.api.v1.EmailTemplateContent'
         velony.email.api.v1.EmailTemplate:
             required:
                 - subject
@@ -198,17 +163,6 @@ components:
                     type: string
                 text:
                     type: string
-        velony.email.api.v1.EmailTemplateContent:
-            required:
-                - name
-            type: object
-            properties:
-                name:
-                    type: string
-                variables:
-                    type: object
-                    additionalProperties:
-                        type: string
         velony.email.api.v1.ListEmailTemplatesResponse:
             type: object
             properties:
@@ -228,11 +182,31 @@ components:
                     type: string
         velony.email.api.v1.SendEmailRequest:
             required:
-                - email
+                - from
+                - to
+                - template
             type: object
             properties:
-                email:
-                    $ref: '#/components/schemas/velony.email.api.v1.Email'
+                from:
+                    type: string
+                to:
+                    type: array
+                    items:
+                        type: string
+                cc:
+                    type: array
+                    items:
+                        type: string
+                bcc:
+                    type: array
+                    items:
+                        type: string
+                template:
+                    type: string
+                variables:
+                    type: object
+                    additionalProperties:
+                        type: string
                 idempotencyKey:
                     type: string
         velony.email.api.v1.SendEmailResponse:

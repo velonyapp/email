@@ -20,37 +20,21 @@ func NewJob(
 }
 
 func (s *Job) SendEmail(ctx context.Context, payload *v1.SendEmailPayload) error {
-	if content := payload.GetCustom(); content != nil {
-		if _, err := command.Send(ctx, s.commandBus, command.SendEmail{
-			From:           payload.From,
-			To:             payload.To,
-			CC:             payload.Cc,
-			BCC:            payload.Bcc,
-			Subject:        content.Subject,
-			HTML:           content.Html,
-			Text:           content.Text,
-			IdempotencyKey: payload.IdempotencyKey,
-		}); err != nil {
-			return err
-		}
+	templateAlias, err := parseEmailTemplateName(payload.Template)
+	if err != nil {
+		return err
 	}
-	if content := payload.GetTemplate(); content != nil {
-		alias, err := parseEmailTemplateName(content.Name)
-		if err != nil {
-			return err
-		}
 
-		if _, err := command.Send(ctx, s.commandBus, command.SendEmailFromTemplate{
-			From:           payload.From,
-			To:             payload.To,
-			CC:             payload.Cc,
-			BCC:            payload.Bcc,
-			Alias:          alias,
-			Variables:      content.Variables,
-			IdempotencyKey: payload.IdempotencyKey,
-		}); err != nil {
-			return err
-		}
+	if _, err := command.Send(ctx, s.commandBus, command.SendEmail{
+		From:           payload.From,
+		To:             payload.To,
+		CC:             payload.Cc,
+		BCC:            payload.Bcc,
+		TemplateAlias:  templateAlias,
+		Variables:      payload.Variables,
+		IdempotencyKey: payload.IdempotencyKey,
+	}); err != nil {
+		return err
 	}
 
 	return nil

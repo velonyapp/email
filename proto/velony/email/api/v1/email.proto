@@ -150,32 +150,7 @@ message RenameEmailTemplateRequest {
   ];
 }
 
-message CustomEmailContent {
-  string subject = 1 [
-    (google.api.field_behavior) = REQUIRED
-  ];
-  string html = 2 [
-    (google.api.field_behavior) = OPTIONAL
-  ];
-  string text = 3 [
-    (google.api.field_behavior) = OPTIONAL
-  ];
-}
-
-message EmailTemplateContent {
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {
-    type: "api.velony.app/EmailTemplate"
-    }
-  ];
-
-  map<string, string> variables = 2 [
-    (google.api.field_behavior) = OPTIONAL
-  ];
-}
-
-message Email {
+message SendEmailRequest {
   string from = 1 [
     (google.api.field_behavior) = REQUIRED
   ];
@@ -189,18 +164,17 @@ message Email {
     (google.api.field_behavior) = OPTIONAL
   ];
 
-  oneof content {
-    CustomEmailContent   custom   = 5;
-    EmailTemplateContent template = 6;
-  }
-}
-
-message SendEmailRequest {
-  Email email = 1 [
-    (google.api.field_behavior) = REQUIRED
+  string template = 5 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+    type: "api.velony.app/EmailTemplate"
+    }
+  ];
+  map<string, string> variables = 6 [
+    (google.api.field_behavior) = OPTIONAL
   ];
 
-  string idempotency_key = 2 [
+  string idempotency_key = 7 [
     (google.api.field_behavior) = OPTIONAL
   ];
 }

@@ -13,7 +13,6 @@ func NewBus(
 	deleteTemplate DeleteTemplateHandler,
 	renameTemplate RenameTemplateHandler,
 	sendEmail SendEmailHandler,
-	sendEmailFromTemplate SendEmailFromTemplateHandler,
 ) *Bus {
 	bus := &Bus{}
 
@@ -22,7 +21,6 @@ func NewBus(
 	Register(bus, deleteTemplate)
 	Register(bus, renameTemplate)
 	Register(bus, sendEmail)
-	Register(bus, sendEmailFromTemplate)
 
 	return bus
 }
