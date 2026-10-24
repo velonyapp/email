@@ -125,7 +125,7 @@ func (r *templateRepo) Save(ctx context.Context, template *entity.Template) erro
 			template.Subject().String(),
 			template.HTML().String(),
 			template.Text().String(),
-			template.Version()+1,
+			template.Version(),
 		); err != nil {
 			var mysqlErr *mysql.MySQLError
 			if errors.As(err, &mysqlErr) && mysqlErr.Number == 1062 {

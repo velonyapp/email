@@ -148,6 +148,11 @@ func (t *Template) IsNew() bool {
 }
 
 func (t *Template) MarkPersisted() {
+	if t.isNew {
+		t.isNew = false
+
+		return
+	}
+
 	t.version++
-	t.isNew = false
 }
