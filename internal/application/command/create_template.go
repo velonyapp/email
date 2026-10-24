@@ -67,7 +67,6 @@ func (h *createTemplateHandler) Handle(
 
 	return CreateTemplateResult{
 		Template: common.TemplateResult{
-			ID:      template.ID().String(),
 			Alias:   template.Alias().String(),
 			Subject: template.Subject().String(),
 			HTML:    template.HTML().String(),

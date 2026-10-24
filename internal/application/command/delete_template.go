@@ -10,7 +10,7 @@ import (
 )
 
 type DeleteTemplate struct {
-	TemplateID string
+	Alias string
 }
 
 type DeleteTemplateResult struct{}
@@ -40,10 +40,10 @@ func (h *deleteTemplateHandler) Handle(
 	ctx context.Context,
 	cmd DeleteTemplate,
 ) (DeleteTemplateResult, error) {
-	templateID, _ := vo.NewTemplateID(cmd.TemplateID)
+	alias, _ := vo.NewAlias(cmd.Alias)
 
 	if err := h.unitOfWork.Do(ctx, func(ctx context.Context) error {
-		template, err := h.templateRepo.FindByID(ctx, templateID)
+		template, err := h.templateRepo.FindByAlias(ctx, alias)
 		if err != nil {
 			return err
 		}

@@ -33,7 +33,7 @@ service EmailService {
       post: "/v1/emailTemplates"
       body: "email_template"
     };
-    option (google.api.method_signature) = "email_template";
+    option (google.api.method_signature) = "email_template,email_template_id";
   }
 
   rpc UpdateEmailTemplate(UpdateEmailTemplateRequest) returns (EmailTemplate) {
@@ -49,6 +49,14 @@ service EmailService {
       delete: "/v1/{name=emailTemplates/*}"
     };
     option (google.api.method_signature) = "name";
+  }
+
+  rpc RenameEmailTemplate(RenameEmailTemplateRequest) returns (EmailTemplate) {
+    option (google.api.http) = {
+      post: "/v1/{name=emailTemplates/*}:rename"
+      body: "*"
+    };
+    option (google.api.method_signature) = "name,new_name";
   }
 
   rpc SendEmail(SendEmailRequest) returns (SendEmailResponse) {
@@ -71,17 +79,13 @@ message EmailTemplate {
     (google.api.field_behavior) = IDENTIFIER
   ];
 
-  string alias = 2 [
+  string subject = 2 [
     (google.api.field_behavior) = REQUIRED
   ];
-
-  string subject = 3 [
-    (google.api.field_behavior) = REQUIRED
-  ];
-  string html = 4 [
+  string html = 3 [
     (google.api.field_behavior) = OPTIONAL
   ];
-  string text = 5 [
+  string text = 4 [
     (google.api.field_behavior) = OPTIONAL
   ];
 }
@@ -105,6 +109,10 @@ message CreateEmailTemplateRequest {
   EmailTemplate email_template = 1 [
     (google.api.field_behavior) = REQUIRED
   ];
+
+  string email_template_id = 2 [
+    (google.api.field_behavior) = REQUIRED
+  ];
 }
 
 message UpdateEmailTemplateRequest {
@@ -119,6 +127,22 @@ message UpdateEmailTemplateRequest {
 
 message DeleteEmailTemplateRequest {
   string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+    type: "api.velony.app/EmailTemplate"
+    }
+  ];
+}
+
+message RenameEmailTemplateRequest {
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+    type: "api.velony.app/EmailTemplate"
+    }
+  ];
+
+  string new_name = 2 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
     type: "api.velony.app/EmailTemplate"

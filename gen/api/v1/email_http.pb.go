@@ -22,6 +22,7 @@ const OperationEmailServiceCreateEmailTemplate = "/velony.email.api.v1.EmailServ
 const OperationEmailServiceDeleteEmailTemplate = "/velony.email.api.v1.EmailService/DeleteEmailTemplate"
 const OperationEmailServiceGetEmailTemplate = "/velony.email.api.v1.EmailService/GetEmailTemplate"
 const OperationEmailServiceListEmailTemplates = "/velony.email.api.v1.EmailService/ListEmailTemplates"
+const OperationEmailServiceRenameEmailTemplate = "/velony.email.api.v1.EmailService/RenameEmailTemplate"
 const OperationEmailServiceSendEmail = "/velony.email.api.v1.EmailService/SendEmail"
 const OperationEmailServiceUpdateEmailTemplate = "/velony.email.api.v1.EmailService/UpdateEmailTemplate"
 
@@ -30,6 +31,7 @@ type EmailServiceHTTPServer interface {
 	DeleteEmailTemplate(context.Context, *DeleteEmailTemplateRequest) (*emptypb.Empty, error)
 	GetEmailTemplate(context.Context, *GetEmailTemplateRequest) (*EmailTemplate, error)
 	ListEmailTemplates(context.Context, *ListEmailTemplatesRequest) (*ListEmailTemplatesResponse, error)
+	RenameEmailTemplate(context.Context, *RenameEmailTemplateRequest) (*EmailTemplate, error)
 	SendEmail(context.Context, *SendEmailRequest) (*SendEmailResponse, error)
 	UpdateEmailTemplate(context.Context, *UpdateEmailTemplateRequest) (*EmailTemplate, error)
 }
@@ -41,6 +43,7 @@ func RegisterEmailServiceHTTPServer(s *http.Server, srv EmailServiceHTTPServer) 
 	r.Handle("POST", "/v1/emailTemplates", _EmailService_CreateEmailTemplate0_HTTP_Handler(srv))
 	r.Handle("PATCH", "/v1/{email_template.name:emailTemplates/[^/]+}", _EmailService_UpdateEmailTemplate0_HTTP_Handler(srv))
 	r.Handle("DELETE", "/v1/{name:emailTemplates/[^/]+}", _EmailService_DeleteEmailTemplate0_HTTP_Handler(srv))
+	r.Handle("POST", "/v1/{name:emailTemplates/[^/]+}:rename", _EmailService_RenameEmailTemplate0_HTTP_Handler(srv))
 	r.Handle("POST", "/v1:sendEmail", _EmailService_SendEmail0_HTTP_Handler(srv))
 }
 
@@ -154,6 +157,28 @@ func _EmailService_DeleteEmailTemplate0_HTTP_Handler(srv EmailServiceHTTPServer)
 	}
 }
 
+func _EmailService_RenameEmailTemplate0_HTTP_Handler(srv EmailServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in RenameEmailTemplateRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationEmailServiceRenameEmailTemplate)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.RenameEmailTemplate(ctx, req.(*RenameEmailTemplateRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*EmailTemplate)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _EmailService_SendEmail0_HTTP_Handler(srv EmailServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in SendEmailRequest
@@ -178,6 +203,7 @@ type EmailServiceHTTPClient interface {
 	DeleteEmailTemplate(ctx context.Context, req *DeleteEmailTemplateRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	GetEmailTemplate(ctx context.Context, req *GetEmailTemplateRequest, opts ...http.CallOption) (rsp *EmailTemplate, err error)
 	ListEmailTemplates(ctx context.Context, req *ListEmailTemplatesRequest, opts ...http.CallOption) (rsp *ListEmailTemplatesResponse, err error)
+	RenameEmailTemplate(ctx context.Context, req *RenameEmailTemplateRequest, opts ...http.CallOption) (rsp *EmailTemplate, err error)
 	SendEmail(ctx context.Context, req *SendEmailRequest, opts ...http.CallOption) (rsp *SendEmailResponse, err error)
 	UpdateEmailTemplate(ctx context.Context, req *UpdateEmailTemplateRequest, opts ...http.CallOption) (rsp *EmailTemplate, err error)
 }
@@ -249,6 +275,23 @@ func (c *EmailServiceHTTPClientImpl) ListEmailTemplates(ctx context.Context, in 
 		http.PathTemplate(pattern),
 	}, opts...)
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *EmailServiceHTTPClientImpl) RenameEmailTemplate(ctx context.Context, in *RenameEmailTemplateRequest, opts ...http.CallOption) (*EmailTemplate, error) {
+	var out EmailTemplate
+	pattern := "/v1/{name=emailTemplates/*}:rename"
+	path := http.BuildPath(pattern, in)
+	opts = append([]http.CallOption{
+		http.Accept("application/protojson"),
+		http.ContentType("application/protojson"),
+		http.Operation(OperationEmailServiceRenameEmailTemplate),
+		http.PathTemplate(pattern),
+	}, opts...)
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

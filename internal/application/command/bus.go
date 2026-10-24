@@ -11,6 +11,7 @@ func NewBus(
 	createTemplate CreateTemplateHandler,
 	updateTemplate UpdateTemplateHandler,
 	deleteTemplate DeleteTemplateHandler,
+	renameTemplate RenameTemplateHandler,
 	sendEmail SendEmailHandler,
 	sendEmailFromTemplate SendEmailFromTemplateHandler,
 ) *Bus {
@@ -19,6 +20,7 @@ func NewBus(
 	Register(bus, createTemplate)
 	Register(bus, updateTemplate)
 	Register(bus, deleteTemplate)
+	Register(bus, renameTemplate)
 	Register(bus, sendEmail)
 	Register(bus, sendEmailFromTemplate)
 

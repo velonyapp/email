@@ -25,6 +25,7 @@ const (
 	EmailService_CreateEmailTemplate_FullMethodName = "/velony.email.api.v1.EmailService/CreateEmailTemplate"
 	EmailService_UpdateEmailTemplate_FullMethodName = "/velony.email.api.v1.EmailService/UpdateEmailTemplate"
 	EmailService_DeleteEmailTemplate_FullMethodName = "/velony.email.api.v1.EmailService/DeleteEmailTemplate"
+	EmailService_RenameEmailTemplate_FullMethodName = "/velony.email.api.v1.EmailService/RenameEmailTemplate"
 	EmailService_SendEmail_FullMethodName           = "/velony.email.api.v1.EmailService/SendEmail"
 )
 
@@ -37,6 +38,7 @@ type EmailServiceClient interface {
 	CreateEmailTemplate(ctx context.Context, in *CreateEmailTemplateRequest, opts ...grpc.CallOption) (*EmailTemplate, error)
 	UpdateEmailTemplate(ctx context.Context, in *UpdateEmailTemplateRequest, opts ...grpc.CallOption) (*EmailTemplate, error)
 	DeleteEmailTemplate(ctx context.Context, in *DeleteEmailTemplateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	RenameEmailTemplate(ctx context.Context, in *RenameEmailTemplateRequest, opts ...grpc.CallOption) (*EmailTemplate, error)
 	SendEmail(ctx context.Context, in *SendEmailRequest, opts ...grpc.CallOption) (*SendEmailResponse, error)
 }
 
@@ -98,6 +100,16 @@ func (c *emailServiceClient) DeleteEmailTemplate(ctx context.Context, in *Delete
 	return out, nil
 }
 
+func (c *emailServiceClient) RenameEmailTemplate(ctx context.Context, in *RenameEmailTemplateRequest, opts ...grpc.CallOption) (*EmailTemplate, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(EmailTemplate)
+	err := c.cc.Invoke(ctx, EmailService_RenameEmailTemplate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *emailServiceClient) SendEmail(ctx context.Context, in *SendEmailRequest, opts ...grpc.CallOption) (*SendEmailResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SendEmailResponse)
@@ -117,6 +129,7 @@ type EmailServiceServer interface {
 	CreateEmailTemplate(context.Context, *CreateEmailTemplateRequest) (*EmailTemplate, error)
 	UpdateEmailTemplate(context.Context, *UpdateEmailTemplateRequest) (*EmailTemplate, error)
 	DeleteEmailTemplate(context.Context, *DeleteEmailTemplateRequest) (*emptypb.Empty, error)
+	RenameEmailTemplate(context.Context, *RenameEmailTemplateRequest) (*EmailTemplate, error)
 	SendEmail(context.Context, *SendEmailRequest) (*SendEmailResponse, error)
 	mustEmbedUnimplementedEmailServiceServer()
 }
@@ -142,6 +155,9 @@ func (UnimplementedEmailServiceServer) UpdateEmailTemplate(context.Context, *Upd
 }
 func (UnimplementedEmailServiceServer) DeleteEmailTemplate(context.Context, *DeleteEmailTemplateRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteEmailTemplate not implemented")
+}
+func (UnimplementedEmailServiceServer) RenameEmailTemplate(context.Context, *RenameEmailTemplateRequest) (*EmailTemplate, error) {
+	return nil, status.Error(codes.Unimplemented, "method RenameEmailTemplate not implemented")
 }
 func (UnimplementedEmailServiceServer) SendEmail(context.Context, *SendEmailRequest) (*SendEmailResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method SendEmail not implemented")
@@ -257,6 +273,24 @@ func _EmailService_DeleteEmailTemplate_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _EmailService_RenameEmailTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RenameEmailTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EmailServiceServer).RenameEmailTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: EmailService_RenameEmailTemplate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EmailServiceServer).RenameEmailTemplate(ctx, req.(*RenameEmailTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _EmailService_SendEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SendEmailRequest)
 	if err := dec(in); err != nil {
@@ -301,6 +335,10 @@ var EmailService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteEmailTemplate",
 			Handler:    _EmailService_DeleteEmailTemplate_Handler,
+		},
+		{
+			MethodName: "RenameEmailTemplate",
+			Handler:    _EmailService_RenameEmailTemplate_Handler,
 		},
 		{
 			MethodName: "SendEmail",

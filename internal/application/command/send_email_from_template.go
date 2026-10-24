@@ -17,7 +17,7 @@ type SendEmailFromTemplate struct {
 	To             []string
 	CC             []string
 	BCC            []string
-	TemplateID     string
+	Alias          string
 	Variables      map[string]string
 	IdempotencyKey string
 }
@@ -49,12 +49,12 @@ func (h *sendEmailFromTemplateHandler) Handle(
 	ctx context.Context,
 	cmd SendEmailFromTemplate,
 ) (SendEmailFromTemplateResult, error) {
-	templateID, err := vo.NewTemplateID(cmd.TemplateID)
+	alias, err := vo.NewAlias(cmd.Alias)
 	if err != nil {
 		return SendEmailFromTemplateResult{}, err
 	}
 
-	template, err := h.templateRepo.FindByID(ctx, templateID)
+	template, err := h.templateRepo.FindByAlias(ctx, alias)
 	if err != nil {
 		return SendEmailFromTemplateResult{}, err
 	}

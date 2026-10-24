@@ -10,11 +10,10 @@ import (
 )
 
 type UpdateTemplate struct {
-	TemplateID string
-	Alias      *string
-	Subject    *string
-	HTML       *string
-	Text       *string
+	Alias   string
+	Subject *string
+	HTML    *string
+	Text    *string
 }
 
 type UpdateTemplateResult struct {
@@ -43,11 +42,11 @@ func (h *updateTemplateHandler) Handle(
 	ctx context.Context,
 	cmd UpdateTemplate,
 ) (UpdateTemplateResult, error) {
-	templateID, _ := vo.NewTemplateID(cmd.TemplateID)
+	alias, _ := vo.NewAlias(cmd.Alias)
 
 	var template *entity.Template
 
-	template, err := h.templateRepo.FindByID(ctx, templateID)
+	template, err := h.templateRepo.FindByAlias(ctx, alias)
 	if err != nil {
 		return UpdateTemplateResult{}, err
 	}
@@ -55,15 +54,6 @@ func (h *updateTemplateHandler) Handle(
 		return UpdateTemplateResult{}, common.ErrTemplateNotFound
 	}
 
-	if cmd.Alias != nil {
-		alias, err := vo.NewAlias(*cmd.Alias)
-		if err != nil {
-			return UpdateTemplateResult{}, err
-		}
-		if !template.Alias().Equal(alias) {
-			template.ChangeAlias(alias)
-		}
-	}
 	if cmd.Subject != nil {
 		template.ChangeSubject(vo.NewSubject(*cmd.Subject))
 	}
@@ -91,7 +81,6 @@ func (h *updateTemplateHandler) Handle(
 
 	return UpdateTemplateResult{
 		Template: common.TemplateResult{
-			ID:      template.ID().String(),
 			Alias:   template.Alias().String(),
 			Subject: template.Subject().String(),
 			HTML:    template.HTML().String(),

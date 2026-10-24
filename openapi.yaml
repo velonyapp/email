@@ -24,6 +24,11 @@ paths:
             tags:
                 - EmailService
             operationId: EmailService_CreateEmailTemplate
+            parameters:
+                - name: emailTemplateId
+                  in: query
+                  schema:
+                    type: string
             requestBody:
                 content:
                     application/json:
@@ -100,6 +105,31 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/velony.email.api.v1.EmailTemplate'
+    /v1/emailTemplates/{emailTemplate}:rename:
+        post:
+            tags:
+                - EmailService
+            operationId: EmailService_RenameEmailTemplate
+            parameters:
+                - name: emailTemplate
+                  in: path
+                  description: The emailTemplate id.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/velony.email.api.v1.RenameEmailTemplateRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/velony.email.api.v1.EmailTemplate'
     /v1:sendEmail:
         post:
             tags:
@@ -157,13 +187,10 @@ components:
                     $ref: '#/components/schemas/velony.email.api.v1.EmailTemplateContent'
         velony.email.api.v1.EmailTemplate:
             required:
-                - alias
                 - subject
             type: object
             properties:
                 name:
-                    type: string
-                alias:
                     type: string
                 subject:
                     type: string
@@ -189,6 +216,16 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/velony.email.api.v1.EmailTemplate'
+        velony.email.api.v1.RenameEmailTemplateRequest:
+            required:
+                - name
+                - newName
+            type: object
+            properties:
+                name:
+                    type: string
+                newName:
+                    type: string
         velony.email.api.v1.SendEmailRequest:
             required:
                 - email

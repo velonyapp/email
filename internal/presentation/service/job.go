@@ -35,7 +35,7 @@ func (s *Job) SendEmail(ctx context.Context, payload *v1.SendEmailPayload) error
 		}
 	}
 	if content := payload.GetTemplate(); content != nil {
-		templateID, err := parseEmailTemplateName(content.Name)
+		alias, err := parseEmailTemplateName(content.Name)
 		if err != nil {
 			return err
 		}
@@ -45,7 +45,7 @@ func (s *Job) SendEmail(ctx context.Context, payload *v1.SendEmailPayload) error
 			To:             payload.To,
 			CC:             payload.Cc,
 			BCC:            payload.Bcc,
-			TemplateID:     templateID,
+			Alias:          alias,
 			Variables:      content.Variables,
 			IdempotencyKey: payload.IdempotencyKey,
 		}); err != nil {

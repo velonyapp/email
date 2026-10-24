@@ -29,34 +29,6 @@ type repoTemplateScanner interface {
 	Scan(dest ...any) error
 }
 
-func (r *templateRepo) FindByID(ctx context.Context, templateID vo.TemplateID) (*entity.Template, error) {
-	const query = `
-		SELECT
-			id,
-			alias,
-			subject,
-			html,
-			text,
-			version
-		FROM templates
-		WHERE id = ?
-		LIMIT 1
-	`
-
-	row := executor(ctx, r.db).QueryRowContext(ctx, query, templateID.String())
-
-	template, err := scanRepoTemplate(row)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil
-		}
-
-		return nil, err
-	}
-
-	return template, nil
-}
-
 func (r *templateRepo) FindByAlias(ctx context.Context, alias vo.Alias) (*entity.Template, error) {
 	const query = `
 		SELECT

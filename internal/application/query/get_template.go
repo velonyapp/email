@@ -9,7 +9,7 @@ import (
 )
 
 type GetTemplate struct {
-	TemplateID string
+	Alias string
 }
 
 type GetTemplateResult struct {
@@ -38,9 +38,9 @@ func (h *getTemplateHandler) Handle(
 	ctx context.Context,
 	qry GetTemplate,
 ) (GetTemplateResult, error) {
-	templateID, _ := vo.NewTemplateID(qry.TemplateID)
+	alias, _ := vo.NewAlias(qry.Alias)
 
-	template, err := h.templateRepo.FindByID(ctx, templateID)
+	template, err := h.templateRepo.FindByAlias(ctx, alias)
 	if err != nil {
 		return GetTemplateResult{}, err
 	}
@@ -50,7 +50,6 @@ func (h *getTemplateHandler) Handle(
 
 	return GetTemplateResult{
 		Template: common.TemplateResult{
-			ID:      template.ID().String(),
 			Alias:   template.Alias().String(),
 			Subject: template.Subject().String(),
 			HTML:    template.HTML().String(),

@@ -39,21 +39,20 @@ func NewAPI(
 }
 
 func (s *API) GetEmailTemplate(ctx context.Context, req *v1.GetEmailTemplateRequest) (*v1.EmailTemplate, error) {
-	templateID, err := parseEmailTemplateName(req.Name)
+	alias, err := parseEmailTemplateName(req.Name)
 	if err != nil {
 		return nil, err
 	}
 
 	result, err := query.Send(ctx, s.queryBus, query.GetTemplate{
-		TemplateID: templateID,
+		Alias: alias,
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	return &v1.EmailTemplate{
-		Name:    formatEmailTemplateName(result.Template.ID),
-		Alias:   result.Template.Alias,
+		Name:    formatEmailTemplateName(result.Template.Alias),
 		Subject: result.Template.Subject,
 		Html:    result.Template.HTML,
 		Text:    result.Template.Text,
@@ -70,8 +69,7 @@ func (s *API) ListEmailTemplates(ctx context.Context, req *v1.ListEmailTemplates
 
 	for i, template := range result.Templates {
 		templates[i] = &v1.EmailTemplate{
-			Name:    formatEmailTemplateName(template.ID),
-			Alias:   template.Alias,
+			Name:    formatEmailTemplateName(template.Alias),
 			Subject: template.Subject,
 			Html:    template.HTML,
 			Text:    template.Text,
@@ -85,7 +83,7 @@ func (s *API) ListEmailTemplates(ctx context.Context, req *v1.ListEmailTemplates
 
 func (s *API) CreateEmailTemplate(ctx context.Context, req *v1.CreateEmailTemplateRequest) (*v1.EmailTemplate, error) {
 	result, err := command.Send(ctx, s.commandBus, command.CreateTemplate{
-		Alias:   req.EmailTemplate.Alias,
+		Alias:   req.EmailTemplateId,
 		Subject: req.EmailTemplate.Subject,
 		HTML:    req.EmailTemplate.Html,
 		Text:    req.EmailTemplate.Text,
@@ -95,8 +93,7 @@ func (s *API) CreateEmailTemplate(ctx context.Context, req *v1.CreateEmailTempla
 	}
 
 	return &v1.EmailTemplate{
-		Name:    formatEmailTemplateName(result.Template.ID),
-		Alias:   result.Template.Alias,
+		Name:    formatEmailTemplateName(result.Template.Alias),
 		Subject: result.Template.Subject,
 		Html:    result.Template.HTML,
 		Text:    result.Template.Text,
@@ -104,20 +101,16 @@ func (s *API) CreateEmailTemplate(ctx context.Context, req *v1.CreateEmailTempla
 }
 
 func (s *API) UpdateEmailTemplate(ctx context.Context, req *v1.UpdateEmailTemplateRequest) (*v1.EmailTemplate, error) {
-	templateID, err := parseEmailTemplateName(req.EmailTemplate.Name)
+	alias, err := parseEmailTemplateName(req.EmailTemplate.Name)
 	if err != nil {
 		return nil, err
 	}
 
-	var alias, subject, html, text *string
+	var subject, html, text *string
 
 	paths := req.UpdateMask.GetPaths()
 
 	if paths == nil {
-		if req.EmailTemplate.Alias != "" {
-			value := req.EmailTemplate.Alias
-			alias = &value
-		}
 		if req.EmailTemplate.Subject != "" {
 			value := req.EmailTemplate.Subject
 			subject = &value
@@ -134,9 +127,6 @@ func (s *API) UpdateEmailTemplate(ctx context.Context, req *v1.UpdateEmailTempla
 		for _, path := range paths {
 			switch path {
 			case "*":
-				aliasValue := req.EmailTemplate.Alias
-				alias = &aliasValue
-
 				subjectValue := req.EmailTemplate.Subject
 				subject = &subjectValue
 
@@ -145,10 +135,6 @@ func (s *API) UpdateEmailTemplate(ctx context.Context, req *v1.UpdateEmailTempla
 
 				textValue := req.EmailTemplate.Text
 				text = &textValue
-
-			case "alias":
-				value := req.EmailTemplate.Alias
-				alias = &value
 
 			case "subject":
 				value := req.EmailTemplate.Subject
@@ -169,19 +155,17 @@ func (s *API) UpdateEmailTemplate(ctx context.Context, req *v1.UpdateEmailTempla
 	}
 
 	result, err := command.Send(ctx, s.commandBus, command.UpdateTemplate{
-		TemplateID: templateID,
-		Alias:      alias,
-		Subject:    subject,
-		HTML:       html,
-		Text:       text,
+		Alias:   alias,
+		Subject: subject,
+		HTML:    html,
+		Text:    text,
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	return &v1.EmailTemplate{
-		Name:    formatEmailTemplateName(result.Template.ID),
-		Alias:   result.Template.Alias,
+		Name:    formatEmailTemplateName(result.Template.Alias),
 		Subject: result.Template.Subject,
 		Html:    result.Template.HTML,
 		Text:    result.Template.Text,
@@ -189,18 +173,44 @@ func (s *API) UpdateEmailTemplate(ctx context.Context, req *v1.UpdateEmailTempla
 }
 
 func (s *API) DeleteEmailTemplate(ctx context.Context, req *v1.DeleteEmailTemplateRequest) (*emptypb.Empty, error) {
-	templateID, err := parseEmailTemplateName(req.Name)
+	alias, err := parseEmailTemplateName(req.Name)
 	if err != nil {
 		return nil, err
 	}
 
 	if _, err := command.Send(ctx, s.commandBus, command.DeleteTemplate{
-		TemplateID: templateID,
+		Alias: alias,
 	}); err != nil {
 		return nil, err
 	}
 
 	return &emptypb.Empty{}, nil
+}
+
+func (s *API) RenameEmailTemplate(ctx context.Context, req *v1.RenameEmailTemplateRequest) (*v1.EmailTemplate, error) {
+	alias, err := parseEmailTemplateName(req.Name)
+	if err != nil {
+		return nil, err
+	}
+	newAlias, err := parseEmailTemplateName(req.NewName)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := command.Send(ctx, s.commandBus, command.RenameTemplate{
+		Alias:    alias,
+		NewAlias: newAlias,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.EmailTemplate{
+		Name:    formatEmailTemplateName(result.Template.Alias),
+		Subject: result.Template.Subject,
+		Html:    result.Template.HTML,
+		Text:    result.Template.Text,
+	}, nil
 }
 
 func (s *API) SendEmail(ctx context.Context, req *v1.SendEmailRequest) (*v1.SendEmailResponse, error) {
@@ -219,7 +229,7 @@ func (s *API) SendEmail(ctx context.Context, req *v1.SendEmailRequest) (*v1.Send
 		}
 	}
 	if content := req.Email.GetTemplate(); content != nil {
-		templateID, err := parseEmailTemplateName(content.Name)
+		alias, err := parseEmailTemplateName(content.Name)
 		if err != nil {
 			return nil, err
 		}
@@ -229,7 +239,7 @@ func (s *API) SendEmail(ctx context.Context, req *v1.SendEmailRequest) (*v1.Send
 			To:             req.Email.To,
 			CC:             req.Email.Cc,
 			BCC:            req.Email.Bcc,
-			TemplateID:     templateID,
+			Alias:          alias,
 			Variables:      content.Variables,
 			IdempotencyKey: req.IdempotencyKey,
 		}); err != nil {
@@ -241,14 +251,14 @@ func (s *API) SendEmail(ctx context.Context, req *v1.SendEmailRequest) (*v1.Send
 }
 
 func parseEmailTemplateName(name string) (string, error) {
-	var templateID string
-	if err := resourcename.Sscan(name, emailTemplateResourcePattern, &templateID); err != nil {
+	var alias string
+	if err := resourcename.Sscan(name, emailTemplateResourcePattern, &alias); err != nil {
 		return "", ErrInvalidEmailTemplateResourceName
 	}
 
-	return templateID, nil
+	return alias, nil
 }
 
-func formatEmailTemplateName(templateID string) string {
-	return resourcename.Sprint(emailTemplateResourcePattern, templateID)
+func formatEmailTemplateName(alias string) string {
+	return resourcename.Sprint(emailTemplateResourcePattern, alias)
 }
