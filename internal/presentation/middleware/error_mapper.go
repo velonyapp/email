@@ -6,7 +6,7 @@ import (
 
 	applicationcommon "github.com/velonyapp/email/internal/application/common"
 	domainentity "github.com/velonyapp/email/internal/domain/entity"
-	domainservice "github.com/velonyapp/email/internal/domain/service"
+	domainrepo "github.com/velonyapp/email/internal/domain/repo"
 	domainvo "github.com/velonyapp/email/internal/domain/vo"
 	presentationservice "github.com/velonyapp/email/internal/presentation/service"
 
@@ -63,10 +63,10 @@ func NewErrorMapper() ErrorMapper {
 						domainentity.ErrTemplateBodyRequired.Error(),
 					)
 
-				// Alias Policy
-				case errors.Is(err, domainservice.ErrAliasAlreadyExists):
+				// Template Repo
+				case errors.Is(err, domainrepo.ErrAliasAlreadyExists):
 					return reply, kerrors.Conflict("",
-						domainservice.ErrAliasAlreadyExists.Error(),
+						domainrepo.ErrAliasAlreadyExists.Error(),
 					)
 
 				// Application Common

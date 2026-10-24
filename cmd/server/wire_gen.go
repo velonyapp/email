@@ -11,11 +11,10 @@ import (
 	"github.com/velonyapp/email/internal/application/command"
 	"github.com/velonyapp/email/internal/application/query"
 	"github.com/velonyapp/email/internal/conf"
-	"github.com/velonyapp/email/internal/domain/service"
 	"github.com/velonyapp/email/internal/infrastructure/data/mysql"
 	"github.com/velonyapp/email/internal/infrastructure/email/resend"
 	"github.com/velonyapp/email/internal/presentation/middleware"
-	service2 "github.com/velonyapp/email/internal/presentation/service"
+	"github.com/velonyapp/email/internal/presentation/service"
 	"github.com/velonyapp/email/internal/presentation/transport"
 	"log/slog"
 )
@@ -33,10 +32,9 @@ func wireApp(email *conf.Email, data *conf.Data, confTransport *conf.Transport, 
 		return nil, nil, err
 	}
 	template := mysql.NewTemplateRepo(db)
-	aliasPolicy := service.NewAliasPolicy(template)
+	createTemplateHandler := command.NewCreateTemplateHandler(template)
+	updateTemplateHandler := command.NewUpdateTemplateHandler(template)
 	unitOfWork := mysql.NewUnitOfWork(db)
-	createTemplateHandler := command.NewCreateTemplateHandler(template, aliasPolicy, unitOfWork)
-	updateTemplateHandler := command.NewUpdateTemplateHandler(template, aliasPolicy, unitOfWork)
 	deleteTemplateHandler := command.NewDeleteTemplateHandler(template, unitOfWork)
 	client := resend.NewClient(email)
 	emailSender := resend.NewSender(client)
@@ -46,7 +44,7 @@ func wireApp(email *conf.Email, data *conf.Data, confTransport *conf.Transport, 
 	getTemplateHandler := query.NewGetTemplateHandler(template)
 	listTemplatesHandler := query.NewListTemplatesHandler(template)
 	queryBus := query.NewBus(getTemplateHandler, listTemplatesHandler)
-	api := service2.NewAPI(bus, queryBus)
+	api := service.NewAPI(bus, queryBus)
 	tracing := middleware.NewTracing()
 	metrics, err := middleware.NewMetrics()
 	if err != nil {
@@ -56,7 +54,7 @@ func wireApp(email *conf.Email, data *conf.Data, confTransport *conf.Transport, 
 	validation := middleware.NewValidation()
 	server := transport.NewGRPCServer(confTransport, api, tracing, metrics, errorMapper, validation)
 	httpServer := transport.NewHTTPServer(confTransport, api, tracing, metrics, errorMapper, validation)
-	job := service2.NewJob(bus)
+	job := service.NewJob(bus)
 	rabbitMQConsumer := transport.NewRabbitMQConsumer(confTransport, job)
 	app := newApp(logger, server, httpServer, rabbitMQConsumer)
 	return app, func() {

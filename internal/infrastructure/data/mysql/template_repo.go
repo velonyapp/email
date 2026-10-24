@@ -4,10 +4,13 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"strings"
 
 	"github.com/velonyapp/email/internal/domain/entity"
 	"github.com/velonyapp/email/internal/domain/repo"
 	"github.com/velonyapp/email/internal/domain/vo"
+
+	"github.com/go-sql-driver/mysql"
 )
 
 var _ repo.Template = (*templateRepo)(nil)
@@ -16,15 +19,13 @@ type templateRepo struct {
 	db *sql.DB
 }
 
-func NewTemplateRepo(
-	db *sql.DB,
-) repo.Template {
+func NewTemplateRepo(db *sql.DB) repo.Template {
 	return &templateRepo{
 		db: db,
 	}
 }
 
-type templateScanner interface {
+type repoTemplateScanner interface {
 	Scan(dest ...any) error
 }
 
@@ -35,18 +36,16 @@ func (r *templateRepo) FindByID(ctx context.Context, templateID vo.TemplateID) (
 			alias,
 			subject,
 			html,
-			text
+			text,
+			version
 		FROM templates
 		WHERE id = ?
 		LIMIT 1
-		FOR UPDATE
 	`
 
-	row := executor(ctx, r.db).QueryRowContext(ctx, query,
-		templateID.String(),
-	)
+	row := executor(ctx, r.db).QueryRowContext(ctx, query, templateID.String())
 
-	template, err := scanTemplate(row)
+	template, err := scanRepoTemplate(row)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
@@ -65,18 +64,16 @@ func (r *templateRepo) FindByAlias(ctx context.Context, alias vo.Alias) (*entity
 			alias,
 			subject,
 			html,
-			text
+			text,
+			version
 		FROM templates
 		WHERE alias = ?
 		LIMIT 1
-		FOR UPDATE
 	`
 
-	row := executor(ctx, r.db).QueryRowContext(ctx, query,
-		alias.String(),
-	)
+	row := executor(ctx, r.db).QueryRowContext(ctx, query, alias.String())
 
-	template, err := scanTemplate(row)
+	template, err := scanRepoTemplate(row)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
@@ -95,7 +92,8 @@ func (r *templateRepo) FindAll(ctx context.Context) ([]*entity.Template, error) 
 			alias,
 			subject,
 			html,
-			text
+			text,
+			version
 		FROM templates
 		ORDER BY id
 	`
@@ -109,7 +107,7 @@ func (r *templateRepo) FindAll(ctx context.Context) ([]*entity.Template, error) 
 	templates := make([]*entity.Template, 0)
 
 	for rows.Next() {
-		template, err := scanTemplate(rows)
+		template, err := scanRepoTemplate(rows)
 		if err != nil {
 			return nil, err
 		}
@@ -136,21 +134,17 @@ func (r *templateRepo) Save(ctx context.Context, template *entity.Template) erro
 		); err != nil {
 			return err
 		}
-	} else {
+	} else if template.IsNew() {
 		const query = `
 			INSERT INTO templates (
 				id,
 				alias,
 				subject,
 				html,
-				text
+				text,
+				version
 			)
-			VALUES (?, ?, ?, ?, ?) AS new
-			ON DUPLICATE KEY UPDATE
-				alias = new.alias,
-				subject = new.subject,
-				html = new.html,
-				text = new.text
+			VALUES (?, ?, ?, ?, ?, ?)
 		`
 
 		if _, err := executor(ctx, r.db).ExecContext(ctx, query,
@@ -159,21 +153,72 @@ func (r *templateRepo) Save(ctx context.Context, template *entity.Template) erro
 			template.Subject().String(),
 			template.HTML().String(),
 			template.Text().String(),
+			template.Version()+1,
 		); err != nil {
+			var mysqlErr *mysql.MySQLError
+			if errors.As(err, &mysqlErr) && mysqlErr.Number == 1062 {
+				switch {
+				case strings.Contains(mysqlErr.Message, "uq_templates_alias"):
+					return repo.ErrAliasAlreadyExists
+				}
+			}
+
 			return err
 		}
+	} else {
+		const query = `
+		    UPDATE templates
+		    SET
+		        alias = ?,
+		        subject = ?,
+		        html = ?,
+		        text = ?,
+		        version = version + 1
+		    WHERE id = ?
+		        AND version = ?
+		`
+
+		result, err := executor(ctx, r.db).ExecContext(ctx, query,
+			template.Alias().String(),
+			template.Subject().String(),
+			template.HTML().String(),
+			template.Text().String(),
+			template.ID().String(),
+			template.Version(),
+		)
+		if err != nil {
+			var mysqlErr *mysql.MySQLError
+			if errors.As(err, &mysqlErr) && mysqlErr.Number == 1062 {
+				switch {
+				case strings.Contains(mysqlErr.Message, "uq_templates_alias"):
+					return repo.ErrAliasAlreadyExists
+				}
+			}
+
+			return err
+		}
+		rowsAffected, err := result.RowsAffected()
+		if err != nil {
+			return err
+		}
+		if rowsAffected == 0 {
+			return repo.ErrTemplateVersionConflict
+		}
 	}
+
+	template.MarkPersisted()
 
 	return nil
 }
 
-func scanTemplate(scanner templateScanner) (*entity.Template, error) {
+func scanRepoTemplate(scanner repoTemplateScanner) (*entity.Template, error) {
 	var (
 		idRaw      string
 		aliasRaw   string
 		subjectRaw string
 		htmlRaw    string
 		textRaw    string
+		versionRaw uint32
 	)
 
 	if err := scanner.Scan(
@@ -182,6 +227,7 @@ func scanTemplate(scanner templateScanner) (*entity.Template, error) {
 		&subjectRaw,
 		&htmlRaw,
 		&textRaw,
+		&versionRaw,
 	); err != nil {
 		return nil, err
 	}
@@ -191,6 +237,7 @@ func scanTemplate(scanner templateScanner) (*entity.Template, error) {
 	subject := vo.NewSubject(subjectRaw)
 	html := vo.NewHTML(htmlRaw)
 	text := vo.NewText(textRaw)
+	version := versionRaw
 
 	return entity.ReconstituteTemplate(
 		id,
@@ -198,5 +245,6 @@ func scanTemplate(scanner templateScanner) (*entity.Template, error) {
 		subject,
 		html,
 		text,
-	)
+		version,
+	), nil
 }

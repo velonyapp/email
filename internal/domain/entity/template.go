@@ -17,6 +17,9 @@ type Template struct {
 	html    vo.HTML
 	text    vo.Text
 	deleted bool
+
+	version uint32
+	isNew   bool
 }
 
 func NewTemplate(
@@ -35,6 +38,9 @@ func NewTemplate(
 		subject: subject,
 		html:    html,
 		text:    text,
+
+		version: 0,
+		isNew:   true,
 	}, nil
 }
 
@@ -44,20 +50,18 @@ func ReconstituteTemplate(
 	subject vo.Subject,
 	html vo.HTML,
 	text vo.Text,
-) (*Template, error) {
+	version uint32,
+) *Template {
 	t := &Template{
 		id:      id,
 		alias:   alias,
 		subject: subject,
 		html:    html,
 		text:    text,
+		version: version,
 	}
 
-	if !t.HasHTML() && !t.HasText() {
-		return nil, ErrTemplateBodyRequired
-	}
-
-	return t, nil
+	return t
 }
 
 func (t *Template) ID() vo.TemplateID {
@@ -133,4 +137,17 @@ func (t *Template) ChangeHTMLAndText(newHTML vo.HTML, newText vo.Text) error {
 
 func (t *Template) Delete() {
 	t.deleted = true
+}
+
+func (t *Template) Version() uint32 {
+	return t.version
+}
+
+func (t *Template) IsNew() bool {
+	return t.isNew
+}
+
+func (t *Template) MarkPersisted() {
+	t.version++
+	t.isNew = false
 }

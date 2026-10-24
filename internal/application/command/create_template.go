@@ -4,10 +4,8 @@ import (
 	"context"
 
 	"github.com/velonyapp/email/internal/application/common"
-	"github.com/velonyapp/email/internal/application/port"
 	"github.com/velonyapp/email/internal/domain/entity"
 	"github.com/velonyapp/email/internal/domain/repo"
-	"github.com/velonyapp/email/internal/domain/service"
 	"github.com/velonyapp/email/internal/domain/vo"
 )
 
@@ -30,19 +28,13 @@ type CreateTemplateHandler Handler[CreateTemplate, CreateTemplateResult]
 
 type createTemplateHandler struct {
 	templateRepo repo.Template
-	aliasPolicy  *service.AliasPolicy
-	unitOfWork   port.UnitOfWork
 }
 
 func NewCreateTemplateHandler(
 	templateRepo repo.Template,
-	aliasPolicy *service.AliasPolicy,
-	unitOfWork port.UnitOfWork,
 ) CreateTemplateHandler {
 	return &createTemplateHandler{
 		templateRepo: templateRepo,
-		aliasPolicy:  aliasPolicy,
-		unitOfWork:   unitOfWork,
 	}
 }
 
@@ -55,29 +47,21 @@ func (h *createTemplateHandler) Handle(
 		return CreateTemplateResult{}, err
 	}
 
-	var template *entity.Template
+	subject := vo.NewSubject(cmd.Subject)
+	html := vo.NewHTML(cmd.HTML)
+	text := vo.NewText(cmd.Text)
 
-	if err := h.unitOfWork.Do(ctx, func(ctx context.Context) error {
-		if err := h.aliasPolicy.CanUse(ctx, alias); err != nil {
-			return err
-		}
+	template, err := entity.NewTemplate(
+		alias,
+		subject,
+		html,
+		text,
+	)
+	if err != nil {
+		return CreateTemplateResult{}, err
+	}
 
-		subject := vo.NewSubject(cmd.Subject)
-		html := vo.NewHTML(cmd.HTML)
-		text := vo.NewText(cmd.Text)
-
-		template, err = entity.NewTemplate(
-			alias,
-			subject,
-			html,
-			text,
-		)
-		if err != nil {
-			return err
-		}
-
-		return h.templateRepo.Save(ctx, template)
-	}); err != nil {
+	if err := h.templateRepo.Save(ctx, template); err != nil {
 		return CreateTemplateResult{}, err
 	}
 

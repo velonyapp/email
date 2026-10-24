@@ -2,9 +2,15 @@ package repo
 
 import (
 	"context"
+	"errors"
 
 	"github.com/velonyapp/email/internal/domain/entity"
 	"github.com/velonyapp/email/internal/domain/vo"
+)
+
+var (
+	ErrAliasAlreadyExists      = errors.New("alias already exists")
+	ErrTemplateVersionConflict = errors.New("template version conflict")
 )
 
 type Template interface {

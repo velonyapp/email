@@ -4,10 +4,8 @@ import (
 	"context"
 
 	"github.com/velonyapp/email/internal/application/common"
-	"github.com/velonyapp/email/internal/application/port"
 	"github.com/velonyapp/email/internal/domain/entity"
 	"github.com/velonyapp/email/internal/domain/repo"
-	"github.com/velonyapp/email/internal/domain/service"
 	"github.com/velonyapp/email/internal/domain/vo"
 )
 
@@ -31,19 +29,13 @@ type UpdateTemplateHandler Handler[UpdateTemplate, UpdateTemplateResult]
 
 type updateTemplateHandler struct {
 	templateRepo repo.Template
-	aliasPolicy  *service.AliasPolicy
-	unitOfWork   port.UnitOfWork
 }
 
 func NewUpdateTemplateHandler(
 	templateRepo repo.Template,
-	aliasPolicy *service.AliasPolicy,
-	unitOfWork port.UnitOfWork,
 ) UpdateTemplateHandler {
 	return &updateTemplateHandler{
 		templateRepo: templateRepo,
-		aliasPolicy:  aliasPolicy,
-		unitOfWork:   unitOfWork,
 	}
 }
 
@@ -55,53 +47,45 @@ func (h *updateTemplateHandler) Handle(
 
 	var template *entity.Template
 
-	if err := h.unitOfWork.Do(ctx, func(ctx context.Context) error {
-		var err error
+	template, err := h.templateRepo.FindByID(ctx, templateID)
+	if err != nil {
+		return UpdateTemplateResult{}, err
+	}
+	if template == nil {
+		return UpdateTemplateResult{}, common.ErrTemplateNotFound
+	}
 
-		template, err = h.templateRepo.FindByID(ctx, templateID)
+	if cmd.Alias != nil {
+		alias, err := vo.NewAlias(*cmd.Alias)
 		if err != nil {
-			return err
+			return UpdateTemplateResult{}, err
 		}
-		if template == nil {
-			return common.ErrTemplateNotFound
+		if !template.Alias().Equal(alias) {
+			template.ChangeAlias(alias)
 		}
+	}
+	if cmd.Subject != nil {
+		template.ChangeSubject(vo.NewSubject(*cmd.Subject))
+	}
+	switch {
+	case cmd.HTML != nil && cmd.Text != nil:
+		if err := template.ChangeHTMLAndText(
+			vo.NewHTML(*cmd.HTML),
+			vo.NewText(*cmd.Text),
+		); err != nil {
+			return UpdateTemplateResult{}, err
+		}
+	case cmd.HTML != nil:
+		if err := template.ChangeHTML(vo.NewHTML(*cmd.HTML)); err != nil {
+			return UpdateTemplateResult{}, err
+		}
+	case cmd.Text != nil:
+		if err := template.ChangeText(vo.NewText(*cmd.Text)); err != nil {
+			return UpdateTemplateResult{}, err
+		}
+	}
 
-		if cmd.Alias != nil {
-			alias, err := vo.NewAlias(*cmd.Alias)
-			if err != nil {
-				return err
-			}
-			if !template.Alias().Equal(alias) {
-				if err := h.aliasPolicy.CanUse(ctx, alias); err != nil {
-					return err
-				}
-
-				template.ChangeAlias(alias)
-			}
-		}
-		if cmd.Subject != nil {
-			template.ChangeSubject(vo.NewSubject(*cmd.Subject))
-		}
-		switch {
-		case cmd.HTML != nil && cmd.Text != nil:
-			if err := template.ChangeHTMLAndText(
-				vo.NewHTML(*cmd.HTML),
-				vo.NewText(*cmd.Text),
-			); err != nil {
-				return err
-			}
-		case cmd.HTML != nil:
-			if err := template.ChangeHTML(vo.NewHTML(*cmd.HTML)); err != nil {
-				return err
-			}
-		case cmd.Text != nil:
-			if err := template.ChangeText(vo.NewText(*cmd.Text)); err != nil {
-				return err
-			}
-		}
-
-		return h.templateRepo.Save(ctx, template)
-	}); err != nil {
+	if err := h.templateRepo.Save(ctx, template); err != nil {
 		return UpdateTemplateResult{}, err
 	}
 
