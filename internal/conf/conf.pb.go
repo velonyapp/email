@@ -493,6 +493,7 @@ type Transport_RabbitMQ struct {
 	Address       string                 `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	Username      string                 `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
 	Password      string                 `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"`
+	Timeout       *durationpb.Duration   `protobuf:"bytes,4,opt,name=timeout,proto3" json:"timeout,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -546,6 +547,13 @@ func (x *Transport_RabbitMQ) GetPassword() string {
 		return x.Password
 	}
 	return ""
+}
+
+func (x *Transport_RabbitMQ) GetTimeout() *durationpb.Duration {
+	if x != nil {
+		return x.Timeout
+	}
+	return nil
 }
 
 type Data_MySQL struct {
@@ -766,7 +774,7 @@ const file_conf_conf_proto_rawDesc = "" +
 	"\x05Email\x128\n" +
 	"\x06resend\x18\x01 \x01(\v2\x18.kratos.api.Email.ResendB\x06\xbaH\x03\xc8\x01\x01R\x06resend\x1a*\n" +
 	"\x06Resend\x12 \n" +
-	"\aapi_key\x18\x01 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\x06apiKey\"\x8e\x04\n" +
+	"\aapi_key\x18\x01 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\x06apiKey\"\xce\x04\n" +
 	"\tTransport\x126\n" +
 	"\x04http\x18\x01 \x01(\v2\x1a.kratos.api.Transport.HTTPB\x06\xbaH\x03\xc8\x01\x01R\x04http\x126\n" +
 	"\x04grpc\x18\x02 \x01(\v2\x1a.kratos.api.Transport.GRPCB\x06\xbaH\x03\xc8\x01\x01R\x04grpc\x12B\n" +
@@ -776,11 +784,12 @@ const file_conf_conf_proto_rawDesc = "" +
 	"\atimeout\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\b\xbaH\x05\xaa\x01\x02*\x00R\atimeout\x1ai\n" +
 	"\x04GRPC\x12\"\n" +
 	"\aaddress\x18\x01 \x01(\tB\b\xbaH\x05r\x03\x80\x02\x01R\aaddress\x12=\n" +
-	"\atimeout\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\b\xbaH\x05\xaa\x01\x02*\x00R\atimeout\x1aw\n" +
+	"\atimeout\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\b\xbaH\x05\xaa\x01\x02*\x00R\atimeout\x1a\xb6\x01\n" +
 	"\bRabbitMQ\x12!\n" +
 	"\aaddress\x18\x01 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\aaddress\x12#\n" +
 	"\busername\x18\x02 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\busername\x12#\n" +
-	"\bpassword\x18\x03 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\bpassword\"\xb0\x04\n" +
+	"\bpassword\x18\x03 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\bpassword\x12=\n" +
+	"\atimeout\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\b\xbaH\x05\xaa\x01\x02*\x00R\atimeout\"\xb0\x04\n" +
 	"\x04Data\x124\n" +
 	"\x05mysql\x18\x01 \x01(\v2\x16.kratos.api.Data.MySQLB\x06\xbaH\x03\xc8\x01\x01R\x05mysql\x1a\xf1\x03\n" +
 	"\x05MySQL\x12\x19\n" +
@@ -858,15 +867,16 @@ var file_conf_conf_proto_depIdxs = []int32{
 	12, // 10: kratos.api.Telemetry.metrics:type_name -> kratos.api.Telemetry.Metrics
 	13, // 11: kratos.api.Transport.HTTP.timeout:type_name -> google.protobuf.Duration
 	13, // 12: kratos.api.Transport.GRPC.timeout:type_name -> google.protobuf.Duration
-	13, // 13: kratos.api.Data.MySQL.max_connection_lifetime:type_name -> google.protobuf.Duration
-	0,  // 14: kratos.api.Telemetry.Tracing.protocol:type_name -> kratos.api.Telemetry.Protocol
-	0,  // 15: kratos.api.Telemetry.Metrics.protocol:type_name -> kratos.api.Telemetry.Protocol
-	13, // 16: kratos.api.Telemetry.Metrics.export_interval:type_name -> google.protobuf.Duration
-	17, // [17:17] is the sub-list for method output_type
-	17, // [17:17] is the sub-list for method input_type
-	17, // [17:17] is the sub-list for extension type_name
-	17, // [17:17] is the sub-list for extension extendee
-	0,  // [0:17] is the sub-list for field type_name
+	13, // 13: kratos.api.Transport.RabbitMQ.timeout:type_name -> google.protobuf.Duration
+	13, // 14: kratos.api.Data.MySQL.max_connection_lifetime:type_name -> google.protobuf.Duration
+	0,  // 15: kratos.api.Telemetry.Tracing.protocol:type_name -> kratos.api.Telemetry.Protocol
+	0,  // 16: kratos.api.Telemetry.Metrics.protocol:type_name -> kratos.api.Telemetry.Protocol
+	13, // 17: kratos.api.Telemetry.Metrics.export_interval:type_name -> google.protobuf.Duration
+	18, // [18:18] is the sub-list for method output_type
+	18, // [18:18] is the sub-list for method input_type
+	18, // [18:18] is the sub-list for extension type_name
+	18, // [18:18] is the sub-list for extension extendee
+	0,  // [0:18] is the sub-list for field type_name
 }
 
 func init() { file_conf_conf_proto_init() }

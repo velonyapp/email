@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"sync"
+	"time"
 
 	v1 "github.com/velonyapp/email/gen/job/v1"
 	"github.com/velonyapp/email/internal/conf"
@@ -30,23 +31,32 @@ type RabbitMQConsumer struct {
 	c          *conf.Transport
 	jobService *service.Job
 
-	conn      *rabbitmqamqp.AmqpConnection
-	consumers map[string]*rabbitmqamqp.Consumer
+	conn        *rabbitmqamqp.AmqpConnection
+	consumerMap map[string]*rabbitmqamqp.Consumer
 
-	wg sync.WaitGroup
+	ctx    context.Context
+	cancel context.CancelFunc
+	mu     sync.Mutex
+	cond   *sync.Cond
+	wg     sync.WaitGroup
 }
 
 func NewRabbitMQConsumer(
 	c *conf.Transport,
 	jobService *service.Job,
 ) *RabbitMQConsumer {
-	return &RabbitMQConsumer{
+	srv := &RabbitMQConsumer{
 		c:          c,
 		jobService: jobService,
+
+		consumerMap: make(map[string]*rabbitmqamqp.Consumer),
 	}
+	srv.cond = sync.NewCond(&srv.mu)
+
+	return srv
 }
 
-func (rc *RabbitMQConsumer) registerAllConsumers(ctx context.Context) error {
+func (rc *RabbitMQConsumer) registerConsumerMap(ctx context.Context) error {
 	var errs []error
 
 	if err := rc.registerConsumer(ctx, sendEmailQueue); err != nil {
@@ -57,6 +67,9 @@ func (rc *RabbitMQConsumer) registerAllConsumers(ctx context.Context) error {
 }
 
 func (rc *RabbitMQConsumer) handleMessage(ctx context.Context, queue string, data []byte) error {
+	ctx, cancel := context.WithTimeout(ctx, rc.c.Rabbitmq.Timeout.AsDuration())
+	defer cancel()
+
 	switch queue {
 	case sendEmailQueue:
 		payload := new(v1.SendEmailPayload)
@@ -78,47 +91,77 @@ func (rc *RabbitMQConsumer) registerConsumer(ctx context.Context, queue string) 
 		return err
 	}
 
-	if rc.consumers == nil {
-		rc.consumers = make(map[string]*rabbitmqamqp.Consumer)
-	}
-
-	rc.consumers[queue] = consumer
+	rc.consumerMap[queue] = consumer
 
 	return nil
 }
 
 func (rc *RabbitMQConsumer) Start(ctx context.Context) error {
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
+	rc.ctx, rc.cancel = context.WithCancel(ctx)
+	defer rc.cancel()
 
-	conn, err := rabbitmqamqp.Dial(
-		ctx,
+	conn, err := rabbitmqamqp.Dial(ctx,
 		rc.c.Rabbitmq.Address,
 		&rabbitmqamqp.AmqpConnOptions{
 			SASLType: amqp.SASLTypePlain(
 				rc.c.Rabbitmq.Username,
 				rc.c.Rabbitmq.Password,
 			),
+			RecoveryConfiguration: &rabbitmqamqp.RecoveryConfiguration{
+				ActiveRecovery:           true,
+				BackOffReconnectInterval: 5 * time.Second,
+				MaxReconnectAttempts:     5,
+			},
 		},
 	)
 	if err != nil {
 		return err
 	}
 
+	_, connected := conn.State().(*rabbitmqamqp.StateOpen)
+
+	stateChanged := make(chan *rabbitmqamqp.StateChanged, 1)
+	go func(ch chan *rabbitmqamqp.StateChanged) {
+		for changed := range ch {
+			switch changed.To.(type) {
+			case *rabbitmqamqp.StateOpen:
+				rc.mu.Lock()
+				connected = true
+				rc.cond.Broadcast()
+				rc.mu.Unlock()
+
+			case *rabbitmqamqp.StateClosed:
+				rc.mu.Lock()
+				connected = false
+				rc.mu.Unlock()
+			}
+		}
+	}(stateChanged)
+
+	conn.NotifyStatusChange(stateChanged)
+
 	rc.conn = conn
 
-	if err := rc.registerAllConsumers(ctx); err != nil {
+	if err := rc.registerConsumerMap(ctx); err != nil {
 		return err
 	}
 
-	errCh := make(chan error, len(rc.consumers))
-
-	for queue, consumer := range rc.consumers {
+	for queue, consumer := range rc.consumerMap {
 		rc.wg.Go(func() {
 			for {
-				delivery, err := consumer.Receive(ctx)
+				rc.mu.Lock()
+				for !connected && rc.ctx.Err() == nil {
+					rc.cond.Wait()
+				}
+				if rc.ctx.Err() != nil {
+					rc.mu.Unlock()
+					return
+				}
+				rc.mu.Unlock()
+
+				delivery, err := consumer.Receive(rc.ctx)
 				if err != nil {
-					if ctx.Err() != nil {
+					if rc.ctx.Err() != nil {
 						return
 					}
 
@@ -134,10 +177,7 @@ func (rc *RabbitMQConsumer) Start(ctx context.Context) error {
 						delivery.Discard(ctx, nil)
 
 					default:
-						if err := delivery.RequeueWithAnnotationsAndDeliveryFailed(ctx, nil, true); err != nil {
-							errCh <- err
-							return
-						}
+						delivery.RequeueWithAnnotationsAndDeliveryFailed(ctx, nil, true)
 					}
 
 					continue
@@ -148,29 +188,27 @@ func (rc *RabbitMQConsumer) Start(ctx context.Context) error {
 		})
 	}
 
-	select {
-	case <-ctx.Done():
-		return nil
+	rc.wg.Wait()
 
-	case err := <-errCh:
-		return err
-	}
+	return nil
 }
 
 func (rc *RabbitMQConsumer) Stop(ctx context.Context) error {
+	rc.cancel()
+	rc.mu.Lock()
+	rc.cond.Broadcast()
+	rc.mu.Unlock()
+
+	rc.wg.Wait()
+
 	var errs []error
 
-	for name, consumer := range rc.consumers {
-		if consumer == nil {
-			delete(rc.consumers, name)
-			continue
-		}
-
+	for name, consumer := range rc.consumerMap {
 		if err := consumer.Close(ctx); err != nil {
 			errs = append(errs, err)
 		}
 
-		delete(rc.consumers, name)
+		delete(rc.consumerMap, name)
 	}
 
 	if rc.conn != nil {
@@ -180,8 +218,6 @@ func (rc *RabbitMQConsumer) Stop(ctx context.Context) error {
 
 		rc.conn = nil
 	}
-
-	rc.wg.Wait()
 
 	return errors.Join(errs...)
 }
