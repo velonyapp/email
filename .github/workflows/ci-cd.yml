@@ -1,0 +1,123 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+    tags:
+      - "v*"
+
+jobs:
+  publish-image:
+    name: Build and Push Image
+    uses: docker/github-builder/.github/workflows/build.yml@v1
+
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    with:
+      output: image
+      push: true
+      platforms: linux/amd64,linux/arm64
+
+      meta-images: ghcr.io/${{ github.repository }}
+
+      meta-tags: |
+        type=raw,value=latest,enable={{is_default_branch}}
+        type=raw,value=dev,enable=${{ github.ref == 'refs/heads/dev' }}
+        type=ref,event=tag
+        type=sha
+
+    secrets:
+      registry-auths: |
+        - registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+  update-gitops:
+    name: Update GitOps Repository
+    needs: publish-image
+    if: github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-24.04
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          repository: velonyapp/gitops
+          ref: dev
+          token: ${{ secrets.GITOPS_TOKEN }}
+          path: gitops
+
+      - name: Update Deployment Image
+        env:
+          REPOSITORY_NAME: ${{ github.event.repository.name }}
+          IMAGE_NAME: ghcr.io/${{ github.repository }}
+          IMAGE_DIGEST: ${{ needs.publish-image.outputs.digest }}
+        run: |
+          set -euo pipefail
+
+          IMAGE_NAME="${IMAGE_NAME,,}"
+          deployment_file="gitops/apps/$REPOSITORY_NAME/deployment.yaml"
+
+          if [[ ! "$IMAGE_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]; then
+            echo "Invalid image digest"
+            exit 1
+          fi
+
+          if [[ ! -f "$deployment_file" ]]; then
+            echo "Deployment file not found: $deployment_file"
+            exit 1
+          fi
+
+          current_image=$(yq -r '.spec.template.spec.containers[0].image' "$deployment_file")
+
+          case "$current_image" in
+            "$IMAGE_NAME":*|"$IMAGE_NAME"@sha256:*) ;;
+            *)
+              echo "Unexpected image: $current_image"
+              exit 1
+              ;;
+          esac
+
+          export CURRENT_IMAGE="$current_image"
+          export IMAGE_REFERENCE="$IMAGE_NAME@$IMAGE_DIGEST"
+                  
+          perl -i -pe 's{^([ \t]*image:[ \t]*)\Q$ENV{CURRENT_IMAGE}\E(?=[ \t]*(?:#.*)?$)}{$1$ENV{IMAGE_REFERENCE}}' "$deployment_file"
+
+      - name: Commit and Push Update
+        env:
+          REPOSITORY_NAME: ${{ github.event.repository.name }}
+        run: |
+          set -euo pipefail
+
+          cd gitops
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add "apps/$REPOSITORY_NAME/deployment.yaml"
+
+          if git diff --cached --quiet; then
+            echo "Deployment image is already up to date"
+            exit 0
+          fi
+
+          git commit -m "deploy: $REPOSITORY_NAME"
+
+          for attempt in 1 2 3; do
+            git pull --rebase origin dev
+
+            if git push origin HEAD:dev; then
+              exit 0
+            fi
+          done
+
+          echo "Failed to push GitOps update"
+          exit 1
