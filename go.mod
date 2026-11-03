@@ -12,6 +12,7 @@ require (
 	github.com/google/wire v0.6.0
 	github.com/rabbitmq/rabbitmq-amqp-go-client v1.4.0
 	github.com/resend/resend-go/v3 v3.17.0
+	github.com/rs/cors v1.11.1
 	go.einride.tech/aip v0.86.3
 	go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc v1.46.0
 	go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp v1.46.0
