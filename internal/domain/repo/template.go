@@ -9,8 +9,7 @@ import (
 )
 
 var (
-	ErrAliasAlreadyExists      = errors.New("alias already exists")
-	ErrTemplateVersionConflict = errors.New("template version conflict")
+	ErrAliasAlreadyExists = errors.New("alias already exists")
 )
 
 type Template interface {

@@ -18,8 +18,7 @@ type Template struct {
 	text    vo.Text
 	deleted bool
 
-	version uint32
-	isNew   bool
+	isNew bool
 }
 
 func NewTemplate(
@@ -39,8 +38,7 @@ func NewTemplate(
 		html:    html,
 		text:    text,
 
-		version: 0,
-		isNew:   true,
+		isNew: true,
 	}, nil
 }
 
@@ -50,7 +48,6 @@ func ReconstituteTemplate(
 	subject vo.Subject,
 	html vo.HTML,
 	text vo.Text,
-	version uint32,
 ) *Template {
 	t := &Template{
 		id:      id,
@@ -58,7 +55,6 @@ func ReconstituteTemplate(
 		subject: subject,
 		html:    html,
 		text:    text,
-		version: version,
 	}
 
 	return t
@@ -139,20 +135,10 @@ func (t *Template) Delete() {
 	t.deleted = true
 }
 
-func (t *Template) Version() uint32 {
-	return t.version
-}
-
 func (t *Template) IsNew() bool {
 	return t.isNew
 }
 
 func (t *Template) MarkPersisted() {
-	if t.isNew {
-		t.isNew = false
-
-		return
-	}
-
-	t.version++
+	t.isNew = false
 }

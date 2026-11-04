@@ -4,7 +4,6 @@ CREATE TABLE templates (
     subject TEXT NOT NULL,
     html    TEXT NOT NULL,
     text    TEXT NOT NULL,
-    version INT NOT NULL,
 
     UNIQUE KEY uq_templates_alias (alias)
 ) ENGINE = InnoDB;

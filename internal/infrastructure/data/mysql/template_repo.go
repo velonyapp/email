@@ -36,8 +36,7 @@ func (r *templateRepo) FindByAlias(ctx context.Context, alias vo.Alias) (*entity
 			alias,
 			subject,
 			html,
-			text,
-			version
+			text
 		FROM templates
 		WHERE alias = ?
 		LIMIT 1
@@ -64,8 +63,7 @@ func (r *templateRepo) FindAll(ctx context.Context) ([]*entity.Template, error) 
 			alias,
 			subject,
 			html,
-			text,
-			version
+			text
 		FROM templates
 		ORDER BY id
 	`
@@ -113,10 +111,9 @@ func (r *templateRepo) Save(ctx context.Context, template *entity.Template) erro
 				alias,
 				subject,
 				html,
-				text,
-				version
+				text
 			)
-			VALUES (?, ?, ?, ?, ?, ?)
+			VALUES (?, ?, ?, ?, ?)
 		`
 
 		if _, err := executor(ctx, r.db).ExecContext(ctx, query,
@@ -125,7 +122,6 @@ func (r *templateRepo) Save(ctx context.Context, template *entity.Template) erro
 			template.Subject().String(),
 			template.HTML().String(),
 			template.Text().String(),
-			template.Version(),
 		); err != nil {
 			var mysqlErr *mysql.MySQLError
 			if errors.As(err, &mysqlErr) && mysqlErr.Number == 1062 {
@@ -144,21 +140,17 @@ func (r *templateRepo) Save(ctx context.Context, template *entity.Template) erro
 		        alias = ?,
 		        subject = ?,
 		        html = ?,
-		        text = ?,
-		        version = version + 1
+		        text = ?
 		    WHERE id = ?
-		        AND version = ?
 		`
 
-		result, err := executor(ctx, r.db).ExecContext(ctx, query,
+		if _, err := executor(ctx, r.db).ExecContext(ctx, query,
 			template.Alias().String(),
 			template.Subject().String(),
 			template.HTML().String(),
 			template.Text().String(),
 			template.ID().String(),
-			template.Version(),
-		)
-		if err != nil {
+		); err != nil {
 			var mysqlErr *mysql.MySQLError
 			if errors.As(err, &mysqlErr) && mysqlErr.Number == 1062 {
 				switch {
@@ -168,13 +160,6 @@ func (r *templateRepo) Save(ctx context.Context, template *entity.Template) erro
 			}
 
 			return err
-		}
-		rowsAffected, err := result.RowsAffected()
-		if err != nil {
-			return err
-		}
-		if rowsAffected == 0 {
-			return repo.ErrTemplateVersionConflict
 		}
 	}
 
@@ -190,7 +175,6 @@ func scanRepoTemplate(scanner repoTemplateScanner) (*entity.Template, error) {
 		subjectRaw string
 		htmlRaw    string
 		textRaw    string
-		versionRaw uint32
 	)
 
 	if err := scanner.Scan(
@@ -199,7 +183,6 @@ func scanRepoTemplate(scanner repoTemplateScanner) (*entity.Template, error) {
 		&subjectRaw,
 		&htmlRaw,
 		&textRaw,
-		&versionRaw,
 	); err != nil {
 		return nil, err
 	}
@@ -209,7 +192,6 @@ func scanRepoTemplate(scanner repoTemplateScanner) (*entity.Template, error) {
 	subject := vo.NewSubject(subjectRaw)
 	html := vo.NewHTML(htmlRaw)
 	text := vo.NewText(textRaw)
-	version := versionRaw
 
 	return entity.ReconstituteTemplate(
 		id,
@@ -217,6 +199,5 @@ func scanRepoTemplate(scanner repoTemplateScanner) (*entity.Template, error) {
 		subject,
 		html,
 		text,
-		version,
 	), nil
 }
