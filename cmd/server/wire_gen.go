@@ -38,7 +38,7 @@ func wireApp(email *conf.Email, data *conf.Data, confTransport *conf.Transport, 
 	deleteTemplateHandler := command.NewDeleteTemplateHandler(template, unitOfWork)
 	renameTemplateHandler := command.NewRenameTemplateHandler(template)
 	client := resend.NewClient(email)
-	emailSender := resend.NewSender(client)
+	emailSender := resend.NewSender(client, logger)
 	sendEmailHandler := command.NewSendEmailHandler(template, emailSender)
 	bus := command.NewBus(createTemplateHandler, updateTemplateHandler, deleteTemplateHandler, renameTemplateHandler, sendEmailHandler)
 	getTemplateHandler := query.NewGetTemplateHandler(template)

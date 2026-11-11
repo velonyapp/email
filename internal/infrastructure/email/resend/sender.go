@@ -1,7 +1,9 @@
+
 package resend
 
 import (
 	"context"
+	"log/slog"
 
 	"github.com/velonyapp/email/internal/application/port"
 
@@ -10,11 +12,13 @@ import (
 
 type sender struct {
 	client *resend.Client
+	log    *slog.Logger
 }
 
-func NewSender(client *resend.Client) port.EmailSender {
+func NewSender(client *resend.Client, log *slog.Logger) port.EmailSender {
 	return &sender{
 		client: client,
+		log:    log,
 	}
 }
 
@@ -41,6 +45,10 @@ func (s *sender) Send(ctx context.Context, email port.Email, idempotencyKey stri
 
 	if idempotencyKey == "" {
 		if _, err := s.client.Emails.SendWithContext(ctx, req); err != nil {
+			s.log.ErrorContext(ctx,
+				"failed to send email",
+				slog.Any("error", err),
+			)
 			return err
 		}
 	} else {
@@ -49,6 +57,10 @@ func (s *sender) Send(ctx context.Context, email port.Email, idempotencyKey stri
 				IdempotencyKey: idempotencyKey,
 			},
 		); err != nil {
+			s.log.ErrorContext(ctx,
+				"failed to send email",
+				slog.Any("error", err),
+			)
 			return err
 		}
 	}
