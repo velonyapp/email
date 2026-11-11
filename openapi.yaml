@@ -4,6 +4,7 @@
 openapi: 3.0.3
 info:
     title: EmailService API
+    description: Provides email template management and email sending operations.
     version: 0.0.1
 servers:
     - url: https://api.velony.app
@@ -12,6 +13,7 @@ paths:
         get:
             tags:
                 - EmailService
+            description: Lists all email templates.
             operationId: EmailService_ListEmailTemplates
             responses:
                 "200":
@@ -23,10 +25,12 @@ paths:
         post:
             tags:
                 - EmailService
+            description: Creates a new email template.
             operationId: EmailService_CreateEmailTemplate
             parameters:
                 - name: emailTemplateId
                   in: query
+                  description: The ID to use for the new email template.
                   schema:
                     type: string
             requestBody:
@@ -46,6 +50,7 @@ paths:
         get:
             tags:
                 - EmailService
+            description: Retrieves an email template by resource name.
             operationId: EmailService_GetEmailTemplate
             parameters:
                 - name: emailTemplate
@@ -64,6 +69,7 @@ paths:
         delete:
             tags:
                 - EmailService
+            description: Deletes an email template.
             operationId: EmailService_DeleteEmailTemplate
             parameters:
                 - name: emailTemplate
@@ -79,6 +85,7 @@ paths:
         patch:
             tags:
                 - EmailService
+            description: Updates an existing email template.
             operationId: EmailService_UpdateEmailTemplate
             parameters:
                 - name: emailTemplate
@@ -89,6 +96,7 @@ paths:
                     type: string
                 - name: updateMask
                   in: query
+                  description: The fields of the email template to update.
                   schema:
                     type: string
                     format: field-mask
@@ -109,6 +117,7 @@ paths:
         post:
             tags:
                 - EmailService
+            description: Renames an existing email template.
             operationId: EmailService_RenameEmailTemplate
             parameters:
                 - name: emailTemplate
@@ -134,6 +143,7 @@ paths:
         post:
             tags:
                 - EmailService
+            description: Sends an email using an existing email template.
             operationId: EmailService_SendEmail
             requestBody:
                 content:
@@ -157,12 +167,19 @@ components:
             properties:
                 name:
                     type: string
+                    description: |-
+                        The resource name of the email template.
+
+                         Format: `emailTemplates/{email_template}`
                 subject:
                     type: string
+                    description: The subject of the email template.
                 html:
                     type: string
+                    description: The HTML content of the email template.
                 text:
                     type: string
+                    description: The plain text content of the email template.
         velony.email.api.v1.ListEmailTemplatesResponse:
             type: object
             properties:
@@ -170,6 +187,7 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/velony.email.api.v1.EmailTemplate'
+                    description: The email templates retrieved.
         velony.email.api.v1.RenameEmailTemplateRequest:
             required:
                 - name
@@ -178,8 +196,16 @@ components:
             properties:
                 name:
                     type: string
+                    description: |-
+                        The email template to rename.
+
+                         Format: `emailTemplates/{email_template}`
                 newName:
                     type: string
+                    description: |-
+                        The new resource name of the email template.
+
+                         Format: `emailTemplates/{email_template}`
         velony.email.api.v1.SendEmailRequest:
             required:
                 - from
@@ -189,26 +215,36 @@ components:
             properties:
                 from:
                     type: string
+                    description: The email address of the sender.
                 to:
                     type: array
                     items:
                         type: string
+                    description: The email addresses of the primary recipients.
                 cc:
                     type: array
                     items:
                         type: string
+                    description: The email addresses of the carbon copy recipients.
                 bcc:
                     type: array
                     items:
                         type: string
+                    description: The email addresses of the blind carbon copy recipients.
                 template:
                     type: string
+                    description: |-
+                        The email template to use when sending the email.
+
+                         Format: `emailTemplates/{email_template}`
                 variables:
                     type: object
                     additionalProperties:
                         type: string
+                    description: The variables to substitute in the email template.
                 idempotencyKey:
                     type: string
+                    description: The unique key used to prevent duplicate email sending requests.
         velony.email.api.v1.SendEmailResponse:
             type: object
             properties: {}

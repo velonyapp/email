@@ -27,12 +27,19 @@ const OperationEmailServiceSendEmail = "/velony.email.api.v1.EmailService/SendEm
 const OperationEmailServiceUpdateEmailTemplate = "/velony.email.api.v1.EmailService/UpdateEmailTemplate"
 
 type EmailServiceHTTPServer interface {
+	// CreateEmailTemplate Creates a new email template.
 	CreateEmailTemplate(context.Context, *CreateEmailTemplateRequest) (*EmailTemplate, error)
+	// DeleteEmailTemplate Deletes an email template.
 	DeleteEmailTemplate(context.Context, *DeleteEmailTemplateRequest) (*emptypb.Empty, error)
+	// GetEmailTemplate Retrieves an email template by resource name.
 	GetEmailTemplate(context.Context, *GetEmailTemplateRequest) (*EmailTemplate, error)
+	// ListEmailTemplates Lists all email templates.
 	ListEmailTemplates(context.Context, *ListEmailTemplatesRequest) (*ListEmailTemplatesResponse, error)
+	// RenameEmailTemplate Renames an existing email template.
 	RenameEmailTemplate(context.Context, *RenameEmailTemplateRequest) (*EmailTemplate, error)
+	// SendEmail Sends an email using an existing email template.
 	SendEmail(context.Context, *SendEmailRequest) (*SendEmailResponse, error)
+	// UpdateEmailTemplate Updates an existing email template.
 	UpdateEmailTemplate(context.Context, *UpdateEmailTemplateRequest) (*EmailTemplate, error)
 }
 
@@ -199,12 +206,19 @@ func _EmailService_SendEmail0_HTTP_Handler(srv EmailServiceHTTPServer) func(ctx 
 }
 
 type EmailServiceHTTPClient interface {
+	// CreateEmailTemplate Creates a new email template.
 	CreateEmailTemplate(ctx context.Context, req *CreateEmailTemplateRequest, opts ...http.CallOption) (rsp *EmailTemplate, err error)
+	// DeleteEmailTemplate Deletes an email template.
 	DeleteEmailTemplate(ctx context.Context, req *DeleteEmailTemplateRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	// GetEmailTemplate Retrieves an email template by resource name.
 	GetEmailTemplate(ctx context.Context, req *GetEmailTemplateRequest, opts ...http.CallOption) (rsp *EmailTemplate, err error)
+	// ListEmailTemplates Lists all email templates.
 	ListEmailTemplates(ctx context.Context, req *ListEmailTemplatesRequest, opts ...http.CallOption) (rsp *ListEmailTemplatesResponse, err error)
+	// RenameEmailTemplate Renames an existing email template.
 	RenameEmailTemplate(ctx context.Context, req *RenameEmailTemplateRequest, opts ...http.CallOption) (rsp *EmailTemplate, err error)
+	// SendEmail Sends an email using an existing email template.
 	SendEmail(ctx context.Context, req *SendEmailRequest, opts ...http.CallOption) (rsp *SendEmailResponse, err error)
+	// UpdateEmailTemplate Updates an existing email template.
 	UpdateEmailTemplate(ctx context.Context, req *UpdateEmailTemplateRequest, opts ...http.CallOption) (rsp *EmailTemplate, err error)
 }
 
@@ -216,6 +230,7 @@ func NewEmailServiceHTTPClient(client *http.Client) EmailServiceHTTPClient {
 	return &EmailServiceHTTPClientImpl{client}
 }
 
+// CreateEmailTemplate Creates a new email template.
 func (c *EmailServiceHTTPClientImpl) CreateEmailTemplate(ctx context.Context, in *CreateEmailTemplateRequest, opts ...http.CallOption) (*EmailTemplate, error) {
 	var out EmailTemplate
 	pattern := "/v1/emailTemplates"
@@ -233,6 +248,7 @@ func (c *EmailServiceHTTPClientImpl) CreateEmailTemplate(ctx context.Context, in
 	return &out, nil
 }
 
+// DeleteEmailTemplate Deletes an email template.
 func (c *EmailServiceHTTPClientImpl) DeleteEmailTemplate(ctx context.Context, in *DeleteEmailTemplateRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
 	var out emptypb.Empty
 	pattern := "/v1/{name=emailTemplates/*}"
@@ -249,6 +265,7 @@ func (c *EmailServiceHTTPClientImpl) DeleteEmailTemplate(ctx context.Context, in
 	return &out, nil
 }
 
+// GetEmailTemplate Retrieves an email template by resource name.
 func (c *EmailServiceHTTPClientImpl) GetEmailTemplate(ctx context.Context, in *GetEmailTemplateRequest, opts ...http.CallOption) (*EmailTemplate, error) {
 	var out EmailTemplate
 	pattern := "/v1/{name=emailTemplates/*}"
@@ -265,6 +282,7 @@ func (c *EmailServiceHTTPClientImpl) GetEmailTemplate(ctx context.Context, in *G
 	return &out, nil
 }
 
+// ListEmailTemplates Lists all email templates.
 func (c *EmailServiceHTTPClientImpl) ListEmailTemplates(ctx context.Context, in *ListEmailTemplatesRequest, opts ...http.CallOption) (*ListEmailTemplatesResponse, error) {
 	var out ListEmailTemplatesResponse
 	pattern := "/v1/emailTemplates"
@@ -281,6 +299,7 @@ func (c *EmailServiceHTTPClientImpl) ListEmailTemplates(ctx context.Context, in 
 	return &out, nil
 }
 
+// RenameEmailTemplate Renames an existing email template.
 func (c *EmailServiceHTTPClientImpl) RenameEmailTemplate(ctx context.Context, in *RenameEmailTemplateRequest, opts ...http.CallOption) (*EmailTemplate, error) {
 	var out EmailTemplate
 	pattern := "/v1/{name=emailTemplates/*}:rename"
@@ -298,6 +317,7 @@ func (c *EmailServiceHTTPClientImpl) RenameEmailTemplate(ctx context.Context, in
 	return &out, nil
 }
 
+// SendEmail Sends an email using an existing email template.
 func (c *EmailServiceHTTPClientImpl) SendEmail(ctx context.Context, in *SendEmailRequest, opts ...http.CallOption) (*SendEmailResponse, error) {
 	var out SendEmailResponse
 	pattern := "/v1:sendEmail"
@@ -315,6 +335,7 @@ func (c *EmailServiceHTTPClientImpl) SendEmail(ctx context.Context, in *SendEmai
 	return &out, nil
 }
 
+// UpdateEmailTemplate Updates an existing email template.
 func (c *EmailServiceHTTPClientImpl) UpdateEmailTemplate(ctx context.Context, in *UpdateEmailTemplateRequest, opts ...http.CallOption) (*EmailTemplate, error) {
 	var out EmailTemplate
 	pattern := "/v1/{email_template.name=emailTemplates/*}"

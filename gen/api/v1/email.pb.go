@@ -25,11 +25,17 @@ const (
 )
 
 type EmailTemplate struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Subject       string                 `protobuf:"bytes,2,opt,name=subject,proto3" json:"subject,omitempty"`
-	Html          string                 `protobuf:"bytes,3,opt,name=html,proto3" json:"html,omitempty"`
-	Text          string                 `protobuf:"bytes,4,opt,name=text,proto3" json:"text,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The resource name of the email template.
+	//
+	// Format: `emailTemplates/{email_template}`
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// The subject of the email template.
+	Subject string `protobuf:"bytes,2,opt,name=subject,proto3" json:"subject,omitempty"`
+	// The HTML content of the email template.
+	Html string `protobuf:"bytes,3,opt,name=html,proto3" json:"html,omitempty"`
+	// The plain text content of the email template.
+	Text          string `protobuf:"bytes,4,opt,name=text,proto3" json:"text,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -93,8 +99,11 @@ func (x *EmailTemplate) GetText() string {
 }
 
 type GetEmailTemplateRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The email template to retrieve.
+	//
+	// Format: `emailTemplates/{email_template}`
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -173,8 +182,9 @@ func (*ListEmailTemplatesRequest) Descriptor() ([]byte, []int) {
 }
 
 type ListEmailTemplatesResponse struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	EmailTemplates []*EmailTemplate       `protobuf:"bytes,1,rep,name=email_templates,json=emailTemplates,proto3" json:"email_templates,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The email templates retrieved.
+	EmailTemplates []*EmailTemplate `protobuf:"bytes,1,rep,name=email_templates,json=emailTemplates,proto3" json:"email_templates,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -217,9 +227,11 @@ func (x *ListEmailTemplatesResponse) GetEmailTemplates() []*EmailTemplate {
 }
 
 type CreateEmailTemplateRequest struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	EmailTemplate   *EmailTemplate         `protobuf:"bytes,1,opt,name=email_template,json=emailTemplate,proto3" json:"email_template,omitempty"`
-	EmailTemplateId string                 `protobuf:"bytes,2,opt,name=email_template_id,json=emailTemplateId,proto3" json:"email_template_id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The email template to create.
+	EmailTemplate *EmailTemplate `protobuf:"bytes,1,opt,name=email_template,json=emailTemplate,proto3" json:"email_template,omitempty"`
+	// The ID to use for the new email template.
+	EmailTemplateId string `protobuf:"bytes,2,opt,name=email_template_id,json=emailTemplateId,proto3" json:"email_template_id,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -269,8 +281,10 @@ func (x *CreateEmailTemplateRequest) GetEmailTemplateId() string {
 }
 
 type UpdateEmailTemplateRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	EmailTemplate *EmailTemplate         `protobuf:"bytes,1,opt,name=email_template,json=emailTemplate,proto3" json:"email_template,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The email template containing the updated fields.
+	EmailTemplate *EmailTemplate `protobuf:"bytes,1,opt,name=email_template,json=emailTemplate,proto3" json:"email_template,omitempty"`
+	// The fields of the email template to update.
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -321,8 +335,11 @@ func (x *UpdateEmailTemplateRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 }
 
 type DeleteEmailTemplateRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The email template to delete.
+	//
+	// Format: `emailTemplates/{email_template}`
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -365,9 +382,15 @@ func (x *DeleteEmailTemplateRequest) GetName() string {
 }
 
 type RenameEmailTemplateRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	NewName       string                 `protobuf:"bytes,2,opt,name=new_name,json=newName,proto3" json:"new_name,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The email template to rename.
+	//
+	// Format: `emailTemplates/{email_template}`
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// The new resource name of the email template.
+	//
+	// Format: `emailTemplates/{email_template}`
+	NewName       string `protobuf:"bytes,2,opt,name=new_name,json=newName,proto3" json:"new_name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -417,14 +440,23 @@ func (x *RenameEmailTemplateRequest) GetNewName() string {
 }
 
 type SendEmailRequest struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	From           string                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
-	To             []string               `protobuf:"bytes,2,rep,name=to,proto3" json:"to,omitempty"`
-	Cc             []string               `protobuf:"bytes,3,rep,name=cc,proto3" json:"cc,omitempty"`
-	Bcc            []string               `protobuf:"bytes,4,rep,name=bcc,proto3" json:"bcc,omitempty"`
-	Template       string                 `protobuf:"bytes,5,opt,name=template,proto3" json:"template,omitempty"`
-	Variables      map[string]string      `protobuf:"bytes,6,rep,name=variables,proto3" json:"variables,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	IdempotencyKey string                 `protobuf:"bytes,7,opt,name=idempotency_key,json=idempotencyKey,proto3" json:"idempotency_key,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The email address of the sender.
+	From string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	// The email addresses of the primary recipients.
+	To []string `protobuf:"bytes,2,rep,name=to,proto3" json:"to,omitempty"`
+	// The email addresses of the carbon copy recipients.
+	Cc []string `protobuf:"bytes,3,rep,name=cc,proto3" json:"cc,omitempty"`
+	// The email addresses of the blind carbon copy recipients.
+	Bcc []string `protobuf:"bytes,4,rep,name=bcc,proto3" json:"bcc,omitempty"`
+	// The email template to use when sending the email.
+	//
+	// Format: `emailTemplates/{email_template}`
+	Template string `protobuf:"bytes,5,opt,name=template,proto3" json:"template,omitempty"`
+	// The variables to substitute in the email template.
+	Variables map[string]string `protobuf:"bytes,6,rep,name=variables,proto3" json:"variables,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// The unique key used to prevent duplicate email sending requests.
+	IdempotencyKey string `protobuf:"bytes,7,opt,name=idempotency_key,json=idempotencyKey,proto3" json:"idempotency_key,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }

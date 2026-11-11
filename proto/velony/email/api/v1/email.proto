@@ -12,9 +12,11 @@ import "google/protobuf/field_mask.proto";
 
 option go_package = "github.com/velonyapp/email/gen/api/v1;apiv1";
 
+// Provides email template management and email sending operations.
 service EmailService {
   option (google.api.default_host) = "api.velony.app";
 
+  // Retrieves an email template by resource name.
   rpc GetEmailTemplate(GetEmailTemplateRequest) returns (EmailTemplate) {
     option (google.api.http) = {
       get: "/v1/{name=emailTemplates/*}"
@@ -22,12 +24,14 @@ service EmailService {
     option (google.api.method_signature) = "name";
   }
 
+  // Lists all email templates.
   rpc ListEmailTemplates(ListEmailTemplatesRequest) returns (ListEmailTemplatesResponse) {
     option (google.api.http) = {
       get: "/v1/emailTemplates"
     };
   }
 
+  // Creates a new email template.
   rpc CreateEmailTemplate(CreateEmailTemplateRequest) returns (EmailTemplate) {
     option (google.api.http) = {
       post: "/v1/emailTemplates"
@@ -36,6 +40,7 @@ service EmailService {
     option (google.api.method_signature) = "email_template,email_template_id";
   }
 
+  // Updates an existing email template.
   rpc UpdateEmailTemplate(UpdateEmailTemplateRequest) returns (EmailTemplate) {
     option (google.api.http) = {
       patch: "/v1/{email_template.name=emailTemplates/*}"
@@ -44,6 +49,7 @@ service EmailService {
     option (google.api.method_signature) = "email_template,update_mask";
   }
 
+  // Deletes an email template.
   rpc DeleteEmailTemplate(DeleteEmailTemplateRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       delete: "/v1/{name=emailTemplates/*}"
@@ -51,6 +57,7 @@ service EmailService {
     option (google.api.method_signature) = "name";
   }
 
+  // Renames an existing email template.
   rpc RenameEmailTemplate(RenameEmailTemplateRequest) returns (EmailTemplate) {
     option (google.api.http) = {
       post: "/v1/{name=emailTemplates/*}:rename"
@@ -59,6 +66,7 @@ service EmailService {
     option (google.api.method_signature) = "name,new_name";
   }
 
+  // Sends an email using an existing email template.
   rpc SendEmail(SendEmailRequest) returns (SendEmailResponse) {
     option (google.api.http) = {
       post: "/v1:sendEmail"
@@ -75,22 +83,33 @@ message EmailTemplate {
     plural  : "emailTemplates"
   };
 
+  // The resource name of the email template.
+  //
+  // Format: `emailTemplates/{email_template}`
   string name = 1 [
     (google.api.field_behavior) = IDENTIFIER
   ];
 
+  // The subject of the email template.
   string subject = 2 [
     (google.api.field_behavior) = REQUIRED
   ];
+
+  // The HTML content of the email template.
   string html = 3 [
     (google.api.field_behavior) = OPTIONAL
   ];
+
+  // The plain text content of the email template.
   string text = 4 [
     (google.api.field_behavior) = OPTIONAL
   ];
 }
 
 message GetEmailTemplateRequest {
+  // The email template to retrieve.
+  //
+  // Format: `emailTemplates/{email_template}`
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
@@ -102,30 +121,38 @@ message GetEmailTemplateRequest {
 message ListEmailTemplatesRequest {}
 
 message ListEmailTemplatesResponse {
+  // The email templates retrieved.
   repeated EmailTemplate email_templates = 1;
 }
 
 message CreateEmailTemplateRequest {
+  // The email template to create.
   EmailTemplate email_template = 1 [
     (google.api.field_behavior) = REQUIRED
   ];
 
+  // The ID to use for the new email template.
   string email_template_id = 2 [
     (google.api.field_behavior) = REQUIRED
   ];
 }
 
 message UpdateEmailTemplateRequest {
+  // The email template containing the updated fields.
   EmailTemplate email_template = 1 [
     (google.api.field_behavior) = REQUIRED
   ];
 
+  // The fields of the email template to update.
   google.protobuf.FieldMask update_mask = 2 [
     (google.api.field_behavior) = OPTIONAL
   ];
 }
 
 message DeleteEmailTemplateRequest {
+  // The email template to delete.
+  //
+  // Format: `emailTemplates/{email_template}`
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
@@ -135,6 +162,9 @@ message DeleteEmailTemplateRequest {
 }
 
 message RenameEmailTemplateRequest {
+  // The email template to rename.
+  //
+  // Format: `emailTemplates/{email_template}`
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
@@ -142,6 +172,9 @@ message RenameEmailTemplateRequest {
     }
   ];
 
+  // The new resource name of the email template.
+  //
+  // Format: `emailTemplates/{email_template}`
   string new_name = 2 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
@@ -151,33 +184,45 @@ message RenameEmailTemplateRequest {
 }
 
 message SendEmailRequest {
+  // The email address of the sender.
   string from = 1 [
     (google.api.field_behavior) = REQUIRED
   ];
+
+  // The email addresses of the primary recipients.
   repeated string to = 2 [
     (google.api.field_behavior) = REQUIRED
   ];
+
+  // The email addresses of the carbon copy recipients.
   repeated string cc = 3 [
     (google.api.field_behavior) = OPTIONAL
   ];
+
+  // The email addresses of the blind carbon copy recipients.
   repeated string bcc = 4 [
     (google.api.field_behavior) = OPTIONAL
   ];
 
+  // The email template to use when sending the email.
+  //
+  // Format: `emailTemplates/{email_template}`
   string template = 5 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
     type: "api.velony.app/EmailTemplate"
     }
   ];
+
+  // The variables to substitute in the email template.
   map<string, string> variables = 6 [
     (google.api.field_behavior) = OPTIONAL
   ];
 
+  // The unique key used to prevent duplicate email sending requests.
   string idempotency_key = 7 [
     (google.api.field_behavior) = OPTIONAL
   ];
 }
 
-message SendEmailResponse {
-}
+message SendEmailResponse {}

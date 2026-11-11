@@ -32,13 +32,22 @@ const (
 // EmailServiceClient is the client API for EmailService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// Provides email template management and email sending operations.
 type EmailServiceClient interface {
+	// Retrieves an email template by resource name.
 	GetEmailTemplate(ctx context.Context, in *GetEmailTemplateRequest, opts ...grpc.CallOption) (*EmailTemplate, error)
+	// Lists all email templates.
 	ListEmailTemplates(ctx context.Context, in *ListEmailTemplatesRequest, opts ...grpc.CallOption) (*ListEmailTemplatesResponse, error)
+	// Creates a new email template.
 	CreateEmailTemplate(ctx context.Context, in *CreateEmailTemplateRequest, opts ...grpc.CallOption) (*EmailTemplate, error)
+	// Updates an existing email template.
 	UpdateEmailTemplate(ctx context.Context, in *UpdateEmailTemplateRequest, opts ...grpc.CallOption) (*EmailTemplate, error)
+	// Deletes an email template.
 	DeleteEmailTemplate(ctx context.Context, in *DeleteEmailTemplateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Renames an existing email template.
 	RenameEmailTemplate(ctx context.Context, in *RenameEmailTemplateRequest, opts ...grpc.CallOption) (*EmailTemplate, error)
+	// Sends an email using an existing email template.
 	SendEmail(ctx context.Context, in *SendEmailRequest, opts ...grpc.CallOption) (*SendEmailResponse, error)
 }
 
@@ -123,13 +132,22 @@ func (c *emailServiceClient) SendEmail(ctx context.Context, in *SendEmailRequest
 // EmailServiceServer is the server API for EmailService service.
 // All implementations must embed UnimplementedEmailServiceServer
 // for forward compatibility.
+//
+// Provides email template management and email sending operations.
 type EmailServiceServer interface {
+	// Retrieves an email template by resource name.
 	GetEmailTemplate(context.Context, *GetEmailTemplateRequest) (*EmailTemplate, error)
+	// Lists all email templates.
 	ListEmailTemplates(context.Context, *ListEmailTemplatesRequest) (*ListEmailTemplatesResponse, error)
+	// Creates a new email template.
 	CreateEmailTemplate(context.Context, *CreateEmailTemplateRequest) (*EmailTemplate, error)
+	// Updates an existing email template.
 	UpdateEmailTemplate(context.Context, *UpdateEmailTemplateRequest) (*EmailTemplate, error)
+	// Deletes an email template.
 	DeleteEmailTemplate(context.Context, *DeleteEmailTemplateRequest) (*emptypb.Empty, error)
+	// Renames an existing email template.
 	RenameEmailTemplate(context.Context, *RenameEmailTemplateRequest) (*EmailTemplate, error)
+	// Sends an email using an existing email template.
 	SendEmail(context.Context, *SendEmailRequest) (*SendEmailResponse, error)
 	mustEmbedUnimplementedEmailServiceServer()
 }
