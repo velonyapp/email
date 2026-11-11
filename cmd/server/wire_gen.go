@@ -55,7 +55,7 @@ func wireApp(email *conf.Email, data *conf.Data, confTransport *conf.Transport, 
 	server := transport.NewGRPCServer(confTransport, api, tracing, metrics, errorMapper, validation)
 	httpServer := transport.NewHTTPServer(confTransport, api, tracing, metrics, errorMapper, validation)
 	job := service.NewJob(bus)
-	rabbitMQConsumer := transport.NewRabbitMQConsumer(confTransport, job)
+	rabbitMQConsumer := transport.NewRabbitMQConsumer(confTransport, job, logger)
 	app := newApp(logger, server, httpServer, rabbitMQConsumer)
 	return app, func() {
 	}, nil

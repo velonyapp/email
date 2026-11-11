@@ -3,6 +3,7 @@ package transport
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"sync"
 	"time"
 
@@ -30,6 +31,7 @@ var _ transport.Server = (*RabbitMQConsumer)(nil)
 type RabbitMQConsumer struct {
 	c          *conf.Transport
 	jobService *service.Job
+	log        *slog.Logger
 
 	conn        *rabbitmqamqp.AmqpConnection
 	consumerMap map[string]*rabbitmqamqp.Consumer
@@ -44,10 +46,12 @@ type RabbitMQConsumer struct {
 func NewRabbitMQConsumer(
 	c *conf.Transport,
 	jobService *service.Job,
+	log *slog.Logger,
 ) *RabbitMQConsumer {
 	srv := &RabbitMQConsumer{
 		c:          c,
 		jobService: jobService,
+		log:        log,
 
 		consumerMap: make(map[string]*rabbitmqamqp.Consumer),
 	}
@@ -88,10 +92,20 @@ func (rc *RabbitMQConsumer) handleMessage(ctx context.Context, queue string, dat
 func (rc *RabbitMQConsumer) registerConsumer(ctx context.Context, queue string) error {
 	consumer, err := rc.conn.NewConsumer(ctx, queue, nil)
 	if err != nil {
+		rc.log.ErrorContext(ctx,
+			"failed to register RabbitMQ consumer",
+			slog.String("queue", queue),
+			slog.Any("error", err),
+		)
 		return err
 	}
 
 	rc.consumerMap[queue] = consumer
+
+	rc.log.InfoContext(ctx,
+		"RabbitMQ consumer registered",
+		slog.String("queue", queue),
+	)
 
 	return nil
 }
@@ -165,6 +179,11 @@ func (rc *RabbitMQConsumer) Start(ctx context.Context) error {
 						return
 					}
 
+					rc.log.WarnContext(ctx,
+						"failed to receive RabbitMQ message",
+						slog.String("queue", queue),
+						slog.Any("error", err),
+					)
 					continue
 				}
 
@@ -174,16 +193,40 @@ func (rc *RabbitMQConsumer) Start(ctx context.Context) error {
 					switch {
 					case errors.Is(err, ErrUnsupportedMessage),
 						errors.Is(err, ErrInvalidMessage):
-						delivery.Discard(ctx, nil)
+						if err := delivery.Discard(ctx, nil); err != nil {
+							rc.log.ErrorContext(ctx,
+								"failed to discard RabbitMQ message",
+								slog.String("queue", queue),
+								slog.Any("error", err),
+							)
+						}
 
 					default:
-						delivery.RequeueWithAnnotationsAndDeliveryFailed(ctx, nil, true)
+						rc.log.WarnContext(ctx,
+							"failed to handle RabbitMQ message, requeueing",
+							slog.String("queue", queue),
+							slog.Any("error", err),
+						)
+
+						if err := delivery.RequeueWithAnnotationsAndDeliveryFailed(ctx, nil, true); err != nil {
+							rc.log.ErrorContext(ctx,
+								"failed to requeue RabbitMQ message",
+								slog.String("queue", queue),
+								slog.Any("error", err),
+							)
+						}
 					}
 
 					continue
 				}
 
-				delivery.Accept(ctx)
+				if err := delivery.Accept(ctx); err != nil {
+					rc.log.ErrorContext(ctx,
+						"failed to accept RabbitMQ message",
+						slog.String("queue", queue),
+						slog.Any("error", err),
+					)
+				}
 			}
 		})
 	}
@@ -205,6 +248,11 @@ func (rc *RabbitMQConsumer) Stop(ctx context.Context) error {
 
 	for name, consumer := range rc.consumerMap {
 		if err := consumer.Close(ctx); err != nil {
+			rc.log.ErrorContext(ctx,
+				"failed to close RabbitMQ consumer",
+				slog.String("queue", name),
+				slog.Any("error", err),
+			)
 			errs = append(errs, err)
 		}
 
@@ -213,10 +261,20 @@ func (rc *RabbitMQConsumer) Stop(ctx context.Context) error {
 
 	if rc.conn != nil {
 		if err := rc.conn.Close(ctx); err != nil {
+			rc.log.ErrorContext(ctx,
+				"failed to close RabbitMQ connection",
+				slog.Any("error", err),
+			)
 			errs = append(errs, err)
 		}
 
 		rc.conn = nil
+	}
+
+	if len(errs) == 0 {
+		rc.log.InfoContext(ctx,
+			"RabbitMQ consumer stopped",
+		)
 	}
 
 	return errors.Join(errs...)
