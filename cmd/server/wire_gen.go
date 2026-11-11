@@ -27,11 +27,11 @@ import (
 
 // wireApp init kratos application.
 func wireApp(email *conf.Email, data *conf.Data, confTransport *conf.Transport, logger *slog.Logger) (*kratos.App, func(), error) {
-	db, err := mysql.NewConnection(data)
+	db, err := mysql.NewConnection(data, logger)
 	if err != nil {
 		return nil, nil, err
 	}
-	template := mysql.NewTemplateRepo(db)
+	template := mysql.NewTemplateRepo(db, logger)
 	createTemplateHandler := command.NewCreateTemplateHandler(template)
 	updateTemplateHandler := command.NewUpdateTemplateHandler(template)
 	unitOfWork := mysql.NewUnitOfWork(db)

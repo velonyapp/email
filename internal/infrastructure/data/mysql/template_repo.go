@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"log/slog"
 	"strings"
 
 	"github.com/velonyapp/email/internal/domain/entity"
@@ -16,12 +17,14 @@ import (
 var _ repo.Template = (*templateRepo)(nil)
 
 type templateRepo struct {
-	db *sql.DB
+	db  *sql.DB
+	log *slog.Logger
 }
 
-func NewTemplateRepo(db *sql.DB) repo.Template {
+func NewTemplateRepo(db *sql.DB, log *slog.Logger) repo.Template {
 	return &templateRepo{
-		db: db,
+		db:  db,
+		log: log,
 	}
 }
 
@@ -50,6 +53,11 @@ func (r *templateRepo) FindByAlias(ctx context.Context, alias vo.Alias) (*entity
 			return nil, nil
 		}
 
+		r.log.ErrorContext(ctx,
+			"failed to find template by alias",
+			slog.String("alias", alias.String()),
+			slog.Any("error", err),
+		)
 		return nil, err
 	}
 
@@ -70,6 +78,10 @@ func (r *templateRepo) FindAll(ctx context.Context) ([]*entity.Template, error) 
 
 	rows, err := executor(ctx, r.db).QueryContext(ctx, query)
 	if err != nil {
+		r.log.ErrorContext(ctx,
+			"failed to find all templates",
+			slog.Any("error", err),
+		)
 		return nil, err
 	}
 	defer rows.Close()
@@ -79,6 +91,10 @@ func (r *templateRepo) FindAll(ctx context.Context) ([]*entity.Template, error) 
 	for rows.Next() {
 		template, err := scanRepoTemplate(rows)
 		if err != nil {
+			r.log.ErrorContext(ctx,
+				"failed to scan template",
+				slog.Any("error", err),
+			)
 			return nil, err
 		}
 
@@ -86,6 +102,10 @@ func (r *templateRepo) FindAll(ctx context.Context) ([]*entity.Template, error) 
 	}
 
 	if err := rows.Err(); err != nil {
+		r.log.ErrorContext(ctx,
+			"failed to iterate templates",
+			slog.Any("error", err),
+		)
 		return nil, err
 	}
 
@@ -102,6 +122,11 @@ func (r *templateRepo) Save(ctx context.Context, template *entity.Template) erro
 		if _, err := executor(ctx, r.db).ExecContext(ctx, query,
 			template.ID().String(),
 		); err != nil {
+			r.log.ErrorContext(ctx,
+				"failed to delete template",
+				slog.String("template_id", template.ID().String()),
+				slog.Any("error", err),
+			)
 			return err
 		}
 	} else if template.IsNew() {
@@ -131,6 +156,11 @@ func (r *templateRepo) Save(ctx context.Context, template *entity.Template) erro
 				}
 			}
 
+			r.log.ErrorContext(ctx,
+				"failed to insert template",
+				slog.String("template_id", template.ID().String()),
+				slog.Any("error", err),
+			)
 			return err
 		}
 	} else {
@@ -159,6 +189,11 @@ func (r *templateRepo) Save(ctx context.Context, template *entity.Template) erro
 				}
 			}
 
+			r.log.ErrorContext(ctx,
+				"failed to update template",
+				slog.String("template_id", template.ID().String()),
+				slog.Any("error", err),
+			)
 			return err
 		}
 	}

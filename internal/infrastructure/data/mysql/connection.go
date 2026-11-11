@@ -2,17 +2,22 @@ package mysql
 
 import (
 	"database/sql"
+	"log/slog"
 
 	"github.com/velonyapp/email/internal/conf"
 
 	"github.com/XSAM/otelsql"
 	"github.com/go-sql-driver/mysql"
-	semconv "go.opentelemetry.io/otel/semconv/v1.37.0"
+	"go.opentelemetry.io/otel/semconv/v1.37.0"
 )
 
-func NewConnection(c *conf.Data) (*sql.DB, error) {
+func NewConnection(c *conf.Data, log *slog.Logger) (*sql.DB, error) {
 	cfg, err := mysql.ParseDSN(c.Mysql.Dsn)
 	if err != nil {
+		log.Error(
+			"failed to parse MySQL DSN",
+			slog.Any("error", err),
+		)
 		return nil, err
 	}
 
@@ -31,6 +36,10 @@ func NewConnection(c *conf.Data) (*sql.DB, error) {
 		}),
 	)
 	if err != nil {
+		log.Error(
+			"failed to open MySQL connection",
+			slog.Any("error", err),
+		)
 		return nil, err
 	}
 
@@ -45,9 +54,17 @@ func NewConnection(c *conf.Data) (*sql.DB, error) {
 	}
 
 	if err := db.Ping(); err != nil {
+		log.Error(
+			"failed to ping MySQL",
+			slog.Any("error", err),
+		)
 		db.Close()
 		return nil, err
 	}
+
+	log.Info(
+		"MySQL connection established",
+	)
 
 	return db, nil
 }
