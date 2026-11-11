@@ -27,7 +27,7 @@ type SendEmailPayload struct {
 	To             []string               `protobuf:"bytes,2,rep,name=to,proto3" json:"to,omitempty"`
 	Cc             []string               `protobuf:"bytes,3,rep,name=cc,proto3" json:"cc,omitempty"`
 	Bcc            []string               `protobuf:"bytes,4,rep,name=bcc,proto3" json:"bcc,omitempty"`
-	Template       string                 `protobuf:"bytes,5,opt,name=template,proto3" json:"template,omitempty"`
+	TemplateId     string                 `protobuf:"bytes,5,opt,name=template_id,json=templateId,proto3" json:"template_id,omitempty"`
 	Variables      map[string]string      `protobuf:"bytes,6,rep,name=variables,proto3" json:"variables,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	IdempotencyKey string                 `protobuf:"bytes,7,opt,name=idempotency_key,json=idempotencyKey,proto3" json:"idempotency_key,omitempty"`
 	unknownFields  protoimpl.UnknownFields
@@ -92,9 +92,9 @@ func (x *SendEmailPayload) GetBcc() []string {
 	return nil
 }
 
-func (x *SendEmailPayload) GetTemplate() string {
+func (x *SendEmailPayload) GetTemplateId() string {
 	if x != nil {
-		return x.Template
+		return x.TemplateId
 	}
 	return ""
 }
@@ -117,13 +117,14 @@ var File_velony_email_job_v1_send_email_proto protoreflect.FileDescriptor
 
 const file_velony_email_job_v1_send_email_proto_rawDesc = "" +
 	"\n" +
-	"$velony/email/job/v1/send_email.proto\x12\x13velony.email.job.v1\"\xaf\x02\n" +
+	"$velony/email/job/v1/send_email.proto\x12\x13velony.email.job.v1\"\xb4\x02\n" +
 	"\x10SendEmailPayload\x12\x12\n" +
 	"\x04from\x18\x01 \x01(\tR\x04from\x12\x0e\n" +
 	"\x02to\x18\x02 \x03(\tR\x02to\x12\x0e\n" +
 	"\x02cc\x18\x03 \x03(\tR\x02cc\x12\x10\n" +
-	"\x03bcc\x18\x04 \x03(\tR\x03bcc\x12\x1a\n" +
-	"\btemplate\x18\x05 \x01(\tR\btemplate\x12R\n" +
+	"\x03bcc\x18\x04 \x03(\tR\x03bcc\x12\x1f\n" +
+	"\vtemplate_id\x18\x05 \x01(\tR\n" +
+	"templateId\x12R\n" +
 	"\tvariables\x18\x06 \x03(\v24.velony.email.job.v1.SendEmailPayload.VariablesEntryR\tvariables\x12'\n" +
 	"\x0fidempotency_key\x18\a \x01(\tR\x0eidempotencyKey\x1a<\n" +
 	"\x0eVariablesEntry\x12\x10\n" +

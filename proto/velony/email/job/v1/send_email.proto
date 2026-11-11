@@ -11,8 +11,8 @@ message SendEmailPayload {
   repeated string cc   = 3;
   repeated string bcc  = 4;
 
-  string              template  = 5;
-  map<string, string> variables = 6;
+  string              template_id = 5;
+  map<string, string> variables   = 6;
 
   string idempotency_key = 7;
 }
