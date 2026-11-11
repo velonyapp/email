@@ -74,19 +74,6 @@ func main() {
 		panic(err)
 	}
 
-	// Telemetry
-	_, cleanup, err := telemetry.NewOpenTelemetry(
-		context.Background(),
-		bc.Telemetry,
-		Name,
-		Version,
-		InstanceID,
-	)
-	if err != nil {
-		panic(err)
-	}
-	defer cleanup()
-
 	// Logger
 	logger := log.NewLogger(
 		slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
@@ -100,6 +87,20 @@ func main() {
 		slog.String("service.instance.id", InstanceID),
 	)
 	log.SetDefault(logger)
+
+	// Telemetry
+	_, cleanup, err := telemetry.NewOpenTelemetry(
+		context.Background(),
+		bc.Telemetry,
+		Name,
+		Version,
+		InstanceID,
+		logger,
+	)
+	if err != nil {
+		panic(err)
+	}
+	defer cleanup()
 
 	// App
 	app, cleanup, err := wireApp(

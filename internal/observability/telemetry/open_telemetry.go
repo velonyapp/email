@@ -3,6 +3,7 @@ package telemetry
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"time"
 
 	"github.com/velonyapp/email/internal/conf"
@@ -24,8 +25,11 @@ type OpenTelemetry struct {
 	meterProvider  *metric.MeterProvider
 }
 
-func NewOpenTelemetry(ctx context.Context, c *conf.Telemetry, name, version, instanceID string) (*OpenTelemetry, func(), error) {
+func NewOpenTelemetry(ctx context.Context, c *conf.Telemetry, name, version, instanceID string, log *slog.Logger) (*OpenTelemetry, func(), error) {
 	if c == nil {
+		log.WarnContext(ctx,
+			"OpenTelemetry disabled",
+		)
 		return &OpenTelemetry{}, func() {}, nil
 	}
 
@@ -39,6 +43,10 @@ func NewOpenTelemetry(ctx context.Context, c *conf.Telemetry, name, version, ins
 		resource.WithFromEnv(),
 	)
 	if err != nil {
+		log.ErrorContext(ctx,
+			"failed to create OpenTelemetry resource",
+			slog.Any("error", err),
+		)
 		return nil, nil, err
 	}
 
@@ -56,12 +64,20 @@ func NewOpenTelemetry(ctx context.Context, c *conf.Telemetry, name, version, ins
 
 		if o.meterProvider != nil {
 			if err := o.meterProvider.Shutdown(ctx); err != nil {
+				log.ErrorContext(ctx,
+					"failed to shutdown OpenTelemetry meter provider",
+					slog.Any("error", err),
+				)
 				errs = append(errs, err)
 			}
 		}
 
 		if o.tracerProvider != nil {
 			if err := o.tracerProvider.Shutdown(ctx); err != nil {
+				log.ErrorContext(ctx,
+					"failed to shutdown OpenTelemetry tracer provider",
+					slog.Any("error", err),
+				)
 				errs = append(errs, err)
 			}
 		}
@@ -89,6 +105,10 @@ func NewOpenTelemetry(ctx context.Context, c *conf.Telemetry, name, version, ins
 
 			exporter, err = otlptracegrpc.New(ctx, exporterOpts...)
 			if err != nil {
+				log.ErrorContext(ctx,
+					"failed to create OpenTelemetry gRPC trace exporter",
+					slog.Any("error", err),
+				)
 				return nil, nil, err
 			}
 
@@ -108,6 +128,10 @@ func NewOpenTelemetry(ctx context.Context, c *conf.Telemetry, name, version, ins
 
 			exporter, err = otlptracehttp.New(ctx, exporterOpts...)
 			if err != nil {
+				log.ErrorContext(ctx,
+					"failed to create OpenTelemetry HTTP trace exporter",
+					slog.Any("error", err),
+				)
 				return nil, nil, err
 			}
 		}
@@ -151,6 +175,10 @@ func NewOpenTelemetry(ctx context.Context, c *conf.Telemetry, name, version, ins
 
 			exporter, err = otlpmetricgrpc.New(ctx, exporterOpts...)
 			if err != nil {
+				log.ErrorContext(ctx,
+					"failed to create OpenTelemetry gRPC metric exporter",
+					slog.Any("error", err),
+				)
 				_ = shutdown(ctx)
 
 				return nil, nil, err
@@ -172,6 +200,10 @@ func NewOpenTelemetry(ctx context.Context, c *conf.Telemetry, name, version, ins
 
 			exporter, err = otlpmetrichttp.New(ctx, exporterOpts...)
 			if err != nil {
+				log.ErrorContext(ctx,
+					"failed to create OpenTelemetry HTTP metric exporter",
+					slog.Any("error", err),
+				)
 				_ = shutdown(ctx)
 
 				return nil, nil, err
@@ -197,6 +229,12 @@ func NewOpenTelemetry(ctx context.Context, c *conf.Telemetry, name, version, ins
 		otel.SetMeterProvider(o.meterProvider)
 	}
 
+	log.InfoContext(ctx,
+		"OpenTelemetry initialized",
+		slog.Bool("tracing_enabled", o.tracerProvider != nil),
+		slog.Bool("metrics_enabled", o.meterProvider != nil),
+	)
+
 	cleanup := func() {
 		ctx, cancel := context.WithTimeout(
 			context.Background(),
@@ -204,7 +242,11 @@ func NewOpenTelemetry(ctx context.Context, c *conf.Telemetry, name, version, ins
 		)
 		defer cancel()
 
-		_ = shutdown(ctx)
+		if err := shutdown(ctx); err == nil {
+			log.InfoContext(ctx,
+				"OpenTelemetry shutdown completed",
+			)
+		}
 	}
 
 	return o, cleanup, nil
